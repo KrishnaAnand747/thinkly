@@ -8,6 +8,10 @@
     body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f0f4f8; }
     header { background: linear-gradient(90deg, #4a90e2, #357ABD); color: white; padding: 20px; text-align: center; }
     header h1 { margin: 0; font-size: 2.5em; }
+    nav { margin-top: 10px; }
+    nav button { padding: 10px 16px; margin: 5px; border: none; border-radius: 6px; cursor: pointer; }
+    nav button:hover { opacity: 0.8; }
+    .nav-btn { background: #ff9800; color: white; }
     .container { max-width: 900px; margin: 40px auto; text-align: center; padding: 20px; }
     select { padding: 10px; font-size: 1.2em; border-radius: 6px; margin-top: 15px; }
     .card-grid { display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; margin-top: 40px; }
@@ -27,6 +31,9 @@
     .status { font-size: 0.9em; margin-left: 8px; }
     .completed { color: green; font-weight: bold; }
     .in-progress { color: orange; font-weight: bold; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+    th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+    th { background: #4a90e2; color: white; }
   </style>
 </head>
 <body>
@@ -34,9 +41,13 @@
 <header>
   <h1>Thinkly 📘</h1>
   <p>Smart Learning for Class 9 & 10 CBSE Students</p>
+  <nav>
+    <button class="nav-btn" onclick="goHome()">🏠 Home</button>
+    <button class="nav-btn" onclick="showDashboard()">📊 Progress Dashboard</button>
+  </nav>
 </header>
 
-<div class="container">
+<div class="container" id="mainContent">
   <h2>Select Your Class</h2>
   <select id="classSelect" onchange="showSubjects()">
     <option value="">-- Choose Class --</option>
@@ -51,6 +62,11 @@
 
   <div id="chapters" class="chapters"></div>
   <div id="chapterContent" class="chapter-content" style="display:none;"></div>
+</div>
+
+<div class="container" id="dashboard" style="display:none;">
+  <h2>📊 Your Progress Dashboard</h2>
+  <div id="progressTable"></div>
 </div>
 
 <script>
@@ -72,14 +88,17 @@
     ]
   };
 
-  // 🔹 Load progress from localStorage
+  // 🔹 Load & Save Progress
   function getProgress() {
     return JSON.parse(localStorage.getItem("quizProgress") || "{}");
   }
-
-  // 🔹 Save progress to localStorage
   function saveProgress(progress) {
     localStorage.setItem("quizProgress", JSON.stringify(progress));
+  }
+
+  function goHome() {
+    document.getElementById("mainContent").style.display = "block";
+    document.getElementById("dashboard").style.display = "none";
   }
 
   function showSubjects() {
@@ -160,7 +179,7 @@
     const percent = Math.round((score / questions.length) * 100);
     let message = percent >= 80 ? "🌟 Excellent!" : percent >= 50 ? "👍 Good job, keep practicing." : "💡 Don’t worry, review and try again.";
 
-    // 🔹 Save best score in localStorage
+    // 🔹 Save best score
     const progress = getProgress();
     if (!progress[chapterName] || percent > progress[chapterName].bestScore) {
       progress[chapterName] = { bestScore: percent };
@@ -173,9 +192,24 @@
       <button class="quiz-btn" onclick="startQuiz('${chapterName}')">Retry Quiz 🔄</button>
     `;
 
-    // Update chapter list with progress
+    // Refresh chapter list with progress
     showChapters("math");
     showChapters("science");
+  }
+
+  function showDashboard() {
+    document.getElementById("mainContent").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+
+    const progress = getProgress();
+    let html = "<table><tr><th>Chapter</th><th>Best Score</th><th>Status</th></tr>";
+    for (let chapter in progress) {
+      const best = progress[chapter].bestScore;
+      const status = best >= 80 ? "✅ Completed" : "⏳ In Progress";
+      html += `<tr><td>${chapter}</td><td>${best}%</td><td>${status}</td></tr>`;
+    }
+    html += "</table>";
+    document.getElementById("progressTable").innerHTML = html || "<p>No progress yet. Start a quiz!</p>";
   }
 </script>
 
