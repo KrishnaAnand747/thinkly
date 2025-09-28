@@ -1,0 +1,24 @@
+{
+  "syllabus": {
+    "9": {
+      "math": ["Number Systems", "Polynomials"],
+      "science": ["Matter in Our Surroundings", "Motion"]
+    },
+    "10": {
+      "math": [],
+      "science": []
+    }
+  },
+  "notes": {
+    "Number Systems": "<h3>Number Systems</h3><p>Explanation here...</p>",
+    "Matter in Our Surroundings": "<h3>Matter in Our Surroundings</h3><p>Explanation here...</p>"
+  },
+  "quizzes": {
+    "Number Systems": [
+      { "q": "Which of these is an irrational number?", "options": ["2","3/4","√2","0.25"], "answer": 2, "explanation": "√2 cannot be written as p/q." }
+    ],
+    "Matter in Our Surroundings": [
+      { "q": "Which state of matter has fixed volume but no fixed shape?", "options": ["Solid","Liquid","Gas","Plasma"], "answer": 1, "explanation": "Liquids have fixed volume but no fixed shape." }
+    ]
+  }
+}
