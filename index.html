@@ -5,32 +5,122 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thinkly - Learn Smarter</title>
   <style>
-    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f0f4f8; }
-    header { background: linear-gradient(90deg, #4a90e2, #357ABD); color: white; padding: 20px; text-align: center; }
-    header h1 { margin: 0; font-size: 2.5em; }
+    /* Global */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #e0f7fa, #e1bee7);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(90deg, #4a90e2, #357ABD);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    header h1 { margin: 0; font-size: 2.2em; }
     nav { margin-top: 10px; }
-    nav button { padding: 10px 16px; margin: 5px; border: none; border-radius: 6px; cursor: pointer; }
-    .nav-btn { background: #ff9800; color: white; }
-    .container { max-width: 900px; margin: 40px auto; text-align: center; padding: 20px; }
-    select { padding: 10px; font-size: 1.2em; border-radius: 6px; margin-top: 15px; }
-    .card-grid { display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; margin-top: 40px; }
-    .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 200px; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; }
-    .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-    .chapters { margin-top: 30px; }
-    .chapter-btn { margin: 10px; padding: 12px 20px; border: none; border-radius: 8px; background: #4a90e2; color: white; cursor: pointer; }
-    .chapter-btn:hover { background: #357ABD; }
-    .chapter-content { margin-top: 30px; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: left; }
+    nav button {
+      padding: 10px 16px;
+      margin: 5px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      backdrop-filter: blur(10px);
+    }
+    nav button:hover { background: rgba(255, 255, 255, 0.3); }
+
+    /* Layout */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(15px);
+      border-right: 1px solid rgba(255, 255, 255, 0.3);
+      overflow-y: auto;
+    }
+    .sidebar h2 { font-size: 1.2em; margin-top: 0; }
+    .sidebar select {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      border-radius: 6px;
+      border: none;
+      margin-bottom: 15px;
+    }
+    .sidebar .subject-btn, .chapter-btn {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(74, 144, 226, 0.8);
+      color: white;
+      cursor: pointer;
+      text-align: left;
+    }
+    .sidebar .subject-btn:hover, .chapter-btn:hover {
+      background: rgba(53, 122, 189, 0.9);
+    }
+    .status {
+      font-size: 0.8em;
+      display: block;
+      margin-top: 2px;
+    }
+    .completed { color: #2e7d32; }
+    .in-progress { color: #ef6c00; }
+
+    /* Content area */
+    .content {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+    }
+    .content h3 { margin-top: 0; }
+    .content img { margin: 20px 0; border-radius: 8px; max-width: 100%; }
+
+    /* Quiz styles */
     .quiz-question { margin-top: 15px; text-align: left; padding: 10px; }
     .quiz-option { display: block; margin: 6px 0; cursor: pointer; }
-    .quiz-btn { margin-top: 20px; padding: 10px 18px; border: none; border-radius: 8px; background: #28a745; color: white; font-size: 1em; cursor: pointer; }
+    .quiz-btn {
+      margin-top: 20px;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #28a745;
+      color: white;
+      font-size: 1em;
+      cursor: pointer;
+    }
     .quiz-btn:hover { background: #218838; }
-    .result { margin-top: 20px; padding: 15px; border-radius: 10px; font-weight: bold; }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: bold;
+    }
     .correct { background: #e6f9e6; border-left: 5px solid #2e7d32; }
     .wrong { background: #fdecea; border-left: 5px solid #c62828; }
-    .status { font-size: 0.9em; margin-left: 8px; }
-    .completed { color: green; font-weight: bold; }
-    .in-progress { color: orange; font-weight: bold; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+
+    /* Dashboard */
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 8px; overflow: hidden; }
     th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
     th { background: #4a90e2; color: white; }
   </style>
@@ -41,29 +131,34 @@
   <h1>Thinkly 📘</h1>
   <p>Smart Learning for Class 9 & 10 CBSE Students</p>
   <nav>
-    <button class="nav-btn" onclick="goHome()">🏠 Home</button>
-    <button class="nav-btn" onclick="showDashboard()">📊 Progress Dashboard</button>
+    <button onclick="goHome()">🏠 Home</button>
+    <button onclick="showDashboard()">📊 Progress Dashboard</button>
   </nav>
 </header>
 
-<div class="container" id="mainContent">
-  <h2>Select Your Class</h2>
-  <select id="classSelect" onchange="showSubjects()">
-    <option value="">-- Choose Class --</option>
-    <option value="9">Class 9</option>
-    <option value="10">Class 10</option>
-  </select>
+<div class="main">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Choose Class</h2>
+    <select id="classSelect" onchange="showSubjects()">
+      <option value="">-- Select Class --</option>
+      <option value="9">Class 9</option>
+      <option value="10">Class 10</option>
+    </select>
 
-  <div id="subjects" class="card-grid" style="display:none;">
-    <div class="card" onclick="showChapters('math')"><h3>📐 Math</h3></div>
-    <div class="card" onclick="showChapters('science')"><h3>🔬 Science</h3></div>
+    <div id="subjects"></div>
+    <div id="chapters"></div>
   </div>
 
-  <div id="chapters" class="chapters"></div>
-  <div id="chapterContent" class="chapter-content" style="display:none;"></div>
+  <!-- Content -->
+  <div class="content" id="chapterContent">
+    <h3>Welcome 👋</h3>
+    <p>Select a class, subject, and chapter from the left sidebar to get started!</p>
+  </div>
 </div>
 
-<div class="container" id="dashboard" style="display:none;">
+<!-- Dashboard -->
+<div class="content" id="dashboard" style="display:none;">
   <h2>📊 Your Progress Dashboard</h2>
   <div id="progressTable"></div>
 </div>
@@ -71,40 +166,10 @@
 <script>
   const syllabus = {
     9: {
-      math: [
-        "Number Systems",
-        "Polynomials",
-        "Coordinate Geometry",
-        "Linear Equations in Two Variables",
-        "Introduction to Euclid's Geometry",
-        "Lines and Angles",
-        "Triangles",
-        "Quadrilaterals",
-        "Circles",
-        "Heron’s Formula",
-        "Surface Areas and Volumes",
-        "Statistics",
-        "Probability"
-      ],
-      science: [
-        "Matter in Our Surroundings",
-        "Is Matter Around Us Pure?",
-        "Atoms and Molecules",
-        "Structure of the Atom",
-        "Motion",
-        "Force and Laws of Motion",
-        "Gravitation",
-        "Work and Energy",
-        "Sound",
-        "The Fundamental Unit of Life",
-        "Tissues",
-        "Diversity in the Living World",
-        "Why Do We Fall Ill?",
-        "Natural Resources",
-        "Improvement in Food Resources"
-      ]
+      math: ["Number Systems", "Polynomials"],
+      science: ["Matter in Our Surroundings", "Motion"]
     },
-    10: { math: [], science: [] } // will fill later
+    10: { math: [], science: [] }
   };
 
   const notes = {
@@ -115,12 +180,11 @@
         <li><b>Natural Numbers</b>: 1, 2, 3, ...</li>
         <li><b>Whole Numbers</b>: 0, 1, 2, 3, ...</li>
         <li><b>Integers</b>: -3, -2, -1, 0, 1, 2, 3, ...</li>
-        <li><b>Rational Numbers</b>: Numbers that can be expressed as p/q (e.g., 1/2, 3/4).</li>
+        <li><b>Rational Numbers</b>: Numbers that can be expressed as p/q.</li>
         <li><b>Irrational Numbers</b>: Cannot be expressed as p/q (e.g., √2, π).</li>
         <li><b>Real Numbers</b>: Combination of rational & irrational numbers.</li>
       </ul>
-      <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Real_number_line.svg" 
-           alt="Number Line Diagram" width="500">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Real_number_line.svg" width="500">
       <p><i>Fig: Representation of Real Numbers on a Number Line</i></p>
     `,
     "Matter in Our Surroundings": `
@@ -131,36 +195,37 @@
         <li><b>Liquid</b> – definite volume but no fixed shape (e.g., water).</li>
         <li><b>Gas</b> – no definite shape or volume (e.g., oxygen).</li>
       </ul>
-      <p>Inter-particle space and force of attraction vary across these states.</p>
-      <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Matter_states.png" 
-           alt="States of Matter Diagram" width="500">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Matter_states.png" width="500">
       <p><i>Fig: Molecules in Solids, Liquids, and Gases</i></p>
     `
   };
 
   const quizzes = {
     "Number Systems": [
-      { q: "Which of these is an irrational number?", options: ["2", "3/4", "√2", "0.25"], answer: 2, explanation: "√2 is irrational because it cannot be expressed as a ratio of integers." },
-      { q: "Decimal expansion of 1/3 is?", options: ["Terminating", "Non-terminating recurring", "Irrational", "None"], answer: 1, explanation: "1/3 = 0.333... is non-terminating recurring." }
+      { q: "Which of these is an irrational number?", options: ["2", "3/4", "√2", "0.25"], answer: 2, explanation: "√2 is irrational because it cannot be expressed as a ratio of integers." }
     ],
     "Matter in Our Surroundings": [
       { q: "Which state of matter has fixed volume but no fixed shape?", options: ["Solid", "Liquid", "Gas", "Plasma"], answer: 1, explanation: "Liquids have definite volume but take the shape of the container." }
     ]
   };
 
-  // Progress Functions
   function getProgress() { return JSON.parse(localStorage.getItem("quizProgress") || "{}"); }
   function saveProgress(progress) { localStorage.setItem("quizProgress", JSON.stringify(progress)); }
 
   function goHome() {
-    document.getElementById("mainContent").style.display = "block";
+    document.querySelector(".main").style.display = "flex";
     document.getElementById("dashboard").style.display = "none";
   }
 
   function showSubjects() {
-    document.getElementById("subjects").style.display = "flex";
+    const selectedClass = document.getElementById("classSelect").value;
+    let html = "";
+    if (selectedClass) {
+      html += `<button class="subject-btn" onclick="showChapters('math')">📐 Math</button>`;
+      html += `<button class="subject-btn" onclick="showChapters('science')">🔬 Science</button>`;
+    }
+    document.getElementById("subjects").innerHTML = html;
     document.getElementById("chapters").innerHTML = "";
-    document.getElementById("chapterContent").style.display = "none";
   }
 
   function showChapters(subject) {
@@ -168,24 +233,19 @@
     const chapters = syllabus[selectedClass][subject];
     const progress = getProgress();
 
-    let html = "<h2>Choose a Chapter</h2>";
+    let html = "<h3>Chapters</h3>";
     chapters.forEach(ch => {
       let status = "";
       if (progress[ch]) {
-        status = progress[ch].bestScore >= 80 
-          ? `<span class="status completed">⭐ Completed (${progress[ch].bestScore}%)</span>`
-          : `<span class="status in-progress">🔄 In Progress (${progress[ch].bestScore}%)</span>`;
+        status = progress[ch].bestScore >= 80 ? `<span class="status completed">⭐ Completed</span>` : `<span class="status in-progress">🔄 In Progress</span>`;
       }
-      html += `<button class="chapter-btn" onclick="showChapterContent('${ch}')">${ch}</button> ${status}<br>`;
+      html += `<button class="chapter-btn" onclick="showChapterContent('${ch}')">${ch}</button>${status}`;
     });
-
     document.getElementById("chapters").innerHTML = html;
-    document.getElementById("chapterContent").style.display = "none";
   }
 
   function showChapterContent(chapterName) {
     const contentDiv = document.getElementById("chapterContent");
-    contentDiv.style.display = "block";
     contentDiv.innerHTML = `
       ${notes[chapterName] || `<h3>${chapterName}</h3><p>📖 Content coming soon.</p>`}
       <button class="quiz-btn" onclick="startQuiz('${chapterName}')">Take Quiz 📝</button>
@@ -196,10 +256,7 @@
   function startQuiz(chapterName) {
     const quizArea = document.getElementById("quiz");
     const questions = quizzes[chapterName] || [];
-    if (questions.length === 0) {
-      quizArea.innerHTML = "<p>No quiz available for this chapter yet.</p>";
-      return;
-    }
+    if (questions.length === 0) { quizArea.innerHTML = "<p>No quiz available yet.</p>"; return; }
 
     let html = "<h4>Quiz</h4>";
     questions.forEach((q, i) => {
@@ -215,14 +272,12 @@
 
   function submitQuiz(chapterName) {
     const questions = quizzes[chapterName] || [];
-    let score = 0;
-    let feedback = "";
+    let score = 0, feedback = "";
 
     questions.forEach((q, i) => {
       const selected = document.querySelector(`input[name="q${i}"]:checked`);
       const isCorrect = selected && parseInt(selected.value) === q.answer;
       if (isCorrect) score++;
-
       feedback += `<div class="quiz-question ${isCorrect ? 'correct' : 'wrong'}">
         <p><b>Q${i+1}:</b> ${q.q}</p>
         <p>Your Answer: ${selected ? q.options[selected.value] : "Not answered"}</p>
@@ -241,14 +296,11 @@
     document.getElementById("quiz").innerHTML = `
       <div class="result">You scored ${score}/${questions.length} (${percent}%).</div>
       ${feedback}
-      <button class="quiz-btn" onclick="startQuiz('${chapterName}')">Retry Quiz 🔄</button>
     `;
-
-    showChapters("math"); showChapters("science");
   }
 
   function showDashboard() {
-    document.getElementById("mainContent").style.display = "none";
+    document.querySelector(".main").style.display = "none";
     document.getElementById("dashboard").style.display = "block";
 
     const progress = getProgress();
@@ -259,9 +311,4 @@
       html += `<tr><td>${chapter}</td><td>${best}%</td><td>${status}</td></tr>`;
     }
     html += "</table>";
-    document.getElementById("progressTable").innerHTML = html || "<p>No progress yet. Start a quiz!</p>";
-  }
-</script>
-
-</body>
-</html>
+    docume
