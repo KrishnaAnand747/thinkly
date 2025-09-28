@@ -311,4 +311,9 @@
       html += `<tr><td>${chapter}</td><td>${best}%</td><td>${status}</td></tr>`;
     }
     html += "</table>";
-    docume
+    document.getElementById("progressTable").innerHTML = html || "<p>No progress yet. Start a quiz!</p>";
+  }
+</script>
+
+</body>
+</html>
