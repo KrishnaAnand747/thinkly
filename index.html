@@ -10,7 +10,6 @@
     header h1 { margin: 0; font-size: 2.5em; }
     nav { margin-top: 10px; }
     nav button { padding: 10px 16px; margin: 5px; border: none; border-radius: 6px; cursor: pointer; }
-    nav button:hover { opacity: 0.8; }
     .nav-btn { background: #ff9800; color: white; }
     .container { max-width: 900px; margin: 40px auto; text-align: center; padding: 20px; }
     select { padding: 10px; font-size: 1.2em; border-radius: 6px; margin-top: 15px; }
@@ -71,8 +70,72 @@
 
 <script>
   const syllabus = {
-    9: { math: ["Number Systems", "Polynomials"], science: ["Matter in Our Surroundings"] },
-    10: { math: ["Real Numbers", "Quadratic Equations"], science: ["Life Processes"] }
+    9: {
+      math: [
+        "Number Systems",
+        "Polynomials",
+        "Coordinate Geometry",
+        "Linear Equations in Two Variables",
+        "Introduction to Euclid's Geometry",
+        "Lines and Angles",
+        "Triangles",
+        "Quadrilaterals",
+        "Circles",
+        "Heron’s Formula",
+        "Surface Areas and Volumes",
+        "Statistics",
+        "Probability"
+      ],
+      science: [
+        "Matter in Our Surroundings",
+        "Is Matter Around Us Pure?",
+        "Atoms and Molecules",
+        "Structure of the Atom",
+        "Motion",
+        "Force and Laws of Motion",
+        "Gravitation",
+        "Work and Energy",
+        "Sound",
+        "The Fundamental Unit of Life",
+        "Tissues",
+        "Diversity in the Living World",
+        "Why Do We Fall Ill?",
+        "Natural Resources",
+        "Improvement in Food Resources"
+      ]
+    },
+    10: { math: [], science: [] } // will fill later
+  };
+
+  const notes = {
+    "Number Systems": `
+      <h3>Number Systems</h3>
+      <p>The <b>number system</b> is the system of writing numbers using digits. It includes:</p>
+      <ul>
+        <li><b>Natural Numbers</b>: 1, 2, 3, ...</li>
+        <li><b>Whole Numbers</b>: 0, 1, 2, 3, ...</li>
+        <li><b>Integers</b>: -3, -2, -1, 0, 1, 2, 3, ...</li>
+        <li><b>Rational Numbers</b>: Numbers that can be expressed as p/q (e.g., 1/2, 3/4).</li>
+        <li><b>Irrational Numbers</b>: Cannot be expressed as p/q (e.g., √2, π).</li>
+        <li><b>Real Numbers</b>: Combination of rational & irrational numbers.</li>
+      </ul>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Real_number_line.svg" 
+           alt="Number Line Diagram" width="500">
+      <p><i>Fig: Representation of Real Numbers on a Number Line</i></p>
+    `,
+    "Matter in Our Surroundings": `
+      <h3>Matter in Our Surroundings</h3>
+      <p>Matter is made up of particles and exists in <b>3 states</b>:</p>
+      <ul>
+        <li><b>Solid</b> – definite shape & volume (e.g., ice).</li>
+        <li><b>Liquid</b> – definite volume but no fixed shape (e.g., water).</li>
+        <li><b>Gas</b> – no definite shape or volume (e.g., oxygen).</li>
+      </ul>
+      <p>Inter-particle space and force of attraction vary across these states.</p>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Matter_states.png" 
+           alt="States of Matter Diagram" width="500">
+      <p><i>Fig: Molecules in Solids, Liquids, and Gases</i></p>
+    `
   };
 
   const quizzes = {
@@ -80,21 +143,14 @@
       { q: "Which of these is an irrational number?", options: ["2", "3/4", "√2", "0.25"], answer: 2, explanation: "√2 is irrational because it cannot be expressed as a ratio of integers." },
       { q: "Decimal expansion of 1/3 is?", options: ["Terminating", "Non-terminating recurring", "Irrational", "None"], answer: 1, explanation: "1/3 = 0.333... is non-terminating recurring." }
     ],
-    "Polynomials": [
-      { q: "Degree of polynomial x² + 3x + 5 is?", options: ["1", "2", "3", "0"], answer: 1, explanation: "The highest power of x is 2, so degree = 2." }
-    ],
-    "Life Processes": [
-      { q: "In humans, which organ is responsible for pumping blood?", options: ["Lungs", "Brain", "Heart", "Kidney"], answer: 2, explanation: "The heart pumps blood throughout the body." }
+    "Matter in Our Surroundings": [
+      { q: "Which state of matter has fixed volume but no fixed shape?", options: ["Solid", "Liquid", "Gas", "Plasma"], answer: 1, explanation: "Liquids have definite volume but take the shape of the container." }
     ]
   };
 
-  // 🔹 Load & Save Progress
-  function getProgress() {
-    return JSON.parse(localStorage.getItem("quizProgress") || "{}");
-  }
-  function saveProgress(progress) {
-    localStorage.setItem("quizProgress", JSON.stringify(progress));
-  }
+  // Progress Functions
+  function getProgress() { return JSON.parse(localStorage.getItem("quizProgress") || "{}"); }
+  function saveProgress(progress) { localStorage.setItem("quizProgress", JSON.stringify(progress)); }
 
   function goHome() {
     document.getElementById("mainContent").style.display = "block";
@@ -131,8 +187,7 @@
     const contentDiv = document.getElementById("chapterContent");
     contentDiv.style.display = "block";
     contentDiv.innerHTML = `
-      <h3>${chapterName}</h3>
-      <p>📖 Content for <b>${chapterName}</b> will appear here.</p>
+      ${notes[chapterName] || `<h3>${chapterName}</h3><p>📖 Content coming soon.</p>`}
       <button class="quiz-btn" onclick="startQuiz('${chapterName}')">Take Quiz 📝</button>
       <div id="quiz"></div>
     `;
@@ -177,9 +232,6 @@
     });
 
     const percent = Math.round((score / questions.length) * 100);
-    let message = percent >= 80 ? "🌟 Excellent!" : percent >= 50 ? "👍 Good job, keep practicing." : "💡 Don’t worry, review and try again.";
-
-    // 🔹 Save best score
     const progress = getProgress();
     if (!progress[chapterName] || percent > progress[chapterName].bestScore) {
       progress[chapterName] = { bestScore: percent };
@@ -187,14 +239,12 @@
     }
 
     document.getElementById("quiz").innerHTML = `
-      <div class="result">You scored ${score}/${questions.length} (${percent}%). ${message}</div>
+      <div class="result">You scored ${score}/${questions.length} (${percent}%).</div>
       ${feedback}
       <button class="quiz-btn" onclick="startQuiz('${chapterName}')">Retry Quiz 🔄</button>
     `;
 
-    // Refresh chapter list with progress
-    showChapters("math");
-    showChapters("science");
+    showChapters("math"); showChapters("science");
   }
 
   function showDashboard() {
