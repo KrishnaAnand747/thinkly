@@ -1,0 +1,111 @@
+<style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f0f4f8;
+      color: #333;
+    }
+    header {
+      background: linear-gradient(90deg, #4a90e2, #357ABD);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      text-align: center;
+      padding: 20px;
+    }
+    select {
+      padding: 10px;
+      font-size: 1.2em;
+      border-radius: 6px;
+      margin-top: 15px;
+    }
+    .card-grid {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin-top: 40px;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 200px;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .card h3 {
+      margin: 0;
+      font-size: 1.5em;
+    }
+    .chapters {
+      margin-top: 30px;
+    }
+    .chapter-btn {
+      display: inline-block;
+      margin: 10px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #4a90e2;
+      color: white;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .chapter-btn:hover {
+      background: #357ABD;
+    }
+    .chapter-content {
+      margin-top: 30px;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: left;
+    }
+    .quiz-question {
+      margin-top: 15px;
+      text-align: left;
+    }
+    .quiz-option {
+      display: block;
+      margin: 6px 0;
+      cursor: pointer;
+    }
+    .quiz-btn {
+      margin-top: 20px;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #28a745;
+      color: white;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    .quiz-btn:hover {
+      background: #218838;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      background: #e8f5e9;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
