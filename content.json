@@ -54,7 +54,7 @@
       { "q": "π is:", "options": ["Rational", "Irrational", "Integer", "Whole"], "answer": 1, "explanation": "π is non-terminating non-repeating." },
       { "q": "Every integer is:", "options": ["Whole", "Rational", "Natural", "Irrational"], "answer": 1, "explanation": "Every integer can be expressed as p/q." },
       { "q": "1/5 in decimal form:", "options": ["0.5", "0.2", "0.25", "0.22"], "answer": 1, "explanation": "1/5 = 0.2, a terminating decimal." }
-      // You can paste the remaining 40 MCQs here
+      
     ],
 
     "Polynomials": [],
@@ -79,4 +79,5 @@
     "Coordinate Geometry": []
   }
 }
+
 
