@@ -34,50 +34,171 @@
       ]
     }
   },
-
   "notes": {
-    "Number Systems": "<h3>Chapter 1: Number Systems</h3><p><b>Natural Numbers (ℕ):</b> 1, 2, 3, 4, ...</p><p><b>Whole Numbers (𝕎):</b> 0, 1, 2, 3, ...</p><p><b>Integers (ℤ):</b> ..., -3, -2, -1, 0, 1, 2, 3, ...</p><p><b>Rational Numbers (ℚ):</b> Numbers expressible as p/q, where p, q are integers, q ≠ 0. Example: 1/2, -3/5</p><p><b>Irrational Numbers:</b> Cannot be expressed as p/q. Example: √2, π</p><p><b>Real Numbers (ℝ):</b> All rational and irrational numbers together.</p><p><b>Decimal Expansions:</b> Rational numbers have terminating or repeating decimals. Irrational numbers have non-terminating, non-repeating decimals.</p><p><b>Representation on Number Line:</b> √2, √3, etc. can be represented using right triangles.</p><p><b>Laws of Exponents:</b> a^m × a^n = a^(m+n), (a^m)^n = a^(mn), a^0 = 1, etc.</p><p><b>Summary:</b> ℕ ⊂ 𝕎 ⊂ ℤ ⊂ ℚ ⊂ ℝ. Real numbers can be represented as points on a number line.</p>",
-
+    "Number Systems": "<h3>Chapter 1: Number Systems</h3><p><b>Natural Numbers (\u2115):</b> 1, 2, 3, 4, ...</p><p><b>Whole Numbers (\ud835\udd4e):</b> 0, 1, 2, 3, ...</p><p><b>Integers (\u2124):</b> ..., -3, -2, -1, 0, 1, 2, 3, ...</p><p><b>Rational Numbers (\u211a):</b> Numbers expressible as p/q, where p, q are integers, q \u2260 0. Example: 1/2, -3/5</p><p><b>Irrational Numbers:</b> Cannot be expressed as p/q. Example: \u221a2, \u03c0</p><p><b>Real Numbers (\u211d):</b> All rational and irrational numbers together.</p><p><b>Decimal Expansions:</b> Rational numbers have terminating or repeating decimals. Irrational numbers have non-terminating, non-repeating decimals.</p><p><b>Representation on Number Line:</b> \u221a2, \u221a3, etc. can be represented using right triangles.</p><p><b>Laws of Exponents:</b> a^m \u00d7 a^n = a^(m+n), (a^m)^n = a^(mn), a^0 = 1, etc.</p><p><b>Summary:</b> \u2115 \u2282 \ud835\udd4e \u2282 \u2124 \u2282 \u211a \u2282 \u211d. Real numbers can be represented as points on a number line.</p>",
     "Polynomials": "<h3>Polynomials</h3><p>Topics: Add detailed notes for Polynomials here.</p>",
     "Coordinate Geometry": "<h3>Coordinate Geometry</h3><p>Topics: Add detailed notes here.</p>"
   },
-
   "quizzes": {
     "Number Systems": [
-      { "q": "Natural numbers start from:", "options": ["0", "1", "2", "-1"], "answer": 1, "explanation": "Natural numbers start from 1." },
-      { "q": "Which is an irrational number?", "options": ["0.25", "√2", "3/4", "-7"], "answer": 1, "explanation": "√2 cannot be expressed as p/q." },
-      { "q": "1/4 = 0.25 is:", "options": ["Terminating", "Repeating", "Non-repeating", "Irrational"], "answer": 0, "explanation": "0.25 is a terminating decimal." },
-      { "q": "Which is not a real number?", "options": ["-2", "0", "√(-4)", "√2"], "answer": 2, "explanation": "√(-4) is imaginary, not real." },
-      { "q": "Sum of rational + irrational is:", "options": ["Rational", "Irrational", "Integer", "None"], "answer": 1, "explanation": "Rational + irrational = irrational." },
-      { "q": "√2 × √8 =", "options": ["√10", "√16", "4", "10"], "answer": 2, "explanation": "√2 × √8 = √16 = 4." },
-      { "q": "The decimal form of 1/3 is:", "options": ["0.3", "0.33", "0.333…", "0.333"], "answer": 2, "explanation": "1/3 = 0.333 repeating." },
-      { "q": "π is:", "options": ["Rational", "Irrational", "Integer", "Whole"], "answer": 1, "explanation": "π is non-terminating non-repeating." },
-      { "q": "Every integer is:", "options": ["Whole", "Rational", "Natural", "Irrational"], "answer": 1, "explanation": "Every integer can be expressed as p/q." },
-      { "q": "1/5 in decimal form:", "options": ["0.5", "0.2", "0.25", "0.22"], "answer": 1, "explanation": "1/5 = 0.2, a terminating decimal." }
-      
+      {
+        "q": "Natural numbers start from:",
+        "options": [
+          "0",
+          "1",
+          "2",
+          "-1"
+        ],
+        "answer": 1,
+        "explanation": "Natural numbers start from 1."
+      },
+      {
+        "q": "Which is an irrational number?",
+        "options": [
+          "0.25",
+          "\u221a2",
+          "3/4",
+          "-7"
+        ],
+        "answer": 1,
+        "explanation": "\u221a2 cannot be expressed as p/q."
+      },
+      {
+        "q": "1/4 = 0.25 is:",
+        "options": [
+          "Terminating",
+          "Repeating",
+          "Non-repeating",
+          "Irrational"
+        ],
+        "answer": 0,
+        "explanation": "0.25 is a terminating decimal."
+      },
+      {
+        "q": "Which is not a real number?",
+        "options": [
+          "-2",
+          "0",
+          "\u221a(-4)",
+          "\u221a2"
+        ],
+        "answer": 2,
+        "explanation": "\u221a(-4) is imaginary, not real."
+      },
+      {
+        "q": "Sum of rational + irrational is:",
+        "options": [
+          "Rational",
+          "Irrational",
+          "Integer",
+          "None"
+        ],
+        "answer": 1,
+        "explanation": "Rational + irrational = irrational."
+      },
+      {
+        "q": "\u221a2 \u00d7 \u221a8 =",
+        "options": [
+          "\u221a10",
+          "\u221a16",
+          "4",
+          "10"
+        ],
+        "answer": 2,
+        "explanation": "\u221a2 \u00d7 \u221a8 = \u221a16 = 4."
+      },
+      {
+        "q": "The decimal form of 1/3 is:",
+        "options": [
+          "0.3",
+          "0.33",
+          "0.333\u2026",
+          "0.333"
+        ],
+        "answer": 2,
+        "explanation": "1/3 = 0.333 repeating."
+      },
+      {
+        "q": "\u03c0 is:",
+        "options": [
+          "Rational",
+          "Irrational",
+          "Integer",
+          "Whole"
+        ],
+        "answer": 1,
+        "explanation": "\u03c0 is non-terminating non-repeating."
+      },
+      {
+        "q": "Every integer is:",
+        "options": [
+          "Whole",
+          "Rational",
+          "Natural",
+          "Irrational"
+        ],
+        "answer": 1,
+        "explanation": "Every integer can be expressed as p/q."
+      },
+      {
+        "q": "1/5 in decimal form:",
+        "options": [
+          "0.5",
+          "0.2",
+          "0.25",
+          "0.22"
+        ],
+        "answer": 1,
+        "explanation": "1/5 = 0.2, a terminating decimal."
+      }
     ],
-
     "Polynomials": [],
     "Coordinate Geometry": []
   },
-
   "practiceQP": {
     "Number Systems": [
-      { "q": "Express 0.333… as a fraction in simplest form.", "marks": 2 },
-      { "q": "Rationalize the denominator: 5/√3", "marks": 2 },
-      { "q": "Prove that √5 is irrational.", "marks": 3 },
-      { "q": "Find a rational number between 3/7 and 4/7.", "marks": 3 },
-      { "q": "If a is rational and b is irrational, show that a + b is irrational.", "marks": 3 },
-      { "q": "Prove that √2 is irrational.", "marks": 4 },
-      { "q": "Using Euclid’s Lemma, show that if a prime divides a², it divides a.", "marks": 4 },
-      { "q": "Prove that √2 + √3 is irrational.", "marks": 5 },
-      { "q": "Derive that the decimal expansion of a rational number either terminates or repeats.", "marks": 5 },
-      { "q": "Show that between any two rational numbers, there are infinitely many rational numbers.", "marks": 5 }
+      {
+        "q": "Express 0.333\u2026 as a fraction in simplest form.",
+        "marks": 2
+      },
+      {
+        "q": "Rationalize the denominator: 5/\u221a3",
+        "marks": 2
+      },
+      {
+        "q": "Prove that \u221a5 is irrational.",
+        "marks": 3
+      },
+      {
+        "q": "Find a rational number between 3/7 and 4/7.",
+        "marks": 3
+      },
+      {
+        "q": "If a is rational and b is irrational, show that a + b is irrational.",
+        "marks": 3
+      },
+      {
+        "q": "Prove that \u221a2 is irrational.",
+        "marks": 4
+      },
+      {
+        "q": "Using Euclid\u2019s Lemma, show that if a prime divides a\u00b2, it divides a.",
+        "marks": 4
+      },
+      {
+        "q": "Prove that \u221a2 + \u221a3 is irrational.",
+        "marks": 5
+      },
+      {
+        "q": "Derive that the decimal expansion of a rational number either terminates or repeats.",
+        "marks": 5
+      },
+      {
+        "q": "Show that between any two rational numbers, there are infinitely many rational numbers.",
+        "marks": 5
+      }
     ],
-
     "Polynomials": [],
     "Coordinate Geometry": []
   }
 }
-
-
