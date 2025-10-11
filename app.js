@@ -55,6 +55,7 @@ function showChapters(subject) {
   document.getElementById("chapters").innerHTML = html;
 }
 
+// ----------- MAIN CHAPTER VIEW -------------
 function showChapterContent(chapterName) {
   const contentDiv = document.getElementById("chapterContent");
   contentDiv.innerHTML = `
@@ -64,38 +65,51 @@ function showChapterContent(chapterName) {
       <button class="quiz-btn" onclick="startQuiz('${chapterName}')">Take Quiz 📝</button>
       <button class="quiz-btn" onclick="showPracticeQP('${chapterName}')">Practice Questions 🧮</button>
     </div>
-    <div id="notes"></div>
-    <div id="quiz"></div>
-    <div id="practiceQP"></div>
+    <div id="notes" class="content-section"></div>
+    <div id="quiz" class="content-section"></div>
+    <div id="practiceQP" class="content-section"></div>
   `;
 }
 
-// ---------- NOTES BUTTON FUNCTION ----------
+// ----------- NOTES -------------
 function showNotes(chapterName) {
   const notesDiv = document.getElementById("notes");
+  const quizDiv = document.getElementById("quiz");
+  const qpDiv = document.getElementById("practiceQP");
+
+  // Hide other sections when notes are shown
+  quizDiv.innerHTML = "";
+  qpDiv.innerHTML = "";
+
   const content = notes[chapterName];
   if (!content) {
     notesDiv.innerHTML = `<p>📖 Notes for this chapter are coming soon!</p>`;
     return;
   }
-  // If the note points to an external file (e.g., .html), load it
+
   if (content.endsWith(".html")) {
     fetch(content)
       .then(res => res.text())
       .then(html => (notesDiv.innerHTML = html))
       .catch(() => (notesDiv.innerHTML = "<p>Unable to load notes.</p>"));
   } else {
-    // Otherwise, show inline HTML content from content.json
     notesDiv.innerHTML = content;
   }
 }
 
-// ---------- QUIZ FUNCTIONS ----------
+// ----------- QUIZ -------------
 function startQuiz(chapterName) {
-  const quizArea = document.getElementById("quiz");
+  const notesDiv = document.getElementById("notes");
+  const quizDiv = document.getElementById("quiz");
+  const qpDiv = document.getElementById("practiceQP");
+
+  // Clear other sections
+  notesDiv.innerHTML = "";
+  qpDiv.innerHTML = "";
+
   const questions = quizzes[chapterName] || [];
   if (questions.length === 0) {
-    quizArea.innerHTML = "<p>No quiz available yet.</p>";
+    quizDiv.innerHTML = "<p>No quiz available yet.</p>";
     return;
   }
 
@@ -108,10 +122,11 @@ function startQuiz(chapterName) {
     html += "</div>";
   });
   html += `<button class="quiz-btn" onclick="submitQuiz('${chapterName}')">Submit Quiz</button>`;
-  quizArea.innerHTML = html;
+  quizDiv.innerHTML = html;
 }
 
 function submitQuiz(chapterName) {
+  const quizDiv = document.getElementById("quiz");
   const questions = quizzes[chapterName] || [];
   let score = 0,
     feedback = "";
@@ -135,18 +150,25 @@ function submitQuiz(chapterName) {
     saveProgress(progress);
   }
 
-  document.getElementById("quiz").innerHTML = `
+  quizDiv.innerHTML = `
     <div class="result">You scored ${score}/${questions.length} (${percent}%).</div>
     ${feedback}
   `;
 }
 
-// ---------- PRACTICE QUESTION PAPER FUNCTION ----------
+// ----------- PRACTICE QUESTIONS -------------
 function showPracticeQP(chapterName) {
-  const qpArea = document.getElementById("practiceQP");
+  const notesDiv = document.getElementById("notes");
+  const quizDiv = document.getElementById("quiz");
+  const qpDiv = document.getElementById("practiceQP");
+
+  // Clear other sections
+  notesDiv.innerHTML = "";
+  quizDiv.innerHTML = "";
+
   const questions = practiceQP[chapterName] || [];
   if (questions.length === 0) {
-    qpArea.innerHTML = "<p>No practice questions available yet.</p>";
+    qpDiv.innerHTML = "<p>No practice questions available yet.</p>";
     return;
   }
 
@@ -155,10 +177,10 @@ function showPracticeQP(chapterName) {
     html += `<li>${q.q} <span style="color:gray">[${q.marks} marks]</span></li>`;
   });
   html += "</ol>";
-  qpArea.innerHTML = html;
+  qpDiv.innerHTML = html;
 }
 
-// ---------- DASHBOARD ----------
+// ----------- DASHBOARD -------------
 function showDashboard() {
   document.querySelector(".main").style.display = "none";
   document.getElementById("dashboard").style.display = "block";
