@@ -1,52 +1,71 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thinkly - Gamified Learning</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Thinkly Learning Portal</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-
-<header>
-  <h1>Thinkly 📘</h1>
-  <p>Smart and Gamified Learning for Class 9 & 10 CBSE Students</p>
-  <nav>
-    <button onclick="goHome()">🏠 Home</button>
-    <button onclick="showDashboard()">📊 Progress Dashboard</button>
-  </nav>
-</header>
-
-<div class="main">
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <h2>Choose Class</h2>
-    <select id="classSelect" onchange="showSubjects()">
-      <option value="">-- Select Class --</option>
-      <option value="9">Class 9</option>
-      <option value="10">Class 10</option>
-    </select>
-    <div id="subjects"></div>
-    <div id="chapters"></div>
+  <!-- Loading spinner -->
+  <div id="splash" class="splash">
+    <div class="spinner"></div>
   </div>
 
-  <!-- Content -->
-  <div class="content" id="chapterContent">
-    <h3>Welcome 👋</h3>
-    <p>Select a class, subject, and chapter from the left sidebar to get started!</p>
+  <!-- Header -->
+  <header class="topbar">
+    <div class="brand">Thinkly Learning Portal</div>
+    <div class="user-area" id="user-area" style="display:none">
+      <img id="user-pic" class="user-pic" alt="" />
+      <span id="user-name"></span>
+      <button id="logoutBtn" class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+    <button id="loginToggle" class="login-toggle" onclick="openLoginPanel()">Login</button>
+  </header>
+
+  <div class="container">
+    <!-- Left sidebar -->
+    <aside class="sidebar">
+      <h2>Start Learning</h2>
+      <label for="classSelect">Class</label>
+      <select id="classSelect" onchange="onClassChange()">
+        <option value="">-- Select Class --</option>
+      </select>
+      <div id="subjectButtons"></div>
+      <div id="chaptersArea" class="chapters"></div>
+      <div class="hint">Progress saved per user (Google or guest)</div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <div id="contentArea" class="card centered">
+        <h3>Welcome to Thinkly</h3>
+        <p>Choose a class and subject from the left. The login panel will slide in automatically.</p>
+      </div>
+      <div id="dashboard" class="card" style="display:none"></div>
+    </main>
   </div>
-</div>
 
-<!-- Dashboard -->
-<div class="content" id="dashboard" style="display:none;">
-  <h2>📊 Your Progress Dashboard</h2>
-  <div id="progressTable"></div>
-</div>
+  <!-- Slide-in Login Panel -->
+  <div id="loginPanel" class="login-panel">
+    <div class="login-inner">
+      <button class="close" onclick="closeLoginPanel()">✕</button>
+      <h3>Sign in to Thinkly</h3>
+      <div id="gSignIn" style="margin:14px 0;">
+        <div id="g_id_onload"
+             data-client_id="852025843203-5goe3ipsous490292fqa4mh17p03h0br.apps.googleusercontent.com"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin" data-type="standard"></div>
+      </div>
+      <div style="text-align:center;margin-top:12px">or</div>
+      <button class="guest-btn" onclick="guestLogin()">Continue as Guest 👤</button>
+      <p class="policy">Your progress is saved locally. Google sign-in links progress to your email.</p>
+    </div>
+  </div>
 
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
-
-
-
-
