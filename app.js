@@ -1,200 +1,221 @@
-let syllabus = {};
-let notes = {};
-let quizzes = {};
-let practiceQP = {};
+// App logic: loads content.json, handles login, guest, notes, quiz & practice QP
+let syllabus = {}, notes = {}, quizzes = {}, practiceQP = {};
+let currentUser = null; // {name,email,picture}
+const CLIENT_ID = "852025843203-5goe3ipsous490292fqa4mh17p03h0br.apps.googleusercontent.com";
 
-async function loadContent() {
-  const response = await fetch("content.json");
-  const data = await response.json();
-  syllabus = data.syllabus;
-  notes = data.notes;
-  quizzes = data.quizzes;
-  practiceQP = data.practiceQP || {};
-}
-
-function getProgress() {
-  return JSON.parse(localStorage.getItem("quizProgress") || "{}");
-}
-
-function saveProgress(progress) {
-  localStorage.setItem("quizProgress", JSON.stringify(progress));
-}
-
-function goHome() {
-  document.querySelector(".main").style.display = "flex";
-  document.getElementById("dashboard").style.display = "none";
-}
-
-function showSubjects() {
-  const selectedClass = document.getElementById("classSelect").value;
-  let html = "";
-  if (selectedClass) {
-    html += `<button class="subject-btn" onclick="showChapters('math')">📐 Math</button>`;
-    html += `<button class="subject-btn" onclick="showChapters('science')">🔬 Science</button>`;
+// ---- Init ----
+async function loadContentJson(){
+  try{
+    const res = await fetch("content.json");
+    const data = await res.json();
+    syllabus = data.syllabus || {};
+    notes = data.notes || {};
+    quizzes = data.quizzes || {};
+    practiceQP = data.practiceQP || {};
+    populateClassSelect();
+  }catch(e){
+    console.error("Failed to load content.json", e);
   }
-  document.getElementById("subjects").innerHTML = html;
-  document.getElementById("chapters").innerHTML = "";
 }
 
-function showChapters(subject) {
-  const selectedClass = document.getElementById("classSelect").value;
-  const chapters = syllabus[selectedClass][subject];
-  const progress = getProgress();
+function populateClassSelect(){
+  const sel = document.getElementById("classSelect");
+  sel.innerHTML = '<option value="">-- Select Class --</option>';
+  for(const cls in syllabus){
+    const opt = document.createElement("option"); opt.value = cls; opt.textContent = "Class " + cls;
+    sel.appendChild(opt);
+  }
+}
 
-  let html = "<h3>Chapters</h3>";
-  chapters.forEach(ch => {
-    let status = "";
-    if (progress[ch]) {
-      status =
-        progress[ch].bestScore >= 80
-          ? `<span class="status completed">⭐ Completed</span>`
-          : `<span class="status in-progress">🔄 In Progress</span>`;
-    }
-    html += `<button class="chapter-btn" onclick="showChapterContent('${ch}')">${ch}</button>${status}`;
+// ---- UI helpers ----
+function onClassChange(){
+  const cls = document.getElementById("classSelect").value;
+  document.getElementById("chaptersArea").innerHTML = "";
+  document.getElementById("subjectButtons").innerHTML = "";
+  if(!cls) return;
+  const sb = document.getElementById("subjectButtons");
+  sb.innerHTML = `<button class="subject-btn" onclick="showChapters('math')">Math</button>
+                  <button class="subject-btn" onclick="showChapters('science')">Science</button>`;
+}
+
+function showChapters(subject){
+  const cls = document.getElementById("classSelect").value;
+  if(!cls) return alert("Select class first");
+  const list = syllabus[cls][subject] || [];
+  const area = document.getElementById("chaptersArea");
+  area.innerHTML = "";
+  list.forEach(ch => {
+    const b = document.createElement("button"); b.className="chapter-btn"; b.textContent = ch;
+    b.onclick = ()=> showChapterContent(ch);
+    area.appendChild(b);
   });
-  document.getElementById("chapters").innerHTML = html;
 }
 
-// ----------- MAIN CHAPTER VIEW -------------
-function showChapterContent(chapterName) {
-  const contentDiv = document.getElementById("chapterContent");
-  contentDiv.innerHTML = `
-    <h2>${chapterName}</h2>
-    <div class="chapter-buttons">
-      <button class="quiz-btn" onclick="showNotes('${chapterName}')">View Notes 📘</button>
-      <button class="quiz-btn" onclick="startQuiz('${chapterName}')">Take Quiz 📝</button>
-      <button class="quiz-btn" onclick="showPracticeQP('${chapterName}')">Practice Questions 🧮</button>
+// ---- Chapter view ----
+function showChapterContent(chapterName){
+  const contentArea = document.getElementById("contentArea");
+  contentArea.innerHTML = `<div class="card"><h2>${chapterName}</h2>
+    <div style="margin-top:12px">
+      <button class="quiz-btn" onclick="showNotes('${escapeJS(chapterName)}')">View Notes 📘</button>
+      <button class="quiz-btn" onclick="startQuiz('${escapeJS(chapterName)}')">Take Quiz 📝</button>
+      <button class="quiz-btn" onclick="showPracticeQP('${escapeJS(chapterName)}')">Practice Questions 🧮</button>
     </div>
     <div id="notes" class="content-section"></div>
     <div id="quiz" class="content-section"></div>
     <div id="practiceQP" class="content-section"></div>
-  `;
+    </div>`;
 }
 
-// ----------- NOTES -------------
-function showNotes(chapterName) {
+function escapeJS(s){ return s.replace(/'/g,"\\'"); }
+
+// ---- Notes ----
+function showNotes(chapterName){
   const notesDiv = document.getElementById("notes");
   const quizDiv = document.getElementById("quiz");
   const qpDiv = document.getElementById("practiceQP");
-
-  // Hide other sections when notes are shown
-  quizDiv.innerHTML = "";
-  qpDiv.innerHTML = "";
-
+  quizDiv.innerHTML = ""; qpDiv.innerHTML = "";
   const content = notes[chapterName];
-  if (!content) {
-    notesDiv.innerHTML = `<p>📖 Notes for this chapter are coming soon!</p>`;
-    return;
-  }
-
-  if (content.endsWith(".html")) {
-    fetch(content)
-      .then(res => res.text())
-      .then(html => (notesDiv.innerHTML = html))
-      .catch(() => (notesDiv.innerHTML = "<p>Unable to load notes.</p>"));
+  if(!content){ notesDiv.innerHTML = "<p>Notes coming soon.</p>"; return; }
+  if(typeof content === "string" && content.endsWith(".html")){
+    fetch(content).then(r=>r.text()).then(txt=> notesDiv.innerHTML = txt).catch(()=>notesDiv.innerHTML="<p>Unable to load notes.</p>");
   } else {
     notesDiv.innerHTML = content;
   }
 }
 
-// ----------- QUIZ -------------
-function startQuiz(chapterName) {
+// ---- Quiz ----
+function startQuiz(chapterName){
   const notesDiv = document.getElementById("notes");
   const quizDiv = document.getElementById("quiz");
   const qpDiv = document.getElementById("practiceQP");
-
-  // Clear other sections
-  notesDiv.innerHTML = "";
-  qpDiv.innerHTML = "";
-
+  notesDiv.innerHTML = ""; qpDiv.innerHTML = "";
   const questions = quizzes[chapterName] || [];
-  if (questions.length === 0) {
-    quizDiv.innerHTML = "<p>No quiz available yet.</p>";
-    return;
-  }
-
+  if(questions.length === 0){ quizDiv.innerHTML = "<p>No quiz available.</p>"; return; }
   let html = "<h4>Quiz</h4>";
-  questions.forEach((q, i) => {
-    html += `<div class="quiz-question"><p><b>Q${i + 1}:</b> ${q.q}</p>`;
-    q.options.forEach((opt, j) => {
-      html += `<label class="quiz-option"><input type="radio" name="q${i}" value="${j}"> ${opt}</label>`;
-    });
+  questions.forEach((q,i)=>{
+    html += `<div class="quiz-question"><p><b>Q${i+1}.</b> ${q.q}</p>`;
+    q.options.forEach((opt,j)=> html += `<label class="quiz-option"><input type="radio" name="q${i}" value="${j}"> ${opt}</label>`);
     html += "</div>";
   });
-  html += `<button class="quiz-btn" onclick="submitQuiz('${chapterName}')">Submit Quiz</button>`;
+  html += `<button class="quiz-btn" onclick="submitQuiz('${escapeJS(chapterName)}')">Submit</button>`;
   quizDiv.innerHTML = html;
 }
 
-function submitQuiz(chapterName) {
-  const quizDiv = document.getElementById("quiz");
+function submitQuiz(chapterName){
   const questions = quizzes[chapterName] || [];
-  let score = 0,
-    feedback = "";
-
-  questions.forEach((q, i) => {
-    const selected = document.querySelector(`input[name="q${i}"]:checked`);
-    const isCorrect = selected && parseInt(selected.value) === q.answer;
-    if (isCorrect) score++;
-    feedback += `<div class="quiz-question ${isCorrect ? "correct" : "wrong"}">
-        <p><b>Q${i + 1}:</b> ${q.q}</p>
-        <p>Your Answer: ${selected ? q.options[selected.value] : "Not answered"}</p>
-        <p>Correct Answer: ${q.options[q.answer]}</p>
-        <p><i>Explanation: ${q.explanation}</i></p>
-      </div>`;
+  let score = 0, feedback = "";
+  questions.forEach((q,i)=>{
+    const sel = document.querySelector(`input[name="q${i}"]:checked`);
+    const val = sel ? parseInt(sel.value) : null;
+    const ok = val === q.answer;
+    if(ok) score++;
+    feedback += `<div class="${ok? 'correct':'wrong'}" style="margin:10px 0;padding:10px;border-radius:8px;background:rgba(255,255,255,0.04);color:white">
+      <p><b>Q${i+1}.</b> ${q.q}</p>
+      <p>Your answer: ${sel ? q.options[val] : 'Not answered'}</p>
+      <p>Correct answer: ${q.options[q.answer]}</p>
+      <p style="opacity:0.9">${q.explanation || ''}</p>
+    </div>`;
   });
-
-  const percent = Math.round((score / questions.length) * 100);
-  const progress = getProgress();
-  if (!progress[chapterName] || percent > progress[chapterName].bestScore) {
-    progress[chapterName] = { bestScore: percent };
-    saveProgress(progress);
-  }
-
-  quizDiv.innerHTML = `
-    <div class="result">You scored ${score}/${questions.length} (${percent}%).</div>
-    ${feedback}
-  `;
+  const percent = Math.round((score / questions.length)*100);
+  saveProgressForCurrentUser(chapterName, percent);
+  document.getElementById("quiz").innerHTML = `<div class="card"><h4>Result: ${score}/${questions.length} (${percent}%)</h4>${feedback}</div>`;
 }
 
-// ----------- PRACTICE QUESTIONS -------------
-function showPracticeQP(chapterName) {
+// ---- Practice QP ----
+function showPracticeQP(chapterName){
   const notesDiv = document.getElementById("notes");
   const quizDiv = document.getElementById("quiz");
   const qpDiv = document.getElementById("practiceQP");
-
-  // Clear other sections
-  notesDiv.innerHTML = "";
-  quizDiv.innerHTML = "";
-
-  const questions = practiceQP[chapterName] || [];
-  if (questions.length === 0) {
-    qpDiv.innerHTML = "<p>No practice questions available yet.</p>";
-    return;
-  }
-
+  notesDiv.innerHTML = ""; quizDiv.innerHTML = "";
+  const list = practiceQP[chapterName] || [];
+  if(list.length === 0){ qpDiv.innerHTML = "<p>No practice questions.</p>"; return; }
   let html = "<h4>Practice Question Paper</h4><ol>";
-  questions.forEach(q => {
-    html += `<li>${q.q} <span style="color:gray">[${q.marks} marks]</span></li>`;
-  });
+  list.forEach(q=> html += `<li>${q.q} <small style="color:#ddd">[${q.marks}m]</small></li>`);
   html += "</ol>";
   qpDiv.innerHTML = html;
 }
 
-// ----------- DASHBOARD -------------
-function showDashboard() {
-  document.querySelector(".main").style.display = "none";
-  document.getElementById("dashboard").style.display = "block";
-
-  const progress = getProgress();
-  let html = "<table><tr><th>Chapter</th><th>Best Score</th><th>Status</th></tr>";
-  for (let chapter in progress) {
-    const best = progress[chapter].bestScore;
-    const status = best >= 80 ? "✅ Completed" : "⏳ In Progress";
-    html += `<tr><td>${chapter}</td><td>${best}%</td><td>${status}</td></tr>`;
-  }
-  html += "</table>";
-  document.getElementById("progressTable").innerHTML =
-    html || "<p>No progress yet. Start a quiz!</p>";
+// ---- Progress storage per user ----
+function getProgressForUserEmail(email){
+  try{
+    return JSON.parse(localStorage.getItem(`progress_${email}`) || "{}");
+  }catch(e){ return {}; }
+}
+function saveProgressForUserEmail(email, obj){
+  localStorage.setItem(`progress_${email}`, JSON.stringify(obj));
+}
+function saveProgressForCurrentUser(chapter, percent){
+  const key = currentUser ? currentUser.email : 'guest';
+  const data = getProgressForUserEmail(key);
+  data[chapter] = data[chapter] || { bestScore:0 };
+  if(percent > data[chapter].bestScore) data[chapter].bestScore = percent;
+  data[chapter].last = new Date().toISOString();
+  saveProgressForUserEmail(key, data);
 }
 
-window.onload = loadContent;
+// ---- Dashboard ----
+function showDashboard(){
+  const key = currentUser ? currentUser.email : 'guest';
+  const data = getProgressForUserEmail(key);
+  let html = "<div class='card'><h3>Progress Dashboard</h3><table style='width:100%;border-collapse:collapse'><tr style='text-align:left'><th>Chapter</th><th>Best</th><th>Last</th></tr>";
+  for(const ch in data){
+    html += `<tr><td style='padding:8px'>${ch}</td><td style='padding:8px'>${data[ch].bestScore}%</td><td style='padding:8px'>${data[ch].last.split('T')[0]}</td></tr>`;
+  }
+  html += "</table></div>";
+  document.getElementById("dashboard").innerHTML = html;
+  document.getElementById("dashboard").style.display = 'block';
+}
+
+// ---- Login / Logout ----
+function openLoginPanel(){ document.getElementById("loginPanel").classList.add("open"); }
+function closeLoginPanel(){ document.getElementById("loginPanel").classList.remove("open"); }
+
+function handleCredentialResponse(response){
+  try{
+    const payload = parseJwt(response.credential);
+    currentUser = {name: payload.name, email: payload.email, picture: payload.picture};
+    onUserSignedIn();
+  }catch(e){ console.error("Invalid credential", e); }
+}
+
+function guestLogin(){ currentUser = {name:"Guest", email:"guest"}; onUserSignedIn(); }
+
+function onUserSignedIn(){
+  document.getElementById("user-area").style.display = 'flex';
+  document.getElementById("user-name").textContent = currentUser.name || 'User';
+  document.getElementById("user-pic").src = currentUser.picture || 'https://via.placeholder.com/80x80?text=G';
+  document.getElementById("loginToggle").style.display = 'none';
+  closeLoginPanel();
+  // load user's stored progress into runtime as needed (we read per-user on demand)
+}
+
+// minimal JWT parser for Google id token
+function parseJwt (token){
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+  return JSON.parse(jsonPayload);
+}
+
+function logout(){
+  if(currentUser){
+    // keep user progress persisted in localStorage (it is already saved per user)
+    currentUser = null;
+    document.getElementById("user-area").style.display = 'none';
+    document.getElementById("loginToggle").style.display = 'inline-block';
+    // clear UI
+    document.getElementById("contentArea").innerHTML = `<div class="card centered"><h3>Welcome to Thinkly</h3><p>Choose a chapter from the left. Sign in to save progress to your account.</p></div>`;
+  }
+}
+
+// ---- Init on page load ----
+window.addEventListener('DOMContentLoaded', async ()=>{
+  // show splash for ~1.5s then auto-open login panel
+  await loadContentJson();
+  setTimeout(()=>{
+    document.getElementById("splash").style.display = 'none';
+    openLoginPanel();
+  },1500);
+});
