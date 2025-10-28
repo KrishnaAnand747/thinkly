@@ -19,6 +19,7 @@
     <div class="user-area" id="user-area" style="display:none">
       <img id="user-pic" class="user-pic" alt="" />
       <span id="user-name"></span>
+      <button id="dashboardBtn" class="logout-btn" onclick="showDashboard()">📊 Dashboard</button>
       <button id="logoutBtn" class="logout-btn" onclick="logout()">Logout</button>
     </div>
     <button id="loginToggle" class="login-toggle" onclick="openLoginPanel()">Login</button>
@@ -43,6 +44,8 @@
         <h3>Welcome to Thinkly</h3>
         <p>Choose a class and subject from the left. The login panel will slide in automatically.</p>
       </div>
+
+      <!-- Dashboard container -->
       <div id="dashboard" class="card" style="display:none"></div>
     </main>
   </div>
