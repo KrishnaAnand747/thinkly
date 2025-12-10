@@ -8,12 +8,10 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-  <!-- Splash spinner -->
   <div id="splash" class="splash">
     <div class="spinner"></div>
   </div>
 
-  <!-- Login screen (visible on load) -->
   <div id="loginScreen" class="login-screen hidden">
     <div class="login-card">
       <h1 class="brand">Thinkly Learning Portal</h1>
@@ -27,11 +25,10 @@
       </div>
       <div class="divider">or</div>
       <button class="guest-btn" onclick="guestLogin()">Continue as Guest</button>
-      <p class="policy">Your progress is saved locally. Sign in with Google to keep progress linked to your email.</p>
+      <p class="policy">Your progress will be saved locally.</p>
     </div>
   </div>
 
-  <!-- Main app (hidden until login) -->
   <div id="app" class="app hidden">
     <header class="topbar">
       <div class="brand-left">Thinkly Learning Portal</div>
@@ -63,11 +60,12 @@
           <h3>Welcome to Thinkly</h3>
           <p>Choose a class and subject on the left. Sign in to save your progress.</p>
         </div>
-        <div id="dashboard" class="content card" style="display:none"></div>
+        
+        <div id="dashboard" class="card" style="display:none;">
+          </div>
       </main>
     </div>
   </div>
-
   <script src="app.js"></script>
 </body>
 </html>
