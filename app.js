@@ -107,14 +107,51 @@ function submitQuiz(chapterName){
   document.getElementById("quiz").innerHTML = `<div class="card"><h4>Result: ${score}/${questions.length} (${percent}%)</h4>${feedback}</div>`;
 }
 
+// MODIFIED: showPracticeQP function with new layout and button
 function showPracticeQP(chapterName){
-  const notesDiv = document.getElementById("notes"); const quizDiv = document.getElementById("quiz"); const qpDiv = document.getElementById("practiceQP");
-  notesDiv.innerHTML=""; quizDiv.innerHTML="";
+  const notesDiv = document.getElementById("notes");
+  const quizDiv = document.getElementById("quiz");
+  const qpDiv = document.getElementById("practiceQP");
+
+  // Clear other sections
+  notesDiv.innerHTML = "";
+  quizDiv.innerHTML = "";
+
   const list = practiceQP[chapterName] || [];
-  if(list.length===0){ qpDiv.innerHTML="<p>No practice questions.</p>"; return; }
-  let html = "<h4>Practice Question Paper</h4><ol>";
-  list.forEach(q=> html += `<li>${q.q} <small style="color:#6b7280">[${q.marks}m]</small></li>`);
-  html += "</ol>"; qpDiv.innerHTML = html;
+
+  let html = `<div class="qp-header">
+                <h4>Practice Questions (Assessment)</h4>
+                <p>This is a model question paper for **${chapterName}**.</p>
+              </div>`;
+
+  if(list.length === 0){
+    qpDiv.innerHTML = html + "<p>No practice questions available for this chapter.</p>";
+    return;
+  }
+
+  // Loop through and format questions
+  list.forEach((q, index) => {
+    html += `<div class="qp-question">
+               <div class="qp-marks">[${q.marks} Marks]</div>
+               <p><strong>Q${index + 1}.</strong> ${q.q}</p>
+             </div>`;
+  });
+
+  // Add the "Generate More" Button
+  html += `<div class="qp-footer">
+             <button class="quiz-btn" onclick="generateMorePracticeQP('${escapeJS(chapterName)}')">
+               🔄 Generate More Questions (AI)
+             </button>
+             <div class="hint">Note: Question generation is an upcoming feature.</div>
+           </div>`;
+
+  qpDiv.innerHTML = html;
+}
+
+// NEW: Placeholder for AI question generation
+function generateMorePracticeQP(chapterName) {
+  // This function will be implemented later to call an AI service.
+  alert(`Feature under development: Generating more questions for ${chapterName}...`);
 }
 
 // Progress per user
