@@ -50,14 +50,12 @@ function showChapters(subject){
   });
 }
 
-// Chapter content (UPDATED for alignment)
+// Chapter content (FIXED ALIGNMENT & CARD NESTING)
 function showChapterContent(chapterName){
   const contentArea = document.getElementById("contentArea");
+  contentArea.classList.remove('centered'); // FIX: Ensure left-alignment
   
-  // FIX 1: Remove the 'centered' class to align content to the left
-  contentArea.classList.remove('centered'); 
-  
-  // Removed redundant outer <div class="card"> from innerHTML
+  // Removed redundant outer <div class="card"> from innerHTML. The #contentArea is already a card.
   contentArea.innerHTML = `<h2>${chapterName}</h2>
     <div style="margin-top:12px">
       <button class="quiz-btn" onclick="showNotes('${escapeJS(chapterName)}')">View Notes</button>
@@ -77,7 +75,13 @@ function showNotes(chapterName){
   const content = notes[chapterName];
   if(!content){ notesDiv.innerHTML = "<p>Notes coming soon.</p>"; return; }
   if(typeof content === "string" && content.endsWith(".html")){
-    fetch(content).then(r=>r.text()).then(txt=> notesDiv.innerHTML = txt).catch(()=>notesDiv.innerHTML="<p>Unable to load notes.</p>");
+    fetch(content)
+      .then(r => {
+          if (!r.ok) throw new Error("File not found: " + content);
+          return r.text();
+      })
+      .then(txt=> notesDiv.innerHTML = txt)
+      .catch(()=>notesDiv.innerHTML="<p>Unable to load notes. Check console for error.</p>");
   } else { notesDiv.innerHTML = content; }
 }
 
@@ -111,51 +115,42 @@ function submitQuiz(chapterName){
   document.getElementById("quiz").innerHTML = `<div class="card"><h4>Result: ${score}/${questions.length} (${percent}%)</h4>${feedback}</div>`;
 }
 
-// MODIFIED: showPracticeQP function with new layout and button (from previous turn)
 function showPracticeQP(chapterName){
   const notesDiv = document.getElementById("notes");
   const quizDiv = document.getElementById("quiz");
   const qpDiv = document.getElementById("practiceQP");
-
-  // Clear other sections
-  notesDiv.innerHTML = "";
-  quizDiv.innerHTML = "";
-
+  notesDiv.innerHTML=""; quizDiv.innerHTML="";
+  
   const list = practiceQP[chapterName] || [];
-
-  let html = `<div class="qp-header">
-                <h4>Practice Questions (Assessment)</h4>
-                <p>This is a model question paper for **${chapterName}**.</p>
-              </div>`;
-
-  if(list.length === 0){
-    qpDiv.innerHTML = html + "<p>No practice questions available for this chapter.</p>";
-    return;
+  
+  let html = `<div class="qp-header"><h4>Practice Questions (Assessment)</h4><p>This is a model question paper for **${chapterName}**.</p></div>`;
+  
+  if(list.length===0){
+     html += "<p>No practice questions available for this chapter.</p>";
+  } else {
+    // Using the nicer qp-question formatting from previous steps (assuming CSS is updated)
+    list.forEach((q, index) => {
+      html += `<div class="qp-question">
+                 <div class="qp-marks">[${q.marks} Marks]</div>
+                 <p><strong>Q${index + 1}.</strong> ${q.q}</p>
+               </div>`;
+    });
   }
-
-  // Loop through and format questions
-  list.forEach((q, index) => {
-    html += `<div class="qp-question">
-               <div class="qp-marks">[${q.marks} Marks]</div>
-               <p><strong>Q${index + 1}.</strong> ${q.q}</p>
-             </div>`;
-  });
-
-  // Add the "Generate More" Button
+  
+  // Re-adding the AI button framework (but skipping the full function implementation)
   html += `<div class="qp-footer">
-             <button class="quiz-btn" onclick="generateMorePracticeQP('${escapeJS(chapterName)}')">
+             <button class="quiz-btn" onclick="alert('This feature is coming soon!')">
                🔄 Generate More Questions (AI)
              </button>
-             <div class="hint">Note: Question generation is an upcoming feature.</div>
+             <div class="hint">Note: This feature is not yet fully implemented.</div>
            </div>`;
 
   qpDiv.innerHTML = html;
 }
 
-// NEW: Placeholder for AI question generation
+// Placeholder for the AI function to prevent errors when the button is clicked
 function generateMorePracticeQP(chapterName) {
-  // This function will be implemented later to call an AI service.
-  alert(`Feature under development: Generating more questions for ${chapterName}...`);
+    alert(`AI generation for ${chapterName} is not yet active. Check back later!`);
 }
 
 // Progress per user
@@ -170,13 +165,43 @@ function saveProgressForCurrentUser(chapter,percent){
   saveProgressForUserEmail(key,data);
 }
 
-// Dashboard
+// Dashboard (UPDATED with Progress Bars)
 function showDashboard(){
   const key = currentUser ? currentUser.email : 'guest';
   const data = getProgressForUserEmail(key);
-  let html = "<div class='card'><h3>Progress Dashboard</h3><table style='width:100%;border-collapse:collapse'><tr style='text-align:left'><th>Chapter</th><th>Best</th><th>Last</th></tr>";
-  for(const ch in data){ html += `<tr><td style='padding:8px'>${ch}</td><td style='padding:8px'>${data[ch].bestScore}%</td><td style='padding:8px'>${data[ch].last.split('T')[0]}</td></tr>`;}
-  html += "</table></div>"; document.getElementById("dashboard").innerHTML = html; document.getElementById("dashboard").style.display = 'block';
+  
+  let html = "<div class='card'><h3>Progress Dashboard</h3>";
+  
+  // Check if there is any data to show
+  const chapters = Object.keys(data);
+  if (chapters.length === 0) {
+      html += "<p>You haven't completed any quizzes yet. Take a quiz to start tracking your progress!</p>";
+  } else {
+      html += `<table class='dashboard-table'>
+                  <tr style='text-align:left'><th>Chapter</th><th>Best Score</th><th>Last Attempt</th></tr>`;
+      
+      for(const ch in data){ 
+          const bestScore = data[ch].bestScore;
+          // Format date nicely
+          const lastDate = new Date(data[ch].last).toLocaleDateString();
+          
+          html += `<tr>
+                      <td class='chapter-name-cell'>${ch}</td>
+                      <td class='score-cell'>
+                          <div class='progress-bar-container'>
+                              <div class='progress-bar' style='width: ${bestScore}%;'></div>
+                              <span class='score-text'>${bestScore}%</span>
+                          </div>
+                      </td>
+                      <td style='padding:8px'>${lastDate}</td>
+                  </tr>`;
+      }
+      html += "</table>";
+  }
+  
+  html += "</div>"; 
+  document.getElementById("dashboard").innerHTML = html; 
+  document.getElementById("dashboard").style.display = 'block';
 }
 
 // Login/Logout & transitions
@@ -211,7 +236,6 @@ function showLoginAgain(){
 
 function parseJwt(token){ const base64Url = token.split('.')[1]; const base64 = base64Url.replace(/-/g,'+').replace(/_/g,'/'); const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c){ return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2); }).join('')); return JSON.parse(jsonPayload); }
 
-// LOGOUT FUNCTION (UPDATED for alignment)
 function logout(){ 
   if(currentUser){ 
     currentUser = null; 
@@ -221,9 +245,8 @@ function logout(){
     document.getElementById('dashboard').innerHTML=''; 
     
     const contentArea = document.getElementById('contentArea');
-    // Re-add the 'centered' class to align the welcome message in the middle
-    contentArea.classList.add('centered'); 
-    contentArea.innerHTML = `<h3>Welcome to Thinkly</h3><p>Choose a chapter from the left. Sign in to save progress to your account.</p>`; 
+    contentArea.classList.add('centered'); // FIX: Re-add centered class for the welcome message
+    contentArea.innerHTML = `<h3>Welcome to Thinkly</h3><p>Choose a chapter from the left. Sign in to save progress to your account.</p>`;
   } 
 }
 
