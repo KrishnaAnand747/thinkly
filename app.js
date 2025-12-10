@@ -50,10 +50,15 @@ function showChapters(subject){
   });
 }
 
-// Chapter content
+// Chapter content (UPDATED for alignment)
 function showChapterContent(chapterName){
   const contentArea = document.getElementById("contentArea");
-  contentArea.innerHTML = `<div class="card"><h2>${chapterName}</h2>
+  
+  // FIX 1: Remove the 'centered' class to align content to the left
+  contentArea.classList.remove('centered'); 
+  
+  // Removed redundant outer <div class="card"> from innerHTML
+  contentArea.innerHTML = `<h2>${chapterName}</h2>
     <div style="margin-top:12px">
       <button class="quiz-btn" onclick="showNotes('${escapeJS(chapterName)}')">View Notes</button>
       <button class="quiz-btn" onclick="startQuiz('${escapeJS(chapterName)}')">Take Quiz</button>
@@ -61,8 +66,7 @@ function showChapterContent(chapterName){
     </div>
     <div id="notes" class="content-section"></div>
     <div id="quiz" class="content-section"></div>
-    <div id="practiceQP" class="content-section"></div>
-    </div>`;
+    <div id="practiceQP" class="content-section"></div>`;
 }
 
 function escapeJS(s){ return s.replace(/'/g,"\'"); }
@@ -107,7 +111,7 @@ function submitQuiz(chapterName){
   document.getElementById("quiz").innerHTML = `<div class="card"><h4>Result: ${score}/${questions.length} (${percent}%)</h4>${feedback}</div>`;
 }
 
-// MODIFIED: showPracticeQP function with new layout and button
+// MODIFIED: showPracticeQP function with new layout and button (from previous turn)
 function showPracticeQP(chapterName){
   const notesDiv = document.getElementById("notes");
   const quizDiv = document.getElementById("quiz");
@@ -207,7 +211,21 @@ function showLoginAgain(){
 
 function parseJwt(token){ const base64Url = token.split('.')[1]; const base64 = base64Url.replace(/-/g,'+').replace(/_/g,'/'); const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c){ return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2); }).join('')); return JSON.parse(jsonPayload); }
 
-function logout(){ if(currentUser){ currentUser = null; document.getElementById('user-area').style.display = 'none'; document.getElementById('loginToggle').style.display = 'inline-block'; document.getElementById('dashboard').style.display='none'; document.getElementById('dashboard').innerHTML=''; document.getElementById('contentArea').innerHTML = `<div class="content card centered"><h3>Welcome to Thinkly</h3><p>Choose a chapter from the left. Sign in to save progress to your account.</p></div>`; } }
+// LOGOUT FUNCTION (UPDATED for alignment)
+function logout(){ 
+  if(currentUser){ 
+    currentUser = null; 
+    document.getElementById('user-area').style.display = 'none'; 
+    document.getElementById('loginToggle').style.display = 'inline-block'; 
+    document.getElementById('dashboard').style.display='none'; 
+    document.getElementById('dashboard').innerHTML=''; 
+    
+    const contentArea = document.getElementById('contentArea');
+    // Re-add the 'centered' class to align the welcome message in the middle
+    contentArea.classList.add('centered'); 
+    contentArea.innerHTML = `<h3>Welcome to Thinkly</h3><p>Choose a chapter from the left. Sign in to save progress to your account.</p>`; 
+  } 
+}
 
 // init
 window.addEventListener('DOMContentLoaded', async ()=>{
