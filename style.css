@@ -1,86 +1,90 @@
-/* Mint Glass Edition - style.css */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-:root{
-  --mint:#16a34a;
-  --bg1:#f7f9fb;
-  --bg2:#e7f6ef;
-  --card: rgba(255,255,255,0.62);
-  --card-2: rgba(255,255,255,0.5);
-  --text:#0f172a;
-}
-
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
-html,body{height:100%;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--text);-webkit-font-smoothing:antialiased;}
-
-/* Splash spinner centered */
-.splash{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,0,0,0.02),transparent);z-index:60;transition:opacity .5s ease}
-.spinner{width:56px;height:56px;border-radius:50%;border:6px solid rgba(22,163,74,0.12);border-top-color:var(--mint);animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* Layout */
-.login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;animation:fadeIn .4s ease}
-.hidden{display:none}
-.login-card{width:420px;max-width:92%;padding:28px;background:var(--card);backdrop-filter:blur(8px);border-radius:14px;box-shadow:0 8px 30px rgba(7,10,14,0.06);text-align:center;border:1px solid rgba(20,83,45,0.06)}
-.brand{font-weight:700;color:var(--mint);font-size:1.3rem;margin-bottom:6px}
-.sub{color:rgba(15,23,42,0.7);margin-bottom:14px;font-size:0.95rem}
-.g-signin-area{margin:10px 0}
-.g_id_signin{display:flex;justify-content:center}
-
-/* divider */
-.divider{margin:12px 0;color:rgba(15,23,42,0.45)}
-
-/* guest button */
-.guest-btn{width:100%;padding:10px;border-radius:10px;border:none;background:var(--mint);color:white;font-weight:600;cursor:pointer}
-.policy{font-size:12px;color:rgba(15,23,42,0.6);margin-top:10px}
-
-/* App */
-.app{min-height:100vh;display:flex;flex-direction:column;opacity:1;transition:opacity .5s ease}
-.topbar{height:68px;padding:10px 22px;display:flex;align-items:center;justify-content:space-between;background:transparent;box-shadow:0 1px 0 rgba(16,24,40,0.02)}
-.brand-left{font-weight:700;color:var(--mint);font-size:1.05rem}
-.header-right{display:flex;align-items:center;gap:10px}
-.header-btn{background:transparent;border:1px solid rgba(15,23,42,0.06);padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--text)}
-.user-area{display:flex;align-items:center;gap:10px}
-.user-pic{width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,0.6)}
-
-/* container */
-.container{display:flex;flex:1;gap:20px;padding:22px}
-.sidebar{width:300px;padding:18px;background:var(--card-2);backdrop-filter:blur(8px);border-radius:12px;border:1px solid rgba(20,83,45,0.04);box-shadow:0 8px 30px rgba(7,10,14,0.04)}
-.sidebar h2{margin-bottom:8px;color:var(--text)}
-.sidebar select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);margin:8px 0;background:white}
-.subject-buttons{margin-top:10px}
-.subject-btn{display:block;width:100%;padding:10px;border-radius:10px;border:none;background:transparent;color:var(--mint);font-weight:600;text-align:left;cursor:pointer;margin-bottom:8px}
-.chapters{margin-top:12px;max-height:56vh;overflow:auto}
-.chapter-btn{width:100%;text-align:left;padding:10px;border-radius:8px;border:none;margin:6px 0;background:transparent;color:var(--text);cursor:pointer}
-
-/* main */
-.main{flex:1;min-height:60vh}
-.card{padding:18px;border-radius:12px;background:var(--card);backdrop-filter:blur(6px);box-shadow:0 8px 30px rgba(7,10,14,0.04);border:1px solid rgba(20,83,45,0.03)}
-.centered{max-width:900px;margin:30px auto;text-align:center}
-
-/* Quiz styles */
-.quiz-btn{padding:10px 14px;border-radius:8px;border:none;background:var(--mint);color:white;cursor:pointer;margin-right:8px}
-
-/* small */
-.hint{font-size:13px;color:rgba(15,23,42,0.6);margin-top:12px}
-
-/* animations */
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-
-/* responsive */
-@media (max-width:900px){.container{flex-direction:column}.sidebar{width:100%}.login-card{width:92%}}
-
-/* --- FIX FOR ALIGNMENT ISSUE --- */
-/* Override global text-align: center for content sections */
+/* --- FIX FOR ALIGNMENT ISSUE (Ensuring left alignment for content) --- */
+/* This block ensures quiz/notes/qp content aligns left, overriding .centered */
 #notes, 
 #quiz, 
 #practiceQP,
 .quiz-question,
 .quiz-option {
-    text-align: left !important; /* Use !important to ensure override */
+    text-align: left !important; 
 }
 
 
-/* Practice Question Paper (QP) Styles - NEW */
+/* --- Dashboard Table & Progress Bar Styles --- */
+.dashboard-table {
+  width: 100%;
+  border-collapse: separate; /* Use separate to allow spacing */
+  border-spacing: 0 10px; /* Vertical spacing between rows */
+  margin-top: 15px;
+}
+
+.dashboard-table th {
+  padding: 8px 0;
+  border-bottom: 2px solid rgba(15, 23, 42, 0.1);
+  font-weight: 600;
+  color: var(--text);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.dashboard-table td {
+  padding: 10px 0;
+  background: var(--card-2);
+  border-radius: 8px;
+  border: 1px solid rgba(20, 83, 45, 0.08);
+}
+
+.chapter-name-cell {
+  padding-left: 15px;
+  font-weight: 500;
+  min-width: 250px;
+}
+
+.score-cell {
+  padding-right: 15px;
+  width: 30%; /* Set width for consistent bar alignment */
+}
+
+/* Progress Bar Structure */
+.progress-bar-container {
+  height: 20px;
+  background-color: rgba(22, 163, 74, 0.1); /* Light background for the track */
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  margin: 0 5px;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--mint);
+  transition: width 0.5s ease-out; /* Smooth transition for visual updates */
+  border-radius: 10px 0 0 10px; /* Only round left corners */
+}
+
+.score-text {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.8rem;
+  z-index: 1; /* Ensure text is above the bar */
+}
+
+/* Ensure progress bar text is white when score is high */
+.progress-bar[style*="width: 50"] ~ .score-text,
+.progress-bar[style*="width: 60"] ~ .score-text,
+.progress-bar[style*="width: 70"] ~ .score-text,
+.progress-bar[style*="width: 80"] ~ .score-text,
+.progress-bar[style*="width: 90"] ~ .score-text,
+.progress-bar[style*="width: 100"] ~ .score-text {
+  color: white; 
+  left: 8px; /* Move text to the left for better contrast */
+  right: auto;
+}
+
+/* --- Practice Question Paper (QP) Styles (Re-added for consistency) --- */
 .qp-header {
   margin-bottom: 20px;
   padding-bottom: 10px;
