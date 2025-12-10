@@ -68,3 +68,40 @@ html,body{height:100%;background:linear-gradient(180deg,var(--bg1),var(--bg2));c
 
 /* responsive */
 @media (max-width:900px){.container{flex-direction:column}.sidebar{width:100%}.login-card{width:92%}}
+
+/* Practice Question Paper (QP) Styles - NEW */
+.qp-header {
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+}
+
+.qp-question {
+  background: var(--card-2);
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(20, 83, 45, 0.08);
+  position: relative;
+}
+
+.qp-question p {
+  line-height: 1.5;
+  padding-right: 70px; /* Space for marks */
+}
+
+.qp-marks {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-weight: 600;
+  color: var(--mint);
+  font-size: 0.9rem;
+}
+
+.qp-footer {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(15, 23, 42, 0.1);
+}
