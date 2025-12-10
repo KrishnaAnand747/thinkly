@@ -69,6 +69,17 @@ html,body{height:100%;background:linear-gradient(180deg,var(--bg1),var(--bg2));c
 /* responsive */
 @media (max-width:900px){.container{flex-direction:column}.sidebar{width:100%}.login-card{width:92%}}
 
+/* --- FIX FOR ALIGNMENT ISSUE --- */
+/* Override global text-align: center for content sections */
+#notes, 
+#quiz, 
+#practiceQP,
+.quiz-question,
+.quiz-option {
+    text-align: left !important; /* Use !important to ensure override */
+}
+
+
 /* Practice Question Paper (QP) Styles - NEW */
 .qp-header {
   margin-bottom: 20px;
