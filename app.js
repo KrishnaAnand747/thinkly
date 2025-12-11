@@ -1,28 +1,46 @@
-// Mint Glass Edition app.js (updated)
+// Mint Glass Edition app.js (Fixed)
 let syllabus = {}, notes = {}, quizzes = {}, practiceQP = {};
 let currentUser = null;
 const CLIENT_ID = "852025843203-5goe3ipsous490292fqa4mh17p03h0br.apps.googleusercontent.com";
 
 async function loadContentJson(){
   try{
+    // Ensure fetch is successful and data is parsed
     const res = await fetch("content.json");
+    if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+    }
     const data = await res.json();
+    
+    // Assign data to global variables
     syllabus = data.syllabus || {};
     notes = data.notes || {};
     quizzes = data.quizzes || {};
     practiceQP = data.practiceQP || {};
-    populateClassSelect();
+    
+    // Crucial: Call the population function after data is ready
+    populateClassSelect(); 
   }catch(e){
-    console.error("Failed to load content.json", e);
+    console.error("Failed to load content.json or parse data", e);
+    // Display error to the user if content loading fails
+    document.getElementById("chaptersArea").innerHTML = "<p style='color:red;'>Error loading content: Check console.</p>";
   }
 }
 
 function populateClassSelect(){
   const sel = document.getElementById("classSelect");
-  sel.innerHTML = '<option value="">-- Select Class --</option>';
+  // Reset the dropdown content
+  sel.innerHTML = '<option value="">-- Select Class --</option>'; 
+  
+  // Loop through the keys ("9", "10") in the globally loaded syllabus object
   for(const cls in syllabus){
-    const opt = document.createElement("option"); opt.value = cls; opt.textContent = "Class " + cls;
-    sel.appendChild(opt);
+    // Check if the property is directly on the object (good practice)
+    if (syllabus.hasOwnProperty(cls)) {
+        const opt = document.createElement("option"); 
+        opt.value = cls; 
+        opt.textContent = "Class " + cls;
+        sel.appendChild(opt);
+    }
   }
 }
 
@@ -33,13 +51,11 @@ function onClassChange(){
   document.getElementById("subjectButtons").innerHTML = "";
   if(!cls) return;
   const sb = document.getElementById("subjectButtons");
-  sb.innerHTML = `<button class="subject-btn" onclick="showChapters('math')">Math</button>
-                  <button class="subject-btn" onclick="showChapters('science')">Science</button>`;
+  sb.innerHTML = `<button class="subject-btn" onclick="showChapters('${cls}', 'math')">Math</button>
+                  <button class="subject-btn" onclick="showChapters('${cls}', 'science')">Science</button>`;
 }
 
-function showChapters(subject){
-  const cls = document.getElementById("classSelect").value;
-  if(!cls) return alert("Select class first");
+function showChapters(cls, subject){
   const list = syllabus[cls][subject] || [];
   const area = document.getElementById("chaptersArea");
   area.innerHTML = "";
@@ -177,23 +193,29 @@ function showQPSection(chapterName, sectionKey) {
     
     questions.forEach((q, index) => {
         // Find the marks from the section key (e.g., '2 Marks')
-        const marksMatch = sectionKey.match(/(\d+)\sMarks/);
-        const marks = marksMatch ? marksMatch[1] : '';
+        const marksMatch = sectionKey.match(/(\d+)\sMarks|(\d+)\smark/i);
+        const marks = marksMatch ? (marksMatch[1] || marksMatch[2]) : '';
+
+        // Safely check for an answer property before displaying button
+        const hasAnswer = q.a && q.a.trim().length > 0;
+        const answerHtml = hasAnswer ? 
+            `<button class="show-answer-btn" data-target="answer-${sectionKey.replace(/\s/g, '-')}-${index}">Show Answer</button>
+             <div id="answer-${sectionKey.replace(/\s/g, '-')}-${index}" class="qp-answer hidden">
+                 <p class="answer-label">Model Answer:</p>
+                 <p>${q.a}</p>
+             </div>` : `<p class="hint" style="margin-top:10px;">Model answer coming soon.</p>`;
+
 
         html += `<div class="qp-question">
                     <div class="qp-marks">${marks ? `[${marks} Marks]` : ''}</div>
                     <p><strong>Q${index + 1}.</strong> ${q.q}</p>
-                    <button class="show-answer-btn" data-target="answer-${sectionKey.replace(/\s/g, '-')}-${index}">Show Answer</button>
-                    <div id="answer-${sectionKey.replace(/\s/g, '-')}-${index}" class="qp-answer hidden">
-                        <p class="answer-label">Model Answer:</p>
-                        <p>${q.a}</p>
-                    </div>
+                    ${answerHtml}
                  </div>`;
     });
     
     qpContentDiv.innerHTML = html;
 
-    // Attach event listeners to the new buttons
+    // Attach event listeners to the new buttons ONLY if they exist
     qpContentDiv.querySelectorAll('.show-answer-btn').forEach(button => {
         button.addEventListener('click', function() {
             const targetId = this.getAttribute('data-target');
@@ -208,6 +230,7 @@ function showQPSection(chapterName, sectionKey) {
 function generateMorePracticeQP(chapterName) {
     alert(`AI generation for ${chapterName} is not yet active. Check back later!`);
 }
+
 
 // Progress per user
 function getProgressForUserEmail(email){ try{ return JSON.parse(localStorage.getItem(`progress_${email}`) || "{}"); }catch(e){ return {}; } }
