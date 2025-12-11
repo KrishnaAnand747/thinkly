@@ -50,12 +50,10 @@ function showChapters(subject){
   });
 }
 
-// Chapter content (FIXED ALIGNMENT & CARD NESTING)
 function showChapterContent(chapterName){
   const contentArea = document.getElementById("contentArea");
-  contentArea.classList.remove('centered'); // FIX: Ensure left-alignment
+  contentArea.classList.remove('centered');
   
-  // Removed redundant outer <div class="card"> from innerHTML. The #contentArea is already a card.
   contentArea.innerHTML = `<h2>${chapterName}</h2>
     <div style="margin-top:12px">
       <button class="quiz-btn" onclick="showNotes('${escapeJS(chapterName)}')">View Notes</button>
@@ -115,37 +113,95 @@ function submitQuiz(chapterName){
   document.getElementById("quiz").innerHTML = `<div class="card"><h4>Result: ${score}/${questions.length} (${percent}%)</h4>${feedback}</div>`;
 }
 
+// showPracticeQP (UPDATED for Section Combo Box)
 function showPracticeQP(chapterName){
   const notesDiv = document.getElementById("notes");
   const quizDiv = document.getElementById("quiz");
   const qpDiv = document.getElementById("practiceQP");
   notesDiv.innerHTML=""; quizDiv.innerHTML="";
   
-  const list = practiceQP[chapterName] || [];
+  const sections = practiceQP[chapterName];
   
-  let html = `<div class="qp-header"><h4>Practice Questions (Assessment)</h4><p>This is a model question paper for **${chapterName}**.</p></div>`;
+  let html = `<div class="qp-header">
+                <h4>CBSE Practice Question Paper: ${chapterName}</h4>
+                <p>Select a section below to view questions and model answers aligned with the board pattern.</p>
+              </div>`;
   
-  if(list.length===0){
-     html += "<p>No practice questions available for this chapter.</p>";
+  if(!sections || Object.keys(sections).length === 0){
+     html += "<p>No sectional practice questions available for this chapter.</p>";
   } else {
-    // Using the nicer qp-question formatting from previous steps (assuming CSS is updated)
-    list.forEach((q, index) => {
-      html += `<div class="qp-question">
-                 <div class="qp-marks">[${q.marks} Marks]</div>
-                 <p><strong>Q${index + 1}.</strong> ${q.q}</p>
-               </div>`;
+    // 1. Generate the Section Select Dropdown
+    const sectionKeys = Object.keys(sections);
+    
+    html += `<div class="qp-controls">
+                <label for="qpSectionSelect">Select Question Section:</label>
+                <select id="qpSectionSelect" onchange="showQPSection('${escapeJS(chapterName)}', this.value)">`;
+    
+    html += `<option value="" disabled selected>-- Choose a Section --</option>`;
+    
+    sectionKeys.forEach(key => {
+        html += `<option value="${escapeJS(key)}">${key}</option>`;
     });
+
+    html += `</select></div>`;
+    
+    // 2. Add container for questions (will be populated on change)
+    html += `<div id="qp-section-content" class="content-section">
+                <p>Please select a section from the dropdown above to view the questions.</p>
+             </div>`;
   }
   
-  // Re-adding the AI button framework (but skipping the full function implementation)
+  // Placeholder for future AI button
   html += `<div class="qp-footer">
-             <button class="quiz-btn" onclick="alert('This feature is coming soon!')">
-               🔄 Generate More Questions (AI)
+             <button class="quiz-btn" onclick="alert('AI generation is coming soon!')">
+               🔄 Generate New Practice Set (AI)
              </button>
-             <div class="hint">Note: This feature is not yet fully implemented.</div>
            </div>`;
 
   qpDiv.innerHTML = html;
+}
+
+// NEW FUNCTION: showQPSection
+function showQPSection(chapterName, sectionKey) {
+    const qpContentDiv = document.getElementById('qp-section-content');
+    const sections = practiceQP[chapterName];
+    
+    if (!sections || !sections[sectionKey]) {
+        qpContentDiv.innerHTML = `<p>Error: Could not load questions for section ${sectionKey}.</p>`;
+        return;
+    }
+
+    const questions = sections[sectionKey];
+    
+    let html = `<h4>Section: ${sectionKey}</h4>`;
+    
+    questions.forEach((q, index) => {
+        // Find the marks from the section key (e.g., '2 Marks')
+        const marksMatch = sectionKey.match(/(\d+)\sMarks/);
+        const marks = marksMatch ? marksMatch[1] : '';
+
+        html += `<div class="qp-question">
+                    <div class="qp-marks">${marks ? `[${marks} Marks]` : ''}</div>
+                    <p><strong>Q${index + 1}.</strong> ${q.q}</p>
+                    <button class="show-answer-btn" data-target="answer-${sectionKey.replace(/\s/g, '-')}-${index}">Show Answer</button>
+                    <div id="answer-${sectionKey.replace(/\s/g, '-')}-${index}" class="qp-answer hidden">
+                        <p class="answer-label">Model Answer:</p>
+                        <p>${q.a}</p>
+                    </div>
+                 </div>`;
+    });
+    
+    qpContentDiv.innerHTML = html;
+
+    // Attach event listeners to the new buttons
+    qpContentDiv.querySelectorAll('.show-answer-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const answerDiv = document.getElementById(targetId);
+            const isHidden = answerDiv.classList.toggle('hidden');
+            this.textContent = isHidden ? 'Show Answer' : 'Hide Answer';
+        });
+    });
 }
 
 // Placeholder for the AI function to prevent errors when the button is clicked
@@ -165,14 +221,13 @@ function saveProgressForCurrentUser(chapter,percent){
   saveProgressForUserEmail(key,data);
 }
 
-// Dashboard (UPDATED with Progress Bars)
+// Dashboard
 function showDashboard(){
   const key = currentUser ? currentUser.email : 'guest';
   const data = getProgressForUserEmail(key);
   
   let html = "<div class='card'><h3>Progress Dashboard</h3>";
   
-  // Check if there is any data to show
   const chapters = Object.keys(data);
   if (chapters.length === 0) {
       html += "<p>You haven't completed any quizzes yet. Take a quiz to start tracking your progress!</p>";
@@ -182,7 +237,6 @@ function showDashboard(){
       
       for(const ch in data){ 
           const bestScore = data[ch].bestScore;
-          // Format date nicely
           const lastDate = new Date(data[ch].last).toLocaleDateString();
           
           html += `<tr>
@@ -216,12 +270,10 @@ function handleCredentialResponse(response){
 function guestLogin(){ currentUser = {name:'Guest', email:'guest'}; onUserSignedIn(); }
 
 function onUserSignedIn(){
-  // show header user area
   document.getElementById('user-area').style.display = 'flex';
   document.getElementById('user-name').textContent = currentUser.name || 'User';
   document.getElementById('user-pic').src = currentUser.picture || 'https://via.placeholder.com/80x80?text=G';
   document.getElementById('loginToggle').style.display = 'none';
-  // fade out login and show app quickly (snappy 0.5s)
   const login = document.getElementById('loginScreen');
   const app = document.getElementById('app');
   login.style.transition = 'opacity 0.5s ease'; login.style.opacity = '0';
@@ -245,7 +297,7 @@ function logout(){
     document.getElementById('dashboard').innerHTML=''; 
     
     const contentArea = document.getElementById('contentArea');
-    contentArea.classList.add('centered'); // FIX: Re-add centered class for the welcome message
+    contentArea.classList.add('centered');
     contentArea.innerHTML = `<h3>Welcome to Thinkly</h3><p>Choose a chapter from the left. Sign in to save progress to your account.</p>`;
   } 
 }
@@ -253,7 +305,6 @@ function logout(){
 // init
 window.addEventListener('DOMContentLoaded', async ()=>{
   await loadContentJson();
-  // show spinner then reveal login (spinner fades to login)
   const splash = document.getElementById('splash');
   const login = document.getElementById('loginScreen');
   setTimeout(()=>{ splash.style.transition='opacity 0.5s ease'; splash.style.opacity='0'; setTimeout(()=>{ splash.classList.add('hidden'); login.classList.remove('hidden'); login.style.opacity='1'; },520); },900);
