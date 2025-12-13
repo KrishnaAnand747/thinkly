@@ -1,4 +1,22 @@
+:root {
+    /* --- ESSENTIAL MISSING VARIABLES (Must be defined for QP styles to work) --- */
+    /* NOTE: Adjust these color codes if you know the exact colors used elsewhere in your app */
+    --mint: #16a34a; /* Used for answer borders and labels */
+    --card-2: #f8fafc; /* Used for the background of qp-controls */
+    
+    /* Assuming other common variables like --card, --text, --primary are defined here */
+}
+
+/* --- UTILITY CLASS (Needed for show/hide answer button functionality) --- */
+.hidden {
+    display: none !important; 
+    /* Use !important to ensure it overrides any other display rule */
+}
+
+
+/* ---------------------------------------------------------------------- */
 /* --- New Styles for Sectional QP Display (Appended to the end of your existing CSS) --- */
+/* ---------------------------------------------------------------------- */
 
 .qp-controls {
     display: flex;
@@ -59,4 +77,28 @@
     font-weight: 600;
     color: var(--mint);
     margin-bottom: 5px;
+}
+
+/* --- Additional styles for the Question Display Container --- */
+.qp-question {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+.qp-marks {
+    float: right;
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 500;
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+/* Clearfix for the marks float */
+.qp-question::after {
+    content: "";
+    display: table;
+    clear: both;
 }
