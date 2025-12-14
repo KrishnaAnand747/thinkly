@@ -1,5 +1,5 @@
 /* ==================================== */
-/* 1. ROOT VARIABLES & GLOBAL RESET     */
+/* 1. ROOT VARIABLES & GLOBAL RESET     */
 /* ==================================== */
 :root {
     /* Branding Colors */
@@ -18,7 +18,14 @@
     
     /* Border/Shadow */
     --border-light: #e2e8f0;
+    --border-medium: #cbd5e1; /* Added for better separation */
     --shadow-subtle: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
 }
 
 * {
@@ -26,11 +33,12 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif; /* Assuming a modern font */
+    font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0;
     background-color: var(--bg-light);
     color: var(--text-dark);
+    min-height: 100vh; /* Ensure full viewport height */
 }
 
 /* Utility class needed for app transitions (splash/login/answer toggles) */
@@ -38,9 +46,20 @@ body {
     display: none !important; 
 }
 
+/* Base button style (for all buttons not explicitly styled) */
+button {
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
 /* ==================================== */
-/* 2. SPLASH & LOGIN SCREEN STYLES      */
+/* 2. SPLASH & LOGIN SCREEN STYLES      */
 /* ==================================== */
+/* (Your splash/login styles are good and retained) */
+
 .splash {
     position: fixed;
     top: 0;
@@ -138,7 +157,7 @@ body {
 
 
 /* ==================================== */
-/* 3. APP LAYOUT & TOPBAR STYLES        */
+/* 3. APP LAYOUT & TOPBAR STYLES        */
 /* ==================================== */
 .app {
     display: flex;
@@ -149,10 +168,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
+    padding: var(--spacing-sm) var(--spacing-lg);
     background: var(--primary);
     color: white;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 10; /* Ensure it stays on top */
 }
 .brand-left {
     font-size: 1.2rem;
@@ -175,12 +195,12 @@ body {
 }
 .user-name {
     font-weight: 500;
-    margin-right: 10px;
+    /* Removed margin-right: 10px; to rely on gap */
 }
 .header-btn {
     background: var(--secondary);
     color: white;
-    margin-left: 10px;
+    /* margin-left: 10px; Removed, rely on user-area gap or separate element */
     padding: 6px 12px;
 }
 .header-btn:hover {
@@ -197,10 +217,15 @@ body {
 }
 .sidebar {
     width: 280px;
-    padding: 20px;
+    padding: var(--spacing-lg);
     background: var(--card-bg);
-    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-subtle); /* Adjusted shadow for consistency */
     flex-shrink: 0;
+    /* Added overflow-y for long chapter lists */
+    overflow-y: auto;
+    max-height: calc(100vh - 50px); /* Adjust based on topbar height */
+    position: sticky; /* Keep sidebar visible */
+    top: 0;
 }
 .sidebar h2 {
     margin-top: 0;
@@ -211,66 +236,66 @@ body {
     font-weight: 600;
     display: block;
     margin-bottom: 5px;
+    font-size: 0.95rem;
 }
-#classSelect {
+#classSelect, #subjectSelect { /* Combined selectors for style consistency */
     width: 100%;
     padding: 8px 10px;
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-md);
     border-radius: 6px;
-    border: 1px solid var(--border-light);
+    border: 1px solid var(--border-medium);
     background: var(--card-2);
+    font-size: 1rem;
 }
-.subject-buttons {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-.subject-btn {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid var(--primary);
-    border-radius: 6px;
-    background: var(--card-bg);
-    color: var(--primary);
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.subject-btn:hover {
-    background: var(--primary);
-    color: white;
-}
+/* Removed .subject-buttons and .subject-btn as app.js uses a single #subjectSelect dropdown */
+
 .chapters {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    margin-top: var(--spacing-md);
 }
-.chapter-btn {
-    text-align: left;
+.chapters h4 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-medium);
+    font-size: 1rem;
+}
+
+/* NEW: Chapter Card Style (replaces .chapter-btn usage) */
+.chapter-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 10px 15px;
-    border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     background: var(--card-2);
     color: var(--text-dark);
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s ease-out;
+    border: 1px solid transparent;
 }
-.chapter-btn:hover {
+.chapter-card:hover {
     background: var(--border-light);
+    border: 1px solid var(--primary);
 }
-.hint {
-    margin-top: 20px;
-    font-size: 0.75rem;
-    color: var(--text-medium);
+.chapter-progress {
+    font-size: 0.85rem;
+    font-weight: 700;
+    min-width: 40px; /* Ensures alignment */
+    text-align: right;
 }
+
 .main {
     flex-grow: 1;
-    padding: 20px;
+    padding: var(--spacing-lg);
 }
 .content {
     background: var(--card-bg);
     padding: 30px;
     border-radius: 12px;
     box-shadow: var(--shadow-subtle);
+    min-height: 80vh; /* Ensure it looks substantial */
 }
 .content h3 {
     color: var(--primary);
@@ -281,35 +306,49 @@ body {
     margin: 40px auto;
 }
 .content-section {
-    margin-top: 25px;
-    padding-top: 15px;
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-md);
     border-top: 1px solid var(--border-light);
 }
 .quiz-btn {
     background: var(--mint);
     color: white;
-    padding: 8px 15px;
+    padding: 10px 18px; /* Slightly larger buttons */
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 0.9rem;
-    margin-right: 10px;
-    margin-top: 10px;
+    font-size: 0.95rem;
+    margin-right: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
     transition: background 0.2s;
 }
 .quiz-btn:hover {
     background: #10873a;
 }
 
+/* NEW: Notes Content Styling (for fetched HTML) */
+.notes-content h3, .notes-content h4 {
+    color: var(--primary);
+    margin-top: 1.5rem;
+}
+.notes-content p {
+    line-height: 1.7;
+    margin-bottom: var(--spacing-md);
+}
+.notes-content ul {
+    padding-left: 20px;
+}
+
 
 /* ==================================== */
-/* 4. QUIZ AND DASHBOARD STYLES         */
+/* 4. QUIZ AND QUESTION BANK STYLES     */
 /* ==================================== */
 .quiz-question {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-lg);
     padding: 15px;
-    border: 1px solid var(--border-light);
+    border: 1px solid var(--border-medium);
     border-radius: 8px;
+    background: var(--card-2);
 }
 .quiz-option {
     display: block;
@@ -318,21 +357,71 @@ body {
     padding: 5px;
     border-radius: 4px;
     transition: background 0.1s;
+    font-size: 0.95rem;
 }
 .quiz-option:hover {
-    background: var(--card-2);
+    background: var(--border-light);
 }
 
-/* Dashboard Styles */
+/* Question Bank (QP) Styles */
+.qp-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: var(--card-2);
+    border-radius: 8px;
+}
+#qbCategorySelect {
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-medium);
+    background: var(--card-bg);
+}
+.qp-question {
+    margin-bottom: var(--spacing-lg);
+    padding: 15px;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    background: var(--card-bg);
+}
+.show-answer-btn {
+    background: var(--secondary);
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    margin-top: var(--spacing-sm);
+    font-size: 0.85rem;
+    transition: background 0.2s;
+}
+.show-answer-btn:hover {
+    background: #2563eb;
+}
+.qp-answer {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    border-left: 4px solid var(--mint);
+    background: var(--card-2);
+    border-radius: 4px;
+}
+.answer-label {
+    font-weight: 700;
+    color: var(--mint);
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Dashboard Styles (Retained and slightly cleaner) */
 .dashboard-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
+    margin-top: var(--spacing-md);
     font-size: 0.95rem;
 }
 .dashboard-table th, .dashboard-table td {
     padding: 12px 15px;
     border-bottom: 1px solid var(--border-light);
+    text-align: left;
 }
 .dashboard-table th {
     background-color: var(--card-2);
@@ -363,10 +452,12 @@ body {
     color: var(--text-dark);
     font-size: 0.8rem;
     font-weight: 600;
+    text-shadow: 0 0 2px white; /* Added shadow for readability over bar */
 }
 
+
 /* ==================================== */
-/* 5. MEDIA QUERIES (Responsiveness)    */
+/* 5. MEDIA QUERIES (Responsiveness)    */
 /* ==================================== */
 @media (max-width: 900px) {
     .container {
@@ -374,12 +465,42 @@ body {
     }
     .sidebar {
         width: 100%;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        box-shadow: var(--shadow-subtle);
+        position: relative; /* Remove sticky on mobile */
+        max-height: none;
+        overflow-y: visible;
     }
     .main {
-        padding: 10px;
+        padding: var(--spacing-md);
+    }
+    .content {
+        padding: 20px;
     }
     .login-card {
         margin: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .topbar {
+        flex-wrap: wrap;
+        padding: 10px;
+        gap: 10px;
+    }
+    .header-right {
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 5px;
+    }
+    .user-area {
+        gap: 8px;
+    }
+    .user-name {
+        display: none; /* Hide name to save space */
+    }
+    .quiz-btn {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: var(--spacing-sm);
     }
 }

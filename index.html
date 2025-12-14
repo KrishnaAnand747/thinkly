@@ -1,71 +1,98 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Thinkly Learning Portal</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syllabus Manager - Mint Glass Edition</title>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="icon" href="favicon.ico" type="image/x-icon"> 
+
+    <script>
+        // CLIENT_ID is defined here to be available immediately for the GSI library attributes
+        const CLIENT_ID = "852025843203-5goe3ipsous490292fqa4mh17p03h0br.apps.googleusercontent.com";
+        
+        // This wrapper is needed because Google's library expects this function to be defined globally 
+        // before the button renders, even if the implementation is in app.js
+        function handleCredentialResponse(response) {
+            // Check if app.js is loaded before calling its implementation
+            if (window.handleCredentialResponse) {
+                window.handleCredentialResponse(response);
+            }
+        }
+    </script>
+
+    <script src="app.js"></script> 
 </head>
 <body>
-  <div id="splash" class="splash">
-    <div class="spinner"></div>
-  </div>
 
-  <div id="loginScreen" class="login-screen hidden">
-    <div class="login-card">
-      <h1 class="brand">Thinkly Learning Portal</h1>
-      <p class="sub">A calm place to learn — Math & Science (CBSE Class 9 & 10)</p>
-      <div id="gSign" class="g-signin-area">
-        <div id="g_id_onload"
-             data-client_id="852025843203-5goe3ipsous490292fqa4mh17p03h0br.apps.googleusercontent.com"
-             data-callback="handleCredentialResponse"
-             data-auto_prompt="false"></div>
-        <div class="g_id_signin" data-type="standard"></div>
-      </div>
-      <div class="divider">or</div>
-      <button class="guest-btn" onclick="guestLogin()">Continue as Guest</button>
-      <p class="policy">Your progress will be saved locally.</p>
+    <div id="splash" class="splash">
+        <div class="spinner"></div>
+        <h1>Loading Syllabus Manager</h1>
     </div>
-  </div>
 
-  <div id="app" class="app hidden">
-    <header class="topbar">
-      <div class="brand-left">Thinkly Learning Portal</div>
-      <div class="header-right">
-        <div id="user-area" class="user-area" style="display:none">
-          <img id="user-pic" class="user-pic" alt="avatar" />
-          <span id="user-name" class="user-name"></span>
-          <button id="dashboardBtn" class="btn header-btn" onclick="showDashboard()">📊 Dashboard</button>
-          <button id="logoutBtn" class="btn header-btn" onclick="logout()">Logout</button>
+    <div id="loginScreen" class="login-screen hidden">
+        <div class="login-card">
+            <h2 class="brand">Thinkly Learning Portal</h2>
+            <p class="sub">A calm place to learn — Math & Science (CBSE Class 9 & 10)</p>
+            
+            <div id="gSign" class="g-signin-area">
+                <div id="g_id_onload"
+                    data-client_id="852025843203-5goe3ipsous490292fqa4mh17p03h0br.apps.googleusercontent.com"
+                    data-callback="handleCredentialResponse"
+                    data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin" data-type="standard"></div>
+            </div>
+
+            <div class="divider">or</div>
+            <button class="guest-btn" onclick="guestLogin()">Continue as Guest</button>
+
+            <p class="policy">Your progress will be saved locally.</p>
+            <p id="loginMessage" style="color: red; margin-top: 10px; display: none;"></p>
         </div>
-        <button id="loginToggle" class="btn header-btn" onclick="showLoginAgain()" style="display:none">Login</button>
-      </div>
-    </header>
+    </div>
 
-    <div class="container">
-      <aside class="sidebar">
-        <h2>Start Learning</h2>
-        <label for="classSelect">Class</label>
-        <select id="classSelect" onchange="onClassChange()">
-          <option value="">-- Select Class --</option>
-        </select>
-        <div id="subjectButtons" class="subject-buttons"></div>
-        <div id="chaptersArea" class="chapters"></div>
-        <div class="hint">Progress is saved per user (Google or Guest)</div>
-      </aside>
-
-      <main class="main">
-        <div id="contentArea" class="content card centered">
-          <h3>Welcome to Thinkly</h3>
-          <p>Choose a class and subject on the left. Sign in to save your progress.</p>
-        </div>
+    <div id="app" class="app hidden">
         
-        <div id="dashboard" class="card" style="display:none;">
-          </div>
-      </main>
+        <header class="topbar">
+            <div class="brand-left">Thinkly Learning Portal</div>
+            <div class="header-right">
+                <div id="user-area" class="user-area" style="display: none;">
+                    <img id="user-pic" src="images/guest-profile.png" alt="User Profile" class="user-pic">
+                    <span id="user-name" class="user-name">User</span>
+                    <button id="dashboardBtn" class="btn header-btn" onclick="showDashboard()">📊 Dashboard</button>
+                    <button id="logoutBtn" class="btn header-btn" onclick="logout()">Logout</button>
+                </div>
+                <button id="loginToggle" class="btn header-btn" onclick="showLoginAgain()" style="display:none">Login</button>
+            </div>
+        </header>
+
+        <div class="container">
+            <aside class="sidebar">
+                <h2>Start Learning</h2>
+                <label for="classSelect">Class</label>
+                <select id="classSelect" onchange="onClassChange()">
+                    <option value="">-- Select Class --</option>
+                </select>
+                <div id="subjectButtons" class="subject-buttons"></div>
+                <div id="chaptersArea" class="chapters"></div>
+                <div class="hint">Progress is saved per user (Google or Guest)</div>
+            </aside>
+
+            <main class="main">
+                <div id="contentArea" class="content card centered">
+                    <h3>Welcome to Thinkly</h3>
+                    <p>Choose a class and subject on the left. Sign in to save your progress.</p>
+                </div>
+                
+                <div id="dashboard" class="card" style="display:none;">
+                </div>
+            </main>
+        </div>
     </div>
-  </div>
-  <script src="app.js"></script>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script> 
 </body>
 </html>

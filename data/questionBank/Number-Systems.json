@@ -1,0 +1,10 @@
+{
+  "Very Short Answer (1M)": [
+    { "q": "Define a rational number.", "a": "A number that can be expressed in the form p/q, where p and q are integers and q ≠ 0." },
+    { "q": "Write an example of an irrational number.", "a": "√2 or π." }
+  ],
+  "Short Answer (3M)": [
+    { "q": "Represent √5 on the number line.", "a": "Construct a right triangle with legs of length 2 and 1 unit. The hypotenuse will be √5. Use a compass to mark this distance on the number line." },
+    { "q": "Find five rational numbers between 3/5 and 4/5.", "a": "Convert to equivalent fractions with a larger denominator, e.g., 3/5 = 18/30 and 4/5 = 24/30. Numbers are 19/30, 20/30, 21/30, 22/30, 23/30." }
+  ]
+}

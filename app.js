@@ -1,233 +1,351 @@
-// Mint Glass Edition app.js (Fixed and Reverted)
-let syllabus = {}, notes = {}, quizzes = {}; // practiceQP removed
-let currentUser = null;
-const CLIENT_ID = "852025843203-5goe3ipsous490292fqa4mh17p03h0br.apps.googleusercontent.com";
+// --- Global Data and Utility Variables ---
+// Note: These will be populated by loadContentData()
+let syllabus = {};
+let notesData = {}; 
+let currentChapter = null;
+// CRITICAL FIX: Update default picture path to local file
+let currentUser = { name: "Guest", pic: "images/guest-profile.png", type: "Guest" };
 
-async function loadContentJson(){
-  try{
-    // Ensure fetch is successful and data is parsed
-    const res = await fetch("content.json");
-    if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+// Utility function for safe string passing to onclick handlers
+function escapeJS(str) {
+    return str.replace(/'/g, "\\'");
+}
+
+// --- 1. AUTHENTICATION AND TRANSITIONS ---
+
+function handleCredentialResponse(response) {
+    // This function is called by the Google Sign-In script
+    try {
+        // Decode the ID token (simplified)
+        const token = response.credential;
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(window.atob(base64));
+
+        currentUser = {
+            name: payload.name,
+            pic: payload.picture,
+            type: "Google"
+        };
+        document.getElementById('loginMessage').style.display = 'none';
+        transitionToApp();
+    } catch (e) {
+        console.error("Google login failed:", e);
+        document.getElementById('loginMessage').innerText = "Sign-in failed. Please try again.";
+        document.getElementById('loginMessage').style.display = 'block';
     }
-    const data = await res.json();
-    
-    // Assign data to global variables. practiceQP removed.
-    syllabus = data.syllabus || {};
-    notes = data.notes || {};
-    quizzes = data.quizzes || {};
-    
-    // Crucial: Call the population function after data is ready
-    populateClassSelect(); 
-  }catch(e){
-    console.error("Failed to load content.json or parse data", e);
-    // Display error to the user if content loading fails
-    document.getElementById("chaptersArea").innerHTML = "<p style='color:red;'>Error loading content: Check console.</p>";
-  }
 }
 
-function populateClassSelect(){
-  const sel = document.getElementById("classSelect");
-  // Reset the dropdown content
-  sel.innerHTML = '<option value="">-- Select Class --</option>'; 
-  
-  // Loop through the keys ("9", "10") in the globally loaded syllabus object
-  for(const cls in syllabus){
-    // Check if the property is directly on the object (good practice)
-    if (syllabus.hasOwnProperty(cls)) {
-        const opt = document.createElement("option"); 
-        opt.value = cls; 
-        opt.textContent = "Class " + cls;
-        sel.appendChild(opt);
+function guestLogin() {
+    // CRITICAL FIX: Update default picture path to local file
+    currentUser = { name: "Guest", pic: "images/guest-profile.png", type: "Guest" }; 
+    transitionToApp();
+}
+
+function logout() {
+    currentUser = { name: "Guest", pic: "images/guest-profile.png", type: "Guest" };
+    document.getElementById("app").classList.add('hidden');
+    document.getElementById("loginScreen").classList.remove('hidden');
+    
+    // Clear the main content and reset selections upon logout
+    document.getElementById("classSelect").value = "";
+    onClassChange();
+    
+    // Update top bar for logged-out state
+    document.getElementById("user-area").style.display = 'none';
+    document.getElementById("loginToggle").style.display = 'block';
+}
+
+function transitionToApp() {
+    document.getElementById("splash").classList.add('hidden');
+    document.getElementById("loginScreen").classList.add('hidden');
+    document.getElementById("app").classList.remove('hidden');
+    
+    // Update top bar UI
+    document.getElementById("user-name").innerText = currentUser.name;
+    document.getElementById("user-pic").src = currentUser.pic;
+    document.getElementById("user-area").style.display = 'flex';
+    document.getElementById("loginToggle").style.display = 'none';
+
+    // Initialize content after login
+    populateClassSelect();
+}
+
+function showLoginAgain() {
+    document.getElementById("app").classList.add('hidden');
+    document.getElementById("loginScreen").classList.remove('hidden');
+}
+
+
+// --- 2. DATA LOADING AND INITIAL UI SETUP ---
+
+async function loadContentData() {
+    try {
+        const response = await fetch('content.json');
+        const data = await response.json();
+        
+        // Store data globally
+        syllabus = data.syllabus;
+        notesData = data.notes;
+        
+        // Hide splash screen and show login screen after data is ready
+        document.getElementById("splash").classList.add('hidden');
+        document.getElementById("loginScreen").classList.remove('hidden');
+    } catch (error) {
+        console.error("Error loading content.json:", error);
+        document.getElementById("splash").innerHTML = '<h1>Error loading content.</h1><p>Check the console for details.</p>';
     }
-  }
 }
 
-// UI helpers
-function onClassChange(){
-  const cls = document.getElementById("classSelect").value;
-  document.getElementById("chaptersArea").innerHTML = "";
-  document.getElementById("subjectButtons").innerHTML = "";
-  if(!cls) return;
-  const sb = document.getElementById("subjectButtons");
-  sb.innerHTML = `<button class="subject-btn" onclick="showChapters('${cls}', 'math')">Math</button>
-                  <button class="subject-btn" onclick="showChapters('${cls}', 'science')">Science</button>`;
+function populateClassSelect() {
+    const classSelect = document.getElementById("classSelect");
+    
+    if (!classSelect) return;
+
+    // Clear existing options, keeping the default
+    classSelect.innerHTML = '<option value="">-- Select Class --</option>';
+
+    const classes = Object.keys(syllabus).sort();
+    classSelect.innerHTML += classes.map(c => `<option value="${c}">Class ${c}</option>`).join('');
+
+    // Restore or set initial state (e.g., select the first class if available)
+    if (classes.length > 0) {
+        classSelect.value = classes[0];
+        onClassChange();
+    } else {
+        renderMainContent(null);
+    }
 }
 
-function showChapters(cls, subject){
-  const list = syllabus[cls][subject] || [];
-  const area = document.getElementById("chaptersArea");
-  area.innerHTML = "";
-  list.forEach(ch => {
-    const b = document.createElement("button"); b.className="chapter-btn"; b.textContent = ch;
-    b.onclick = ()=> showChapterContent(ch);
-    area.appendChild(b);
-  });
+
+// --- 3. SELECTION AND CHAPTER LOGIC ---
+
+function onClassChange() {
+    const classSelect = document.getElementById("classSelect");
+    const subjectButtonsArea = document.getElementById("subjectButtons");
+    
+    if (!classSelect || !subjectButtonsArea) return;
+
+    const selectedClass = classSelect.value;
+    
+    // Clear chapters and main content area when class changes
+    subjectButtonsArea.innerHTML = '';
+    document.getElementById("chaptersArea").innerHTML = '<h4>Chapters</h4><p>Select a Subject.</p>';
+    renderMainContent(null); // CRITICAL: Clear main content
+
+    if (!selectedClass || !syllabus[selectedClass]) return;
+    
+    const subjects = Object.keys(syllabus[selectedClass]);
+    
+    // Render subject buttons/links
+    subjectButtonsArea.innerHTML = subjects.map(sub => 
+        `<button class="subject-btn" onclick="showChapters('${selectedClass}', '${sub}')">
+            ${sub.charAt(0).toUpperCase() + sub.slice(1)}
+         </button>`).join('');
+    
+    // Auto-select the first subject if available
+    if (subjects.length > 0) {
+        showChapters(selectedClass, subjects[0]);
+    }
 }
 
-function showChapterContent(chapterName){
-  const contentArea = document.getElementById("contentArea");
-  contentArea.classList.remove('centered');
-  
-  // Removed Practice Questions button
-  contentArea.innerHTML = `<h2>${chapterName}</h2>
-    <div style="margin-top:12px">
-      <button class="quiz-btn" onclick="showNotes('${escapeJS(chapterName)}')">View Notes</button>
-      <button class="quiz-btn" onclick="startQuiz('${escapeJS(chapterName)}')">Take Quiz</button>
-    </div>
-    <div id="notes" class="content-section"></div>
-    <div id="quiz" class="content-section"></div>
+
+function showChapters(selectedClass, selectedSubject) {
+    const chaptersArea = document.getElementById("chaptersArea");
+    
+    if (!chaptersArea || !syllabus[selectedClass] || !syllabus[selectedClass][selectedSubject]) {
+        chaptersArea.innerHTML = '<h4>Chapters</h4><p>No chapters found.</p>';
+        return;
+    }
+
+    const chapters = syllabus[selectedClass][selectedSubject];
+    
+    chaptersArea.innerHTML = '<h4>Chapters</h4>';
+    
+    chaptersArea.innerHTML += chapters.map(chapter => 
+        `<div class="chapter-card" onclick="showChapterContent('${escapeJS(chapter)}')">
+            <span>${chapter.replace(/-/g, ' ')}</span>
+            <span class="chapter-progress">0%</span>
+        </div>`).join('');
+        
+    // Clear main content area
+    renderMainContent(null);
+}
+
+// --- 4. MODULAR CONTENT RENDERING (STABILITY CORE) ---
+
+/**
+ * Manages the visibility and default content of the main content area.
+ * @param {string|null} mode - 'chapterControls', 'dashboard', or null (for welcome/clear).
+ */
+function renderMainContent(mode) {
+    const contentArea = document.getElementById("contentArea");
+    
+    if (!contentArea) return;
+
+    // Reset all content areas by default
+    contentArea.innerHTML = '';
+    contentArea.classList.remove('centered'); 
+
+    if (mode === 'chapterControls') {
+        // showChapterContent will inject the controls next.
+        return;
+    } 
+    
+    if (mode === 'dashboard') {
+        contentArea.innerHTML = '<h2>Your Learning Dashboard</h2><div id="dashboardContent"></div>';
+        return;
+    }
+
+    // Default: Show welcome message (or clear)
+    contentArea.innerHTML = `
+        <div class="centered-message">
+            <h3>Welcome to Thinkly</h3>
+            <p>Choose a class and subject on the left, then select a chapter to begin.</p>
+        </div>
+    `;
+    contentArea.classList.add('centered');
+}
+
+function showChapterContent(chapterName) {
+    currentChapter = chapterName;
+    
+    // 1. Clear and set up the main content area for controls
+    renderMainContent('chapterControls'); 
+
+    const contentArea = document.getElementById("contentArea");
+    const displayName = chapterName.replace(/-/g, ' ');
+
+    contentArea.innerHTML = `
+        <h2>${displayName}</h2>
+        <div class="content-controls">
+            <button class="quiz-btn" onclick="showNotes('${escapeJS(chapterName)}')">View Notes</button>
+            <button class="quiz-btn" onclick="startQuiz('${escapeJS(chapterName)}')">Take Quiz</button>
+            <button class="quiz-btn" onclick="showQuestionBank('${escapeJS(chapterName)}')">Question Bank</button>
+        </div>
+        
+        <div id="notesContainer" class="notes-content content-section"></div>
+        <div id="quizContainer" class="quiz-area content-section"></div>
+        <div id="questionBankContainer" class="qb-area content-section"></div>
+    `;
+    
+    // Automatically load notes content when the chapter is first selected
+    showNotes(chapterName);
+}
+
+
+// --- 5. CONTENT LOADING FUNCTIONS ---
+
+async function showNotes(chapterName) {
+    const notesDiv = document.getElementById("notesContainer");
+    const quizDiv = document.getElementById("quizContainer");
+    const qbArea = document.getElementById("questionBankContainer");
+    
+    // CRITICAL FIX: Ensure only the notes container is active
+    quizDiv.innerHTML = "";
+    qbArea.innerHTML = "";
+    notesDiv.style.display = 'block';
+
+    if (notesData[chapterName]) {
+        const filePath = notesData[chapterName];
+        notesDiv.innerHTML = `<h4>Loading Notes for ${chapterName.replace(/-/g, ' ')}...</h4>`;
+        
+        try {
+            const response = await fetch(filePath);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const htmlContent = await response.text();
+            notesDiv.innerHTML = htmlContent;
+        } catch (error) {
+            notesDiv.innerHTML = `<p style="color:red;">Failed to load notes: <a href="${filePath}" target="_blank">Check File Path</a></p>`;
+            console.error(`Error fetching file: ${filePath}`, error);
+        }
+    } else {
+        notesDiv.innerHTML = `<p>No notes path found in content.json for this chapter.</p>`;
+    }
+}
+
+function startQuiz(chapterName) {
+    const notesDiv = document.getElementById("notesContainer");
+    const quizDiv = document.getElementById("quizContainer");
+    const qbArea = document.getElementById("questionBankContainer");
+    
+    // CRITICAL FIX: Ensure only the quiz container is active
+    notesDiv.innerHTML = "";
+    qbArea.innerHTML = "";
+    quizDiv.style.display = 'block';
+
+    // --- QUIZ MOCKUP ---
+    quizDiv.innerHTML = `
+        <h3>Quiz for ${chapterName.replace(/-/g, ' ')}</h3>
+        <p>This is a placeholder for the Quiz component.</p>
+        <button class="quiz-btn">Start Quiz</button>
     `;
 }
 
-function escapeJS(s){ return s.replace(/'/g,"\'"); }
-
-function showNotes(chapterName){
-  const notesDiv = document.getElementById("notes"); const quizDiv = document.getElementById("quiz"); // qpDiv removed
-  quizDiv.innerHTML = ""; // qpDiv.innerHTML removed
-  const content = notes[chapterName];
-  if(!content){ notesDiv.innerHTML = "<p>Notes coming soon.</p>"; return; }
-  if(typeof content === "string" && content.endsWith(".html")){
-    fetch(content)
-      .then(r => {
-          if (!r.ok) throw new Error("File not found: " + content);
-          return r.text();
-      })
-      .then(txt=> notesDiv.innerHTML = txt)
-      .catch(()=>notesDiv.innerHTML="<p>Unable to load notes. Check console for error.</p>");
-  } else { notesDiv.innerHTML = content; }
-}
-
-function startQuiz(chapterName){
-  const notesDiv = document.getElementById("notes"); const quizDiv = document.getElementById("quiz"); // qpDiv removed
-  notesDiv.innerHTML=""; // qpDiv.innerHTML removed
-  const questions = quizzes[chapterName] || [];
-  if(questions.length===0){ quizDiv.innerHTML="<p>No quiz available.</p>"; return; }
-  let html = "<h4>Quiz</h4>";
-  questions.forEach((q,i)=>{
-    html += `<div class="quiz-question"><p><b>Q${i+1}.</b> ${q.q}</p>`;
-    q.options.forEach((opt,j)=> html += `<label class="quiz-option"><input type="radio" name="q${i}" value="${j}"> ${opt}</label>`);
-    html += "</div>";
-  });
-  html += `<button class="quiz-btn" onclick="submitQuiz('${escapeJS(chapterName)}')">Submit</button>`;
-  quizDiv.innerHTML = html;
-}
-
-function submitQuiz(chapterName){
-  const questions = quizzes[chapterName] || [];
-  let score = 0, feedback = "";
-  questions.forEach((q,i)=>{
-    const sel = document.querySelector(`input[name="q${i}"]:checked`);
-    const val = sel ? parseInt(sel.value) : null;
-    const ok = val === q.answer;
-    if(ok) score++;
-    feedback += `<div style="margin:10px 0;padding:10px;border-radius:8px;background:rgba(0,0,0,0.03)"><p><b>Q${i+1}.</b> ${q.q}</p><p>Your: ${sel? q.options[val]:'Not answered'}</p><p>Correct: ${q.options[q.answer]}</p><p style="opacity:0.9">${q.explanation||''}</p></div>`;
-  });
-  const percent = Math.round((score / questions.length)*100);
-  saveProgressForCurrentUser(chapterName, percent);
-  document.getElementById("quiz").innerHTML = `<div class="card"><h4>Result: ${score}/${questions.length} (${percent}%)</h4>${feedback}</div>`;
-}
-
-// showPracticeQP functions removed here
-
-// Progress per user
-function getProgressForUserEmail(email){ try{ return JSON.parse(localStorage.getItem(`progress_${email}`) || "{}"); }catch(e){ return {}; } }
-function saveProgressForUserEmail(email,obj){ localStorage.setItem(`progress_${email}`, JSON.stringify(obj)); }
-function saveProgressForCurrentUser(chapter,percent){
-  const key = currentUser ? currentUser.email : 'guest';
-  const data = getProgressForUserEmail(key);
-  data[chapter] = data[chapter] || {bestScore:0};
-  if(percent > data[chapter].bestScore) data[chapter].bestScore = percent;
-  data[chapter].last = new Date().toISOString();
-  saveProgressForUserEmail(key,data);
-}
-
-// Dashboard
-function showDashboard(){
-  const key = currentUser ? currentUser.email : 'guest';
-  const data = getProgressForUserEmail(key);
-  
-  let html = "<div class='card'><h3>Progress Dashboard</h3>";
-  
-  const chapters = Object.keys(data);
-  if (chapters.length === 0) {
-      html += "<p>You haven't completed any quizzes yet. Take a quiz to start tracking your progress!</p>";
-  } else {
-      html += `<table class='dashboard-table'>
-                  <tr style='text-align:left'><th>Chapter</th><th>Best Score</th><th>Last Attempt</th></tr>`;
-      
-      for(const ch in data){ 
-          const bestScore = data[ch].bestScore;
-          const lastDate = new Date(data[ch].last).toLocaleDateString();
-          
-          html += `<tr>
-                      <td class='chapter-name-cell'>${ch}</td>
-                      <td class='score-cell'>
-                          <div class='progress-bar-container'>
-                              <div class='progress-bar' style='width: ${bestScore}%;'></div>
-                              <span class='score-text'>${bestScore}%</span>
-                          </div>
-                      </td>
-                      <td style='padding:8px'>${lastDate}</td>
-                  </tr>`;
-      }
-      html += "</table>";
-  }
-  
-  html += "</div>"; 
-  document.getElementById("dashboard").style.display = 'block';
-  document.getElementById("dashboard").innerHTML = html; 
-}
-
-// Login/Logout & transitions
-function handleCredentialResponse(response){
-  try{
-    const payload = parseJwt(response.credential);
-    currentUser = {name: payload.name, email: payload.email, picture: payload.picture};
-    onUserSignedIn();
-  }catch(e){ console.error("Invalid credential", e); }
-}
-
-function guestLogin(){ currentUser = {name:'Guest', email:'guest'}; onUserSignedIn(); }
-
-function onUserSignedIn(){
-  document.getElementById('user-area').style.display = 'flex';
-  document.getElementById('user-name').textContent = currentUser.name || 'User';
-  document.getElementById('user-pic').src = currentUser.picture || 'https://via.placeholder.com/80x80?text=G';
-  document.getElementById('loginToggle').style.display = 'none';
-  const login = document.getElementById('loginScreen');
-  const app = document.getElementById('app');
-  login.style.transition = 'opacity 0.5s ease'; login.style.opacity = '0';
-  setTimeout(()=>{ login.classList.add('hidden'); app.classList.remove('hidden'); app.style.opacity = '0'; app.style.transition = 'opacity 0.5s ease'; setTimeout(()=> app.style.opacity = '1',20); },520);
-}
-
-function showLoginAgain(){
-  const login = document.getElementById('loginScreen');
-  const app = document.getElementById('app');
-  app.style.opacity = '0'; setTimeout(()=>{ app.classList.add('hidden'); login.classList.remove('hidden'); login.style.opacity = '1'; },520);
-}
-
-function parseJwt(token){ const base64Url = token.split('.')[1]; const base64 = base64Url.replace(/-/g,'+').replace(/_/g,'/'); const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c){ return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2); }).join('')); return JSON.parse(jsonPayload); }
-
-function logout(){ 
-  if(currentUser){ 
-    currentUser = null; 
-    document.getElementById('user-area').style.display = 'none'; 
-    document.getElementById('loginToggle').style.display = 'inline-block'; 
-    document.getElementById('dashboard').style.display='none'; 
-    document.getElementById('dashboard').innerHTML=''; 
+function showQuestionBank(chapterName) {
+    const notesDiv = document.getElementById("notesContainer");
+    const quizDiv = document.getElementById("quizContainer");
+    const qbArea = document.getElementById("questionBankContainer");
     
-    const contentArea = document.getElementById('contentArea');
-    contentArea.classList.add('centered');
-    contentArea.innerHTML = `<h3>Welcome to Thinkly</h3><p>Choose a chapter from the left. Sign in to save progress to your account.</p>`;
-  } 
+    // CRITICAL FIX: Ensure only the question bank container is active
+    notesDiv.innerHTML = "";
+    quizDiv.innerHTML = "";
+    qbArea.style.display = 'block';
+
+    // --- QUESTION BANK MOCKUP ---
+    qbArea.innerHTML = `
+        <h3>Question Bank for ${chapterName.replace(/-/g, ' ')}</h3>
+        <p>This is a placeholder for the Question Bank component.</p>
+        <div class="qp-controls">
+            <label for="qbCategorySelect">Filter:</label>
+            <select id="qbCategorySelect">
+                <option>All</option>
+                <option>MCQ</option>
+                <option>Short Answer</option>
+            </select>
+        </div>
+        <div class="qp-question">
+            <p>Example Question: What is the formula for calculating the volume of a sphere?</p>
+            <button class="show-answer-btn" onclick="alert('Answer: V = 4/3 * pi * r^3')">Show Answer</button>
+        </div>
+    `;
 }
 
-// init
-window.addEventListener('DOMContentLoaded', async ()=>{
-  await loadContentJson();
-  const splash = document.getElementById('splash');
-  const login = document.getElementById('loginScreen');
-  setTimeout(()=>{ splash.style.transition='opacity 0.5s ease'; splash.style.opacity='0'; setTimeout(()=>{ splash.classList.add('hidden'); login.classList.remove('hidden'); login.style.opacity='1'; },520); },900);
-}); 
-// *** The extra '}' has been removed from the end of the file. ***
+function showDashboard() {
+    // Show the dashboard view
+    renderMainContent('dashboard'); 
+    const dashboardContent = document.getElementById("dashboardContent");
+    
+    // --- DASHBOARD MOCKUP ---
+    dashboardContent.innerHTML = `
+        <p>This area will display your quiz scores and chapter progress.</p>
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Last Score</th>
+                    <th>Progress</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Polynomials</td>
+                    <td>8/10</td>
+                    <td>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: 80%;"></div>
+                            <span class="score-text">80%</span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+}
+
+// --- 6. DOCUMENT READY LOGIC ---
+document.addEventListener('DOMContentLoaded', () => {
+    loadContentData();
+});
