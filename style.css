@@ -1,27 +1,18 @@
 /* ==================================== */
-/* 1. ROOT VARIABLES & GLOBAL RESET     */
+/* 1. ROOT VARIABLES & GLOBAL RESET      */
 /* ==================================== */
 :root {
-    /* Branding Colors */
-    --primary: #1e3a8a; /* Deep Blue (Main brand color) */
-    --secondary: #3b82f6; /* Lighter Blue (Accents) */
-    --mint: #16a34a; /* Mint Green (Success/Quiz/Branding) */
-    
-    /* Background & Card Colors */
-    --bg-light: #f1f5f9; /* Light Grey (Main background) */
+    --primary: #1e3a8a; 
+    --secondary: #3b82f6; 
+    --mint: #16a34a; 
+    --bg-light: #f1f5f9; 
     --card-bg: white;
-    --card-2: #f8fafc; /* Very light background for components/controls */
-    
-    /* Text Colors */
+    --card-2: #f8fafc; 
     --text-dark: #1f2937;
-    --text-medium: #6b7280;
-    
-    /* Border/Shadow */
+    --text-medium: #6b7280; 
     --border-light: #e2e8f0;
-    --border-medium: #cbd5e1; /* Added for better separation */
+    --border-medium: #cbd5e1; 
     --shadow-subtle: 0 4px 6px rgba(0, 0, 0, 0.05);
-
-    /* Spacing */
     --spacing-xs: 4px;
     --spacing-sm: 8px;
     --spacing-md: 16px;
@@ -38,15 +29,19 @@ body {
     padding: 0;
     background-color: var(--bg-light);
     color: var(--text-dark);
-    min-height: 100vh; /* Ensure full viewport height */
+    min-height: 100vh;
 }
 
-/* Utility class needed for app transitions (splash/login/answer toggles) */
+/* CRITICAL FIX: The .hidden class must use !important 
+   to override flex and opacity settings. 
+*/
 .hidden {
     display: none !important; 
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }
 
-/* Base button style (for all buttons not explicitly styled) */
 button {
     font-family: inherit;
     font-size: 1rem;
@@ -56,9 +51,8 @@ button {
 }
 
 /* ==================================== */
-/* 2. SPLASH & LOGIN SCREEN STYLES      */
+/* 2. SPLASH & LOGIN SCREEN STYLES      */
 /* ==================================== */
-/* (Your splash/login styles are good and retained) */
 
 .splash {
     position: fixed;
@@ -68,11 +62,14 @@ button {
     height: 100%;
     background-color: var(--card-bg);
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 9999; /* Ensure it stays above everything */
     opacity: 1;
+    transition: opacity 0.4s ease;
 }
+
 .spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);
     border-top: 4px solid var(--primary);
@@ -80,61 +77,67 @@ button {
     width: 40px;
     height: 40px;
     animation: spin 1s linear infinite;
+    margin-bottom: 20px;
 }
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 
+/* CRITICAL FIX: Changed opacity from 0 to 1. 
+   If it's 0, the login screen stays invisible after loading.
+*/
 .login-screen {
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    opacity: 0;
+    background-color: var(--bg-light);
+    opacity: 1; 
     transition: opacity 0.5s ease;
 }
+
 .login-card {
     background: var(--card-bg);
     padding: 40px;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     text-align: center;
-    width: 100%;
+    width: 90%;
     max-width: 400px;
 }
+
 .brand {
     color: var(--primary);
     margin-bottom: 5px;
     font-size: 1.8rem;
 }
+
 .sub {
     color: var(--text-medium);
-    margin-top: 0;
     margin-bottom: 25px;
     font-size: 0.9rem;
 }
+
 .divider {
     color: var(--text-medium);
     margin: 20px 0;
     position: relative;
     font-size: 0.85rem;
 }
+
 .divider::before, .divider::after {
     content: '';
     position: absolute;
     top: 50%;
-    width: 40%;
+    width: 35%;
     height: 1px;
     background: var(--border-light);
 }
 .divider::before { left: 0; }
 .divider::after { right: 0; }
-.policy {
-    margin-top: 25px;
-    font-size: 0.75rem;
-    color: var(--text-medium);
-}
+
 .guest-btn {
     background: var(--mint);
     color: white;
@@ -144,26 +147,30 @@ button {
     border: none;
     cursor: pointer;
     font-size: 1rem;
+    font-weight: 600;
     transition: background 0.2s;
 }
+
 .guest-btn:hover {
-    background: #10873a; /* Darker Mint */
+    background: #10873a;
 }
-/* Google Sign-in Area uses GSI styles, but we center the container */
+
 .g-signin-area {
     display: flex;
     justify-content: center;
+    min-height: 40px;
 }
 
+/* ==================================== */
+/* 3. APP LAYOUT & TOPBAR STYLES        */
+/* ==================================== */
 
-/* ==================================== */
-/* 3. APP LAYOUT & TOPBAR STYLES        */
-/* ==================================== */
 .app {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
+
 .topbar {
     display: flex;
     justify-content: space-between;
@@ -172,42 +179,35 @@ button {
     background: var(--primary);
     color: white;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    z-index: 10; /* Ensure it stays on top */
+    z-index: 100;
 }
-.brand-left {
-    font-size: 1.2rem;
-    font-weight: 700;
-}
-.header-right {
-    display: flex;
-    align-items: center;
-}
+
 .user-area {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
 }
+
 .user-pic {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     border: 2px solid white;
+    object-fit: cover;
 }
-.user-name {
-    font-weight: 500;
-    /* Removed margin-right: 10px; to rely on gap */
-}
+
 .header-btn {
     background: var(--secondary);
     color: white;
-    /* margin-left: 10px; Removed, rely on user-area gap or separate element */
-    padding: 6px 12px;
-}
-.header-btn:hover {
-    background: #2563eb;
+    padding: 6px 14px;
+    border: none;
+    font-weight: 500;
 }
 
-/* Main Content Area */
+/* ==================================== */
+/* 4. SIDEBAR & CONTENT AREA            */
+/* ==================================== */
+
 .container {
     display: flex;
     flex-grow: 1;
@@ -215,292 +215,61 @@ button {
     width: 100%;
     margin: 0 auto;
 }
+
 .sidebar {
-    width: 280px;
+    width: 300px;
     padding: var(--spacing-lg);
     background: var(--card-bg);
-    box-shadow: var(--shadow-subtle); /* Adjusted shadow for consistency */
+    border-right: 1px solid var(--border-light);
     flex-shrink: 0;
-    /* Added overflow-y for long chapter lists */
-    overflow-y: auto;
-    max-height: calc(100vh - 50px); /* Adjust based on topbar height */
-    position: sticky; /* Keep sidebar visible */
-    top: 0;
-}
-.sidebar h2 {
-    margin-top: 0;
-    font-size: 1.3rem;
-    color: var(--primary);
-}
-.sidebar label {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 5px;
-    font-size: 0.95rem;
-}
-#classSelect, #subjectSelect { /* Combined selectors for style consistency */
-    width: 100%;
-    padding: 8px 10px;
-    margin-bottom: var(--spacing-md);
-    border-radius: 6px;
-    border: 1px solid var(--border-medium);
-    background: var(--card-2);
-    font-size: 1rem;
-}
-/* Removed .subject-buttons and .subject-btn as app.js uses a single #subjectSelect dropdown */
-
-.chapters {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: var(--spacing-md);
-}
-.chapters h4 {
-    margin-top: 0;
-    margin-bottom: var(--spacing-sm);
-    color: var(--text-medium);
-    font-size: 1rem;
 }
 
-/* NEW: Chapter Card Style (replaces .chapter-btn usage) */
 .chapter-card {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 15px;
+    padding: 12px 15px;
     border-radius: 8px;
     background: var(--card-2);
-    color: var(--text-dark);
+    margin-bottom: 8px;
     cursor: pointer;
-    transition: all 0.2s ease-out;
+    transition: all 0.2s;
     border: 1px solid transparent;
 }
+
 .chapter-card:hover {
-    background: var(--border-light);
-    border: 1px solid var(--primary);
-}
-.chapter-progress {
-    font-size: 0.85rem;
-    font-weight: 700;
-    min-width: 40px; /* Ensures alignment */
-    text-align: right;
+    background: white;
+    border-color: var(--secondary);
+    box-shadow: var(--shadow-subtle);
 }
 
 .main {
     flex-grow: 1;
     padding: var(--spacing-lg);
+    background: var(--bg-light);
 }
+
 .content {
     background: var(--card-bg);
     padding: 30px;
     border-radius: 12px;
     box-shadow: var(--shadow-subtle);
-    min-height: 80vh; /* Ensure it looks substantial */
+    min-height: 70vh;
 }
-.content h3 {
-    color: var(--primary);
-}
+
 .centered {
-    text-align: center;
-    max-width: 700px;
-    margin: 40px auto;
-}
-.content-section {
-    margin-top: var(--spacing-lg);
-    padding-top: var(--spacing-md);
-    border-top: 1px solid var(--border-light);
-}
-.quiz-btn {
-    background: var(--mint);
-    color: white;
-    padding: 10px 18px; /* Slightly larger buttons */
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    margin-right: var(--spacing-sm);
-    margin-top: var(--spacing-sm);
-    transition: background 0.2s;
-}
-.quiz-btn:hover {
-    background: #10873a;
-}
-
-/* NEW: Notes Content Styling (for fetched HTML) */
-.notes-content h3, .notes-content h4 {
-    color: var(--primary);
-    margin-top: 1.5rem;
-}
-.notes-content p {
-    line-height: 1.7;
-    margin-bottom: var(--spacing-md);
-}
-.notes-content ul {
-    padding-left: 20px;
-}
-
-
-/* ==================================== */
-/* 4. QUIZ AND QUESTION BANK STYLES     */
-/* ==================================== */
-.quiz-question {
-    margin-bottom: var(--spacing-lg);
-    padding: 15px;
-    border: 1px solid var(--border-medium);
-    border-radius: 8px;
-    background: var(--card-2);
-}
-.quiz-option {
-    display: block;
-    margin: 5px 0;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 4px;
-    transition: background 0.1s;
-    font-size: 0.95rem;
-}
-.quiz-option:hover {
-    background: var(--border-light);
-}
-
-/* Question Bank (QP) Styles */
-.qp-controls {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-lg);
-    padding: var(--spacing-md);
-    background: var(--card-2);
-    border-radius: 8px;
+    text-align: center;
 }
-#qbCategorySelect {
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: 1px solid var(--border-medium);
-    background: var(--card-bg);
-}
-.qp-question {
-    margin-bottom: var(--spacing-lg);
-    padding: 15px;
-    border: 1px solid var(--border-light);
-    border-radius: 8px;
-    background: var(--card-bg);
-}
-.show-answer-btn {
-    background: var(--secondary);
-    color: white;
-    padding: 6px 12px;
-    border: none;
-    margin-top: var(--spacing-sm);
-    font-size: 0.85rem;
-    transition: background 0.2s;
-}
-.show-answer-btn:hover {
-    background: #2563eb;
-}
-.qp-answer {
-    margin-top: var(--spacing-md);
-    padding: var(--spacing-md);
-    border-left: 4px solid var(--mint);
-    background: var(--card-2);
-    border-radius: 4px;
-}
-.answer-label {
-    font-weight: 700;
-    color: var(--mint);
-    margin-bottom: var(--spacing-sm);
-}
-
-/* Dashboard Styles (Retained and slightly cleaner) */
-.dashboard-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: var(--spacing-md);
-    font-size: 0.95rem;
-}
-.dashboard-table th, .dashboard-table td {
-    padding: 12px 15px;
-    border-bottom: 1px solid var(--border-light);
-    text-align: left;
-}
-.dashboard-table th {
-    background-color: var(--card-2);
-    color: var(--primary);
-    font-weight: 600;
-}
-.dashboard-table tr:hover {
-    background-color: var(--card-2);
-}
-.progress-bar-container {
-    background: var(--bg-light);
-    border-radius: 4px;
-    height: 20px;
-    width: 150px;
-    overflow: hidden;
-    position: relative;
-}
-.progress-bar {
-    height: 100%;
-    background-color: var(--mint);
-    transition: width 0.5s ease;
-}
-.score-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--text-dark);
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-shadow: 0 0 2px white; /* Added shadow for readability over bar */
-}
-
 
 /* ==================================== */
-/* 5. MEDIA QUERIES (Responsiveness)    */
+/* 5. RESPONSIVENESS                    */
 /* ==================================== */
+
 @media (max-width: 900px) {
-    .container {
-        flex-direction: column;
-    }
-    .sidebar {
-        width: 100%;
-        box-shadow: var(--shadow-subtle);
-        position: relative; /* Remove sticky on mobile */
-        max-height: none;
-        overflow-y: visible;
-    }
-    .main {
-        padding: var(--spacing-md);
-    }
-    .content {
-        padding: 20px;
-    }
-    .login-card {
-        margin: 20px;
-    }
-}
-
-@media (max-width: 600px) {
-    .topbar {
-        flex-wrap: wrap;
-        padding: 10px;
-        gap: 10px;
-    }
-    .header-right {
-        width: 100%;
-        justify-content: space-between;
-        margin-top: 5px;
-    }
-    .user-area {
-        gap: 8px;
-    }
-    .user-name {
-        display: none; /* Hide name to save space */
-    }
-    .quiz-btn {
-        width: 100%;
-        margin-right: 0;
-        margin-bottom: var(--spacing-sm);
-    }
+    .container { flex-direction: column; }
+    .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-light); }
 }
