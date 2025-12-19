@@ -170,29 +170,37 @@ function renderQuestionBank(data, container) {
 async function startQuiz(chapterName) {
     const quizDiv = document.getElementById("quizContainer");
     
-    // 1. Clear other containers to prevent overlapping content
+    // Clear other containers
     document.getElementById("notesContainer").innerHTML = "";
     document.getElementById("questionBankContainer").innerHTML = "";
     
     quizDiv.style.display = 'block';
     quizDiv.innerHTML = `<p>Loading Quiz...</p>`;
 
-    // 2. Normalize name just in case there are leading/trailing spaces
+    // Clean the name to ensure no trailing spaces match your JSON keys
     const cleanChapterName = chapterName.trim();
 
+    // Use the absolute path for GitHub Pages to avoid subdirectory confusion
+    const quizPath = `/thinkly/data/quizzes/${cleanChapterName}.json`;
+
     try {
-        // 3. We use the exact same path logic as your working Question Bank
-        // but pointing to the 'quizzes' folder
-        const response = await fetch(`data/quizzes/${cleanChapterName}.json`);
+        console.log("Fetching quiz from:", quizPath);
+        const response = await fetch(quizPath);
         
         if (!response.ok) {
-            throw new Error(`File not found at data/quizzes/${cleanChapterName}.json`);
+            // Fallback: Try a relative path if absolute fails
+            const fallbackResponse = await fetch(`data/quizzes/${cleanChapterName}.json`);
+            if (!fallbackResponse.ok) throw new Error("File not found");
+            
+            const data = await fallbackResponse.json();
+            renderQuestionBank(data, quizDiv);
+            return;
         }
 
         const data = await response.json();
         
-        // 4. Since your Quiz JSON has the same { "q": ..., "a": ... } structure 
-        // as the QB, we use the same working renderer
+        // Since your Quiz JSON matches the QB structure { "q": ..., "a": ... }
+        // we use the existing working renderer
         renderQuestionBank(data, quizDiv);
         
     } catch (err) {
@@ -200,8 +208,11 @@ async function startQuiz(chapterName) {
         quizDiv.innerHTML = `
             <div style="padding: 15px; border: 1px solid #ffcccc; background: #fff5f5; border-radius: 8px;">
                 <p style="color:red; margin:0;"><strong>Quiz Not Found</strong></p>
-                <p style="font-size: 0.85rem; margin: 5px 0 0 0;">
-                    Path: <code>data/quizzes/${cleanChapterName}.json</code>
+                <p style="font-size: 0.85rem; margin: 10px 0;">
+                    Tried to reach: <code>${quizPath}</code>
+                </p>
+                <p style="font-size: 0.8rem; color: #666;">
+                    Verify that <b>${cleanChapterName}.json</b> is exactly as written in the quizzes folder.
                 </p>
             </div>
         `;
