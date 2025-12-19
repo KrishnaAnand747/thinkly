@@ -169,51 +169,37 @@ function renderQuestionBank(data, container) {
 
 async function startQuiz(chapterName) {
     const quizDiv = document.getElementById("quizContainer");
-    
-    // Clear other containers
     document.getElementById("notesContainer").innerHTML = "";
     document.getElementById("questionBankContainer").innerHTML = "";
-    
     quizDiv.style.display = 'block';
-    quizDiv.innerHTML = `<p>Loading Quiz...</p>`;
+    quizDiv.innerHTML = `<p>🔄 Fetching latest Quiz data...</p>`;
 
-    // Clean the name to ensure no trailing spaces match your JSON keys
-    const cleanChapterName = chapterName.trim();
+    const cleanName = chapterName.trim();
+    // Cache buster ensures you don't keep seeing an old 404 result from the browser cache
+    const cb = `?t=${Date.now()}`; 
 
-    // Use the absolute path for GitHub Pages to avoid subdirectory confusion
-    const quizPath = `/thinkly/data/quizzes/${cleanChapterName}.json`;
+    // This is the most reliable path format for GitHub Pages
+    const targetPath = `data/quizzes/${cleanName}.json${cb}`;
 
     try {
-        console.log("Fetching quiz from:", quizPath);
-        const response = await fetch(quizPath);
+        console.log("Fetching from:", targetPath);
+        const response = await fetch(targetPath);
         
-        if (!response.ok) {
-            // Fallback: Try a relative path if absolute fails
-            const fallbackResponse = await fetch(`data/quizzes/${cleanChapterName}.json`);
-            if (!fallbackResponse.ok) throw new Error("File not found");
-            
-            const data = await fallbackResponse.json();
-            renderQuestionBank(data, quizDiv);
-            return;
-        }
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const data = await response.json();
-        
-        // Since your Quiz JSON matches the QB structure { "q": ..., "a": ... }
-        // we use the existing working renderer
+        // We use your working renderer since the data format matches QB
         renderQuestionBank(data, quizDiv);
-        
+        console.log("✅ Quiz loaded successfully");
+
     } catch (err) {
-        console.error("Quiz Error:", err);
+        console.error("Quiz Fetch failed:", err);
         quizDiv.innerHTML = `
-            <div style="padding: 15px; border: 1px solid #ffcccc; background: #fff5f5; border-radius: 8px;">
-                <p style="color:red; margin:0;"><strong>Quiz Not Found</strong></p>
-                <p style="font-size: 0.85rem; margin: 10px 0;">
-                    Tried to reach: <code>${quizPath}</code>
-                </p>
-                <p style="font-size: 0.8rem; color: #666;">
-                    Verify that <b>${cleanChapterName}.json</b> is exactly as written in the quizzes folder.
-                </p>
+            <div style="padding: 20px; border: 2px solid #dc3545; background: #fff5f5; border-radius: 10px;">
+                <h4 style="color: #dc3545; margin-top: 0;">File Access Error</h4>
+                <p>GitHub returned a 404 for: <code>${targetPath}</code></p>
+                <hr>
+                <p><strong>Final Solution:</strong> If the file exists on GitHub, rename it to something simple like <code>quiz1.json</code> and update your <code>content.json</code> to match. This often clears "stuck" paths on GitHub servers.</p>
             </div>
         `;
     }
