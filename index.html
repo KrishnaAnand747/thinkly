@@ -7,28 +7,31 @@
     
     <link rel="stylesheet" href="style.css">
     
-
     <script>
-        // CLIENT_ID is defined here to be available immediately for the GSI library attributes
+        // CLIENT_ID global constant
         const CLIENT_ID = "852025843203-5goe3ipsous490292fqa4mh17p03h0br.apps.googleusercontent.com";
         
-        // This wrapper is needed because Google's library expects this function to be defined globally 
-        // before the button renders, even if the implementation is in app.js
+        // This global function must exist before Google's library initializes
         function handleCredentialResponse(response) {
-            // Check if app.js is loaded before calling its implementation
-            if (window.handleCredentialResponse) {
-                window.handleCredentialResponse(response);
+            console.log("Google callback received");
+            if (window.app && typeof window.app.handleCredentialResponse === 'function') {
+                window.app.handleCredentialResponse(response);
+            } else if (typeof window.handleCredentialResponseImplementation === 'function') {
+                window.handleCredentialResponseImplementation(response);
             }
         }
     </script>
 
-    <script src="./app.js"></script> 
+    <script src="app.js" defer></script> 
+    
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
     <div id="splash" class="splash">
         <div class="spinner"></div>
         <h1>Loading Syllabus Manager</h1>
+        <p>Setting up your learning portal...</p>
     </div>
 
     <div id="loginScreen" class="login-screen hidden">
@@ -40,9 +43,17 @@
                 <div id="g_id_onload"
                     data-client_id="852025843203-5goe3ipsous490292fqa4mh17p03h0br.apps.googleusercontent.com"
                     data-callback="handleCredentialResponse"
-                    data-auto_prompt="false">
+                    data-auto_prompt="false"
+                    data-ux_mode="popup">
                 </div>
-                <div class="g_id_signin" data-type="standard"></div>
+                <div class="g_id_signin" 
+                     data-type="standard" 
+                     data-shape="rectangular" 
+                     data-theme="outline" 
+                     data-text="signin_with" 
+                     data-size="large" 
+                     data-logo_alignment="left">
+                </div>
             </div>
 
             <div class="divider">or</div>
@@ -54,7 +65,6 @@
     </div>
 
     <div id="app" class="app hidden">
-        
         <header class="topbar">
             <div class="brand-left">Thinkly Learning Portal</div>
             <div class="header-right">
@@ -92,6 +102,5 @@
         </div>
     </div>
 
-    <script src="https://accounts.google.com/gsi/client" async defer></script> 
 </body>
 </html>
