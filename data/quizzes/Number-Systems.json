@@ -1,14 +1,62 @@
 [
   {
     "q": "Which of the following is an irrational number?",
-    "options": ["22/7", "3.1415", "√2", "0.555..."],
-    "a": "√2",
-    "explanation": "√2 cannot be expressed as a simple fraction p/q. Its decimal expansion is non-terminating and non-recurring."
+    "options": ["√4", "3.14", "√7", "22/7"],
+    "a": "√7",
+    "explanation": "√4 = 2 (rational). 3.14 is a terminating decimal. 22/7 is a fraction. √7 is a non-terminating, non-recurring decimal, making it irrational."
   },
   {
-    "q": "The value of 0.999... in the form p/q is:",
-    "options": ["9/10", "1", "99/100", "1/9"],
-    "a": "1",
-    "explanation": "Let x = 0.999... Then 10x = 9.999... Subtracting x from 10x gives 9x = 9, so x = 1."
+    "q": "The value of 0.333... in the form p/q is:",
+    "options": ["1/3", "3/10", "33/100", "1/9"],
+    "a": "1/3",
+    "explanation": "Let x = 0.333... Multiplying by 10 gives 10x = 3.333... Subtracting x gives 9x = 3, so x = 3/9 = 1/3."
+  },
+  {
+    "q": "Between two rational numbers, there are:",
+    "options": ["Exactly one rational number", "Exactly two rational numbers", "Infinitely many rational numbers", "No rational number"],
+    "a": "Infinitely many rational numbers",
+    "explanation": "A key property of the real number system is that between any two rational numbers, there are infinite rational and irrational numbers."
+  },
+  {
+    "q": "The product of a non-zero rational number and an irrational number is:",
+    "options": ["Always rational", "Always irrational", "Always an integer", "Sometimes rational"],
+    "a": "Always irrational",
+    "explanation": "The product of any non-zero rational number and an irrational number results in an irrational number."
+  },
+  {
+    "q": "What is the value of (3 + √3)(3 - √3)?",
+    "options": ["6", "9", "3", "0"],
+    "a": "6",
+    "explanation": "Using the identity (a+b)(a-b) = a² - b², we get (3)² - (√3)² = 9 - 3 = 6."
+  },
+  {
+    "q": "The decimal expansion of an irrational number is always:",
+    "options": ["Terminating", "Non-terminating recurring", "Non-terminating non-recurring", "Terminating recurring"],
+    "a": "Non-terminating non-recurring",
+    "explanation": "This is the definition of an irrational number. If it were terminating or recurring, it would be rational."
+  },
+  {
+    "q": "Representing √9 in decimal form gives:",
+    "options": ["3", "3.14", "Non-terminating", "1.414"],
+    "a": "3",
+    "explanation": "9 is a perfect square, so √9 = 3, which is a rational number."
+  },
+  {
+    "q": "To rationalize the denominator of 1/(√7 - 2), we multiply it by:",
+    "options": ["√7 - 2", "√7 + 2", "7", "√7"],
+    "a": "√7 + 2",
+    "explanation": "To rationalize the denominator of (a - √b), we use its conjugate (a + √b) to apply the a² - b² identity."
+  },
+  {
+    "q": "The value of (64)^(1/2) is:",
+    "options": ["32", "16", "8", "4"],
+    "a": "8",
+    "explanation": "64 can be written as 8². Thus, (8²)^(1/2) = 8^(2 * 1/2) = 8^1 = 8."
+  },
+  {
+    "q": "Which of the following is the value of (2^0 + 7^0) / 5^0?",
+    "options": ["0", "1", "2", "9/5"],
+    "a": "2",
+    "explanation": "Any non-zero number raised to the power 0 is 1. So, (1 + 1) / 1 = 2 / 1 = 2."
   }
 ]
