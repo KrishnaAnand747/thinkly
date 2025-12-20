@@ -6,10 +6,8 @@ window.onClassChange = onClassChange;
 window.showDashboard = showDashboard;
 window.showLoginAgain = showLoginAgain;
 
-// --- Global Data and Utility Variables ---
 let syllabus = {};
 let notesData = {}; 
-let currentChapter = null;
 let currentUser = { name: "Guest", pic: "images/guest-profile.png", type: "Guest" };
 
 function escapeJS(str) {
@@ -20,10 +18,7 @@ function escapeJS(str) {
 function handleCredentialResponse(response) {
     try {
         const token = response.credential;
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const payload = JSON.parse(window.atob(base64));
-
+        const payload = JSON.parse(window.atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
         currentUser = { name: payload.name, pic: payload.picture, type: "Google" };
         transitionToApp();
     } catch (e) {
@@ -51,11 +46,6 @@ function transitionToApp() {
     populateClassSelect();
 }
 
-function showLoginAgain() {
-    document.getElementById("app").classList.add('hidden');
-    document.getElementById("loginScreen").classList.remove('hidden');
-}
-
 // --- 2. DATA LOADING ---
 async function loadContentData() {
     try {
@@ -64,7 +54,6 @@ async function loadContentData() {
         const data = await response.json();
         syllabus = data.syllabus || {};
         notesData = data.notes || {};
-        console.log("Data loaded successfully");
     } catch (error) {
         console.error("Error loading content.json:", error);
     } finally {
@@ -110,10 +99,9 @@ function showChapters(selectedClass, selectedSubject) {
         </div>`).join('');
 }
 
-// --- 3. CONTENT RENDERING (QUIZ & QB FIXES) ---
+// --- 3. CONTENT RENDERING ---
 
 function showChapterContent(chapterName) {
-    currentChapter = chapterName;
     const contentArea = document.getElementById("contentArea");
     contentArea.classList.remove('centered');
     contentArea.innerHTML = `
@@ -130,6 +118,7 @@ function showChapterContent(chapterName) {
     showNotes(chapterName);
 }
 
+// --- 4. QUESTION BANK (Working Logic) ---
 async function showQuestionBank(chapterName) {
     const qbArea = document.getElementById("questionBankContainer");
     document.getElementById("notesContainer").innerHTML = "";
@@ -138,8 +127,7 @@ async function showQuestionBank(chapterName) {
     qbArea.innerHTML = `<p>Loading Question Bank...</p>`;
 
     try {
-        // Updated path to match your folder: data/questionBank/
-        const response = await fetch(`data/questionBank/${chapterName}.json`);
+        const response = await fetch(`data/questionBank/${chapterName.trim()}.json`);
         if (!response.ok) throw new Error("File not found");
         const data = await response.json();
         renderQuestionBank(data, qbArea);
@@ -150,13 +138,12 @@ async function showQuestionBank(chapterName) {
 
 function renderQuestionBank(data, container) {
     container.innerHTML = "<h3>Question Bank</h3>";
-    // Loop through categories like "Very Short Answer (1M)"
     for (const category in data) {
         container.innerHTML += `<h4 style="margin-top:20px; color:var(--primary);">${category}</h4>`;
         data[category].forEach((item, index) => {
             container.innerHTML += `
                 <div class="qp-question">
-                    <p><strong>Q${index + 1}:</strong> ${item.q}</p>
+                    <p><strong>Q:</strong> ${item.q}</p>
                     <button class="show-answer-btn" onclick="this.nextElementSibling.classList.toggle('hidden')">Show Answer</button>
                     <div class="qp-answer hidden">
                         <div class="answer-label">Answer:</div>
@@ -167,43 +154,83 @@ function renderQuestionBank(data, container) {
     }
 }
 
+// --- 5. INTERACTIVE QUIZ (Updated Logic) ---
 async function startQuiz(chapterName) {
     const quizDiv = document.getElementById("quizContainer");
     document.getElementById("notesContainer").innerHTML = "";
     document.getElementById("questionBankContainer").innerHTML = "";
     quizDiv.style.display = 'block';
-    quizDiv.innerHTML = `<p>🔄 Fetching latest Quiz data...</p>`;
-
-    const cleanName = chapterName.trim();
-    // Cache buster ensures you don't keep seeing an old 404 result from the browser cache
-    const cb = `?t=${Date.now()}`; 
-
-    // This is the most reliable path format for GitHub Pages
-    const targetPath = `data/quizzes/${cleanName}.json${cb}`;
+    quizDiv.innerHTML = `<p>Loading Quiz...</p>`;
 
     try {
-        console.log("Fetching from:", targetPath);
-        const response = await fetch(targetPath);
-        
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-        const data = await response.json();
-        // We use your working renderer since the data format matches QB
-        renderQuestionBank(data, quizDiv);
-        console.log("✅ Quiz loaded successfully");
-
+        const response = await fetch(`data/quizzes/${chapterName.trim()}.json`);
+        if (!response.ok) throw new Error("Quiz file not found");
+        const questions = await response.json();
+        renderInteractiveQuiz(questions, quizDiv);
     } catch (err) {
-        console.error("Quiz Fetch failed:", err);
-        quizDiv.innerHTML = `
-            <div style="padding: 20px; border: 2px solid #dc3545; background: #fff5f5; border-radius: 10px;">
-                <h4 style="color: #dc3545; margin-top: 0;">File Access Error</h4>
-                <p>GitHub returned a 404 for: <code>${targetPath}</code></p>
-                <hr>
-                <p><strong>Final Solution:</strong> If the file exists on GitHub, rename it to something simple like <code>quiz1.json</code> and update your <code>content.json</code> to match. This often clears "stuck" paths on GitHub servers.</p>
-            </div>
-        `;
+        quizDiv.innerHTML = `<p style="color:red;">Error: Could not load quiz for ${chapterName}.</p>`;
     }
 }
+
+function renderInteractiveQuiz(questions, container) {
+    // Standardized header to match your app's style
+    container.innerHTML = `<h2 style="text-align:center; margin-bottom:20px; color:var(--primary);">Interactive Quiz</h2>`;
+    
+    questions.forEach((item, index) => {
+        const qCard = document.createElement('div');
+        // Using inline styles to protect your layout from "scrambling"
+        qCard.style = "background: #fff; border: 1px solid #ddd; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);";
+        
+        let optionsHTML = item.options.map(opt => `
+            <label style="display: block; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 8px; cursor: pointer; transition: background 0.2s;">
+                <input type="radio" name="q${index}" value="${opt}" style="margin-right: 10px; transform: scale(1.2);">
+                <span>${opt}</span>
+            </label>
+        `).join('');
+
+        qCard.innerHTML = `
+            <p style="font-weight: 600; font-size: 1.05rem; margin-bottom: 15px;">Q${index + 1}: ${item.q}</p>
+            <div class="options-group">${optionsHTML}</div>
+            <div id="feedback-${index}" class="hidden" style="margin-top: 15px; padding: 12px; border-radius: 8px;"></div>
+        `;
+        container.appendChild(qCard);
+    });
+
+    // Create the Submit Button
+    const submitBtn = document.createElement('button');
+    submitBtn.innerText = "Check My Answers";
+    submitBtn.style = "display: block; width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px;";
+    
+    submitBtn.onclick = () => {
+        let score = 0;
+        questions.forEach((item, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            const feedback = document.getElementById(`feedback-${index}`);
+            feedback.classList.remove('hidden');
+
+            if (selected && selected.value === item.a) {
+                score++;
+                feedback.style.background = "#d4edda";
+                feedback.style.color = "#155724";
+                feedback.innerHTML = `<strong>✅ Correct!</strong><br>${item.explanation || ''}`;
+            } else {
+                feedback.style.background = "#f8d7da";
+                feedback.style.color = "#721c24";
+                feedback.innerHTML = `<strong>❌ Incorrect.</strong> Correct answer: <b>${item.a}</b><br><em>${item.explanation || ''}</em>`;
+            }
+        });
+        
+        // Final score summary
+        const scoreSummary = document.createElement('div');
+        scoreSummary.style = "text-align: center; font-size: 1.2rem; font-weight: bold; margin-top: 20px; padding: 15px; background: #eef6ff; border-radius: 10px;";
+        scoreSummary.innerHTML = `Your Score: ${score} / ${questions.length}`;
+        container.prepend(scoreSummary);
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    container.appendChild(submitBtn);
+}
+// --- 6. NOTES & DASHBOARD ---
 async function showNotes(chapterName) {
     const notesDiv = document.getElementById("notesContainer");
     document.getElementById("quizContainer").innerHTML = "";
@@ -223,6 +250,11 @@ async function showNotes(chapterName) {
 function showDashboard() {
     const contentArea = document.getElementById("contentArea");
     contentArea.innerHTML = '<h2>Dashboard</h2><p>Your progress tracking will appear here.</p>';
+}
+
+function showLoginAgain() {
+    document.getElementById("app").classList.add('hidden');
+    document.getElementById("loginScreen").classList.remove('hidden');
 }
 
 document.addEventListener('DOMContentLoaded', loadContentData);
