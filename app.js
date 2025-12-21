@@ -95,6 +95,10 @@ function onClassChange() {
     if (subjects.length > 0) showChapters(selectedClass, subjects[0]);
 }
 
+/**
+ * UPDATED: Removed the static "0%" progress placeholder 
+ * for a cleaner look.
+ */
 function showChapters(selectedClass, selectedSubject) {
     const chaptersArea = document.getElementById("chaptersArea");
     const chapters = syllabus[selectedClass][selectedSubject] || [];
@@ -102,7 +106,6 @@ function showChapters(selectedClass, selectedSubject) {
     chaptersArea.innerHTML += chapters.map(chapter => 
         `<div class="chapter-card" onclick="showChapterContent('${escapeJS(chapter)}')">
             <span>${chapter.replace(/-/g, ' ')}</span>
-            <span class="chapter-progress">0%</span>
         </div>`).join('');
 }
 
