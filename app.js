@@ -5,6 +5,7 @@ window.logout = logout;
 window.onClassChange = onClassChange;
 window.showDashboard = showDashboard;
 window.showLoginAgain = showLoginAgain;
+window.toggleQBAnswer = toggleQBAnswer; // Exposed for onclick events
 
 let syllabus = {};
 let notesData = {}; 
@@ -118,7 +119,7 @@ function showChapterContent(chapterName) {
     showNotes(chapterName);
 }
 
-// --- 4. QUESTION BANK (Working Logic) ---
+// --- 4. QUESTION BANK (Updated UI) ---
 async function showQuestionBank(chapterName) {
     const qbArea = document.getElementById("questionBankContainer");
     document.getElementById("notesContainer").innerHTML = "";
@@ -137,24 +138,66 @@ async function showQuestionBank(chapterName) {
 }
 
 function renderQuestionBank(data, container) {
-    container.innerHTML = "<h3>Question Bank</h3>";
+    container.innerHTML = `<h3 style="color:var(--primary); border-bottom:2px solid #eee; padding-bottom:10px;">Question Bank</h3>`;
+    
     for (const category in data) {
-        container.innerHTML += `<h4 style="margin-top:20px; color:var(--primary);">${category}</h4>`;
+        container.innerHTML += `<h4 style="margin-top:25px; color:var(--secondary); text-decoration:underline;">${category}</h4>`;
+        
         data[category].forEach((item, index) => {
-            container.innerHTML += `
-                <div class="qp-question">
-                    <p><strong>Q:</strong> ${item.q}</p>
-                    <button class="show-answer-btn" onclick="this.nextElementSibling.classList.toggle('hidden')">Show Answer</button>
-                    <div class="qp-answer hidden">
-                        <div class="answer-label">Answer:</div>
-                        ${item.a}
-                    </div>
-                </div>`;
+            const qWrapper = document.createElement('div');
+            qWrapper.style = "margin-bottom: 15px; padding: 15px; border-radius: 8px; background: #fff; border: 1px solid #eaeaea; box-shadow: 0 2px 4px rgba(0,0,0,0.02);";
+
+            qWrapper.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
+                    <p style="margin: 0; flex: 1;"><strong>Q${index + 1}:</strong> ${item.q}</p>
+                    <button class="show-answer-btn" 
+                            style="white-space: nowrap; padding: 6px 14px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s;"
+                            onclick="toggleQBAnswer(this)">
+                        Show Answer
+                    </button>
+                </div>
+                <div class="qp-answer hidden" 
+                     style="margin-top: 12px; padding: 12px; background: #f0f7ff; border-left: 4px solid var(--primary); color: #004085; border-radius: 4px;">
+                    <strong style="color:var(--primary);">Answer:</strong> ${item.a}
+                </div>
+            `;
+            container.appendChild(qWrapper);
         });
     }
 }
 
-// --- 5. INTERACTIVE QUIZ (Updated Logic) ---
+function toggleQBAnswer(btn) {
+    const answerDiv = btn.parentElement.nextElementSibling;
+    const isHidden = answerDiv.classList.contains('hidden');
+    
+    if (isHidden) {
+        answerDiv.classList.remove('hidden');
+        btn.innerText = "Hide Answer";
+        btn.style.background = "#6c757d"; // Gray when open
+    } else {
+        answerDiv.classList.add('hidden');
+        btn.innerText = "Show Answer";
+        btn.style.background = "var(--primary)"; // Back to primary color
+    }
+}
+
+// --- 5. INTERACTIVE QUIZ & PROGRESS LOGIC ---
+
+function saveProgress(chapterName, score, total) {
+    let progress = JSON.parse(localStorage.getItem('studentProgress')) || {};
+    const percentage = Math.round((score / total) * 100);
+    
+    if (!progress[chapterName] || percentage > progress[chapterName].percent) {
+        progress[chapterName] = {
+            percent: percentage,
+            score: score,
+            total: total,
+            date: new Date().toLocaleDateString()
+        };
+        localStorage.setItem('studentProgress', JSON.stringify(progress));
+    }
+}
+
 async function startQuiz(chapterName) {
     const quizDiv = document.getElementById("quizContainer");
     document.getElementById("notesContainer").innerHTML = "";
@@ -166,19 +209,17 @@ async function startQuiz(chapterName) {
         const response = await fetch(`data/quizzes/${chapterName.trim()}.json`);
         if (!response.ok) throw new Error("Quiz file not found");
         const questions = await response.json();
-        renderInteractiveQuiz(questions, quizDiv);
+        renderInteractiveQuiz(questions, quizDiv, chapterName);
     } catch (err) {
         quizDiv.innerHTML = `<p style="color:red;">Error: Could not load quiz for ${chapterName}.</p>`;
     }
 }
 
-function renderInteractiveQuiz(questions, container) {
-    // Standardized header to match your app's style
+function renderInteractiveQuiz(questions, container, chapterName) {
     container.innerHTML = `<h2 style="text-align:center; margin-bottom:20px; color:var(--primary);">Interactive Quiz</h2>`;
     
     questions.forEach((item, index) => {
         const qCard = document.createElement('div');
-        // Using inline styles to protect your layout from "scrambling"
         qCard.style = "background: #fff; border: 1px solid #ddd; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);";
         
         let optionsHTML = item.options.map(opt => `
@@ -196,7 +237,6 @@ function renderInteractiveQuiz(questions, container) {
         container.appendChild(qCard);
     });
 
-    // Create the Submit Button
     const submitBtn = document.createElement('button');
     submitBtn.innerText = "Check My Answers";
     submitBtn.style = "display: block; width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px;";
@@ -220,16 +260,18 @@ function renderInteractiveQuiz(questions, container) {
             }
         });
         
-        // Final score summary
+        saveProgress(chapterName, score, questions.length);
+
         const scoreSummary = document.createElement('div');
         scoreSummary.style = "text-align: center; font-size: 1.2rem; font-weight: bold; margin-top: 20px; padding: 15px; background: #eef6ff; border-radius: 10px;";
-        scoreSummary.innerHTML = `Your Score: ${score} / ${questions.length}`;
+        scoreSummary.innerHTML = `Your Score: ${score} / ${questions.length} (${Math.round((score/questions.length)*100)}%)`;
         container.prepend(scoreSummary);
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     container.appendChild(submitBtn);
 }
+
 // --- 6. NOTES & DASHBOARD ---
 async function showNotes(chapterName) {
     const notesDiv = document.getElementById("notesContainer");
@@ -249,7 +291,65 @@ async function showNotes(chapterName) {
 
 function showDashboard() {
     const contentArea = document.getElementById("contentArea");
-    contentArea.innerHTML = '<h2>Dashboard</h2><p>Your progress tracking will appear here.</p>';
+    const progress = JSON.parse(localStorage.getItem('studentProgress')) || {};
+    
+    let rowsHTML = "";
+    let count = 0;
+    
+    for (const [chapter, data] of Object.entries(progress)) {
+        count++;
+        rowsHTML += `
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 15px;">${chapter.replace(/-/g, ' ')}</td>
+                <td style="padding: 15px;">
+                    <div style="background:#eee; border-radius:10px; height:10px; width:100%; max-width:150px;">
+                        <div style="background:var(--primary); height:10px; border-radius:10px; width:${data.percent}%"></div>
+                    </div>
+                    <span style="font-size:0.8rem;">${data.percent}%</span>
+                </td>
+                <td style="padding: 15px; font-weight:bold;">${data.score} / ${data.total}</td>
+                <td style="padding: 15px; color:#666; font-size:0.85rem;">${data.date}</td>
+            </tr>
+        `;
+    }
+
+    contentArea.innerHTML = `
+        <h2 style="color:var(--secondary); margin-bottom:20px;">Performance Dashboard</h2>
+        
+        <div style="display:flex; gap:15px; margin-bottom:30px; flex-wrap:wrap;">
+            <div style="background:var(--primary); color:white; padding:20px; border-radius:15px; flex:1; min-width:150px; text-align:center;">
+                <h3 style="margin:0; font-size:2rem;">${count}</h3>
+                <p style="margin:0;">Quizzes Done</p>
+            </div>
+            <div style="background:#28a745; color:white; padding:20px; border-radius:15px; flex:1; min-width:150px; text-align:center;">
+                <h3 style="margin:0; font-size:1.2rem;">${currentUser.name}</h3>
+                <p style="margin:0;">Student Profile</p>
+            </div>
+        </div>
+
+        <div class="content-section" style="padding:0; overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; text-align:left; background:white;">
+                <thead style="background:#f8f9fa;">
+                    <tr>
+                        <th style="padding:15px;">Chapter Name</th>
+                        <th style="padding:15px;">Completion</th>
+                        <th style="padding:15px;">Best Score</th>
+                        <th style="padding:15px;">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rowsHTML || '<tr><td colspan="4" style="padding:30px; text-align:center; color:#999;">No quiz data available yet. Start a quiz to track progress!</td></tr>'}
+                </tbody>
+            </table>
+        </div>
+        
+        ${count > 0 ? `
+            <button onclick="if(confirm('Clear all progress?')){localStorage.removeItem('studentProgress'); showDashboard();}" 
+                    style="margin-top:20px; color:#dc3545; border:none; background:none; cursor:pointer; font-size:0.9rem;">
+                Reset All Statistics
+            </button>
+        ` : ''}
+    `;
 }
 
 function showLoginAgain() {
