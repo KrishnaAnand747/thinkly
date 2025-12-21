@@ -1,0 +1,32 @@
+[
+  {
+    "q": "The sum of all four angles of a quadrilateral is:",
+    "options": ["180°", "270°", "360°", "540°"],
+    "a": "360°",
+    "explanation": "According to the Angle Sum Property of a quadrilateral, the sum of internal angles is always 360°."
+  },
+  {
+    "q": "A quadrilateral whose opposite sides are parallel is called a:",
+    "options": ["Trapezium", "Parallelogram", "Kite", "None of these"],
+    "a": "Parallelogram",
+    "explanation": "By definition, a parallelogram is a quadrilateral with both pairs of opposite sides parallel."
+  },
+  {
+    "q": "If the diagonals of a quadrilateral bisect each other at right angles, then it is a:",
+    "options": ["Rectangle", "Trapezium", "Rhombus", "Parallelogram"],
+    "a": "Rhombus",
+    "explanation": "While all parallelograms have diagonals that bisect each other, only in a Rhombus (and Square) do they bisect at 90°."
+  },
+  {
+    "q": "A square is a:",
+    "options": ["Rectangle", "Rhombus", "Parallelogram", "All of the above"],
+    "a": "All of the above",
+    "explanation": "A square satisfies all properties of a rectangle (90° angles), a rhombus (equal sides), and a parallelogram (parallel sides)."
+  },
+  {
+    "q": "The line segment joining the mid-points of two sides of a triangle is:",
+    "options": ["Parallel to the third side", "Half of the third side", "Both A and B", "None of these"],
+    "a": "Both A and B",
+    "explanation": "This is the Mid-point Theorem: it states the segment is parallel to and half the length of the third side."
+  }
+]

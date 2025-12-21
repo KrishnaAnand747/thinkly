@@ -1,0 +1,32 @@
+[
+  {
+    "q": "Which of the following is NOT a criterion for congruence of triangles?",
+    "options": ["SAS", "ASA", "SSA", "SSS"],
+    "a": "SSA",
+    "explanation": "SAS, ASA, SSS, and RHS are valid criteria. SSA (Side-Side-Angle) is not a guaranteed criterion for congruence."
+  },
+  {
+    "q": "In an isosceles triangle ABC with AB = AC, if ∠B = 50°, then ∠A is:",
+    "options": ["50°", "80°", "100°", "40°"],
+    "a": "80°",
+    "explanation": "Since AB = AC, angles opposite to them are equal (∠B = ∠C = 50°). Sum of angles = 180°. So, ∠A = 180 - (50 + 50) = 80°."
+  },
+  {
+    "q": "In ΔABC and ΔPQR, if AB = PQ, BC = QR and ∠B = ∠Q, then the triangles are congruent by:",
+    "options": ["SSS", "ASA", "SAS", "RHS"],
+    "a": "SAS",
+    "explanation": "Two sides and the included angle are equal, satisfying the Side-Angle-Side criterion."
+  },
+  {
+    "q": "If the altitudes from two vertices of a triangle to the opposite sides are equal, then the triangle is:",
+    "options": ["Equilateral", "Isosceles", "Scalene", "Right-angled"],
+    "a": "Isosceles",
+    "explanation": "If two altitudes are equal, the sides to which they are drawn are also equal, making the triangle isosceles."
+  },
+  {
+    "q": "In a right-angled triangle, the longest side is always the:",
+    "options": ["Base", "Perpendicular", "Hypotenuse", "None of these"],
+    "a": "Hypotenuse",
+    "explanation": "The side opposite to the largest angle (90°) is always the longest side."
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "q": "The point (-3, 5) lies in which quadrant?",
+    "options": ["I", "II", "III", "IV"],
+    "a": "II",
+    "explanation": "In Quadrant II, the x-coordinate is negative and the y-coordinate is positive."
+  },
+  {
+    "q": "The distance of the point (4, 3) from the x-axis is:",
+    "options": ["4 units", "3 units", "5 units", "7 units"],
+    "a": "3 units",
+    "explanation": "The distance from the x-axis is always the absolute value of the y-coordinate (ordinate)."
+  },
+  {
+    "q": "The ordinate of all points on the x-axis is:",
+    "options": ["0", "1", "-1", "Any number"],
+    "a": "0",
+    "explanation": "Points on the x-axis have the form (x, 0), so the y-coordinate (ordinate) is always 0."
+  },
+  {
+    "q": "If the y-coordinate of a point is zero, then this point always lies:",
+    "options": ["In I quadrant", "In II quadrant", "On x-axis", "On y-axis"],
+    "a": "On x-axis",
+    "explanation": "Any point with y = 0 must lie on the horizontal x-axis."
+  },
+  {
+    "q": "The point where the two axes meet is called:",
+    "options": ["Abscissa", "Ordinate", "Quadrant", "Origin"],
+    "a": "Origin",
+    "explanation": "The intersection of the x-axis and y-axis is the origin, with coordinates (0, 0)."
+  }
+]

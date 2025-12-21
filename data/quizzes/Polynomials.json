@@ -1,0 +1,32 @@
+[
+  {
+    "q": "Which of the following is a polynomial?",
+    "options": ["x² + 2/x", "√x + 3", "x² + √2x + 1", "x⁻² + 5"],
+    "a": "x² + √2x + 1",
+    "explanation": "In a polynomial, the exponents of the variables must be whole numbers. 1/x (x⁻¹) and √x (x¹/²) are not allowed."
+  },
+  {
+    "q": "The degree of the constant polynomial 5 is:",
+    "options": ["1", "0", "5", "Not defined"],
+    "a": "0",
+    "explanation": "A constant can be written as 5x⁰. The highest power of the variable is 0."
+  },
+  {
+    "q": "If p(x) = x + 3, then p(x) + p(-x) is equal to:",
+    "options": ["3", "2x", "0", "6"],
+    "a": "6",
+    "explanation": "p(x) = x + 3 and p(-x) = -x + 3. Adding them: (x + 3) + (-x + 3) = 6."
+  },
+  {
+    "q": "One of the factors of (25x² - 1) + (1 + 5x)² is:",
+    "options": ["5 + x", "5 - x", "5x - 1", "10x"],
+    "a": "10x",
+    "explanation": "(5x-1)(5x+1) + (1+5x)(1+5x). Taking (1+5x) common: (1+5x)[(5x-1) + (1+5x)] = (1+5x)(10x)."
+  },
+  {
+    "q": "The value of 249² - 248² is:",
+    "options": ["1", "497", "487", "501"],
+    "a": "497",
+    "explanation": "Using a² - b² = (a-b)(a+b): (249-248)(249+248) = 1 * 497 = 497."
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "q": "If two lines intersect, the vertically opposite angles are always:",
+    "options": ["Complementary", "Supplementary", "Equal", "Unequal"],
+    "a": "Equal",
+    "explanation": "The vertically opposite angles formed by two intersecting lines are always equal."
+  },
+  {
+    "q": "An angle which is greater than 180° but less than 360° is called:",
+    "options": ["Acute angle", "Obtuse angle", "Straight angle", "Reflex angle"],
+    "a": "Reflex angle",
+    "explanation": "By definition, a reflex angle lies between 180 and 360 degrees."
+  },
+  {
+    "q": "If two complementary angles are in the ratio 2:3, then the angles are:",
+    "options": ["36°, 54°", "40°, 50°", "20°, 30°", "45°, 45°"],
+    "a": "36°, 54°",
+    "explanation": "2x + 3x = 90 => 5x = 90 => x = 18. The angles are 2(18)=36 and 3(18)=54."
+  },
+  {
+    "q": "If a ray stands on a line, then the sum of the two adjacent angles so formed is:",
+    "options": ["90°", "180°", "270°", "360°"],
+    "a": "180°",
+    "explanation": "This is known as the Linear Pair Axiom."
+  },
+  {
+    "q": "If two parallel lines are intersected by a transversal, then the interior angles on the same side of the transversal are:",
+    "options": ["Equal", "Complementary", "Supplementary", "None of these"],
+    "a": "Supplementary",
+    "explanation": "Consecutive interior angles (co-interior) between parallel lines sum up to 180°."
+  }
+]
