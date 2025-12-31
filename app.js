@@ -6,6 +6,7 @@ window.onClassChange = onClassChange;
 window.showDashboard = showDashboard;
 window.showLoginAgain = showLoginAgain;
 window.toggleQBAnswer = toggleQBAnswer; 
+window.loadSubTopic = loadSubTopic; // Exposed for onclick
 
 let syllabus = {};
 let notesData = {}; 
@@ -115,28 +116,104 @@ function showChapterContent(chapterName) {
             <button class="quiz-btn" onclick="startQuiz('${escapeJS(chapterName)}')">Take Quiz</button>
             <button class="quiz-btn" onclick="showQuestionBank('${escapeJS(chapterName)}')">Question Bank</button>
         </div>
-        <div id="notesContainer" class="notes-content content-section"></div>
-        <div id="quizContainer" class="quiz-area content-section"></div>
-        <div id="questionBankContainer" class="qb-area content-section"></div>
+        <div id="notesContainer" class="notes-content content-section" style="display:none;"></div>
+        <div id="quizContainer" class="quiz-area content-section" style="display:none;"></div>
+        <div id="questionBankContainer" class="qb-area content-section" style="display:none;"></div>
     `;
     showNotes(chapterName);
 }
 
-// --- 4. QUESTION BANK (UPDATED WITH IMAGE SUPPORT) ---
+// --- 4. NEW: SUB-TOPIC NOTES LOGIC ---
+async function showNotes(chapterName) {
+    const notesDiv = document.getElementById("notesContainer");
+    const selectedClass = document.getElementById("classSelect").value;
+    const selectedSubject = "Science"; // Adjust this based on your dynamic logic if needed
+    
+    // Hide others
+    document.getElementById("quizContainer").style.display = "none";
+    document.getElementById("questionBankContainer").style.display = "none";
+    notesDiv.style.display = 'block';
+
+    // The path to the chapter folder
+    const chapterPath = `data/notes/Class-${selectedClass}/${selectedSubject}/${chapterName.trim()}`;
+
+    try {
+        const configResp = await fetch(`${chapterPath}/config.json`);
+        if (!configResp.ok) throw new Error("No subtopics config found");
+        const config = await configResp.json();
+
+        notesDiv.innerHTML = `
+            <div class="subtopic-nav" style="display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; margin-bottom: 20px; border-bottom: 2px solid #eee; -webkit-overflow-scrolling: touch;">
+                ${config.topics.map(t => `
+                    <button class="sub-btn" onclick="loadSubTopic('${chapterPath}/${t.file}', this)" 
+                            style="white-space: nowrap; padding: 8px 18px; border-radius: 20px; border: 1.5px solid var(--primary); background: #fff; color: var(--primary); font-weight: 600; cursor: pointer;">
+                        ${t.title}
+                    </button>
+                `).join('')}
+            </div>
+            <div id="subTopicDisplay" class="subtopic-content" style="line-height:1.6;">
+                <p>Loading sub-topic...</p>
+            </div>
+        `;
+
+        // Load first topic by default
+        if(config.topics.length > 0) {
+            const firstBtn = notesDiv.querySelector('.sub-btn');
+            loadSubTopic(`${chapterPath}/${config.topics[0].file}`, firstBtn);
+        }
+
+    } catch (err) {
+        notesDiv.innerHTML = `<p style="padding:20px; color:#666;">Detailed sub-topics for this chapter are coming soon.</p>`;
+    }
+}
+
+async function loadSubTopic(filePath, btn) {
+    const display = document.getElementById("subTopicDisplay");
+    
+    // UI Feedback: Highlight active button
+    document.querySelectorAll('.sub-btn').forEach(b => {
+        b.style.background = "#fff";
+        b.style.color = "var(--primary)";
+    });
+    btn.style.background = "var(--primary)";
+    btn.style.color = "#fff";
+
+    try {
+        const response = await fetch(filePath);
+        display.innerHTML = await response.text();
+        
+        // Auto-handle diagram zoom
+        display.querySelectorAll('img').forEach(img => {
+            img.style.cursor = "zoom-in";
+            img.onclick = function() { openModal(this.src); };
+        });
+    } catch (err) {
+        display.innerHTML = `<p>Error loading content.</p>`;
+    }
+}
+
+function openModal(src) {
+    const modal = document.createElement('div');
+    modal.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; display:flex; justify-content:center; align-items:center; cursor:zoom-out;";
+    modal.innerHTML = `<img src="${src}" style="max-width:95%; max-height:90%; border-radius:5px;">`;
+    modal.onclick = () => modal.remove();
+    document.body.appendChild(modal);
+}
+
+// --- 5. QUESTION BANK & QUIZ (Updated with Image Support) ---
 async function showQuestionBank(chapterName) {
     const qbArea = document.getElementById("questionBankContainer");
-    document.getElementById("notesContainer").innerHTML = "";
-    document.getElementById("quizContainer").innerHTML = "";
+    document.getElementById("notesContainer").style.display = "none";
+    document.getElementById("quizContainer").style.display = "none";
     qbArea.style.display = 'block';
     qbArea.innerHTML = `<p>Loading Question Bank...</p>`;
 
     try {
         const response = await fetch(`data/questionBank/${chapterName.trim()}.json`);
-        if (!response.ok) throw new Error("File not found");
         const data = await response.json();
         renderQuestionBank(data, qbArea);
     } catch (err) {
-        qbArea.innerHTML = `<p>No Question Bank found at <code>data/questionBank/${chapterName}.json</code></p>`;
+        qbArea.innerHTML = `<p>No Question Bank found for ${chapterName}.</p>`;
     }
 }
 
@@ -145,26 +222,18 @@ function renderQuestionBank(data, container) {
     for (const category in data) {
         container.innerHTML += `<h4 style="margin-top:25px; color:var(--secondary); text-decoration:underline;">${category}</h4>`;
         data[category].forEach((item, index) => {
-            // Check if diagram exists in JSON
-            const qImageHTML = item.image ? 
-                `<img src="${item.image}" style="display:block; max-width:100%; height:auto; border-radius:8px; margin:12px 0; border:1px solid #ddd;">` : "";
-
+            const qImageHTML = item.image ? `<img src="${item.image}" onclick="openModal(this.src)" style="display:block; max-width:100%; height:auto; border-radius:8px; margin:10px 0; border:1px solid #ddd; cursor:zoom-in;">` : "";
             const qWrapper = document.createElement('div');
             qWrapper.style = "margin-bottom: 15px; padding: 15px; border-radius: 8px; background: #fff; border: 1px solid #eaeaea; box-shadow: 0 2px 4px rgba(0,0,0,0.02);";
             qWrapper.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
-                    <div style="flex: 1;">
+                    <div style="flex:1;">
                         <p style="margin: 0;"><strong>Q${index + 1}:</strong> ${item.q}</p>
                         ${qImageHTML}
                     </div>
-                    <button class="show-answer-btn" 
-                            style="white-space: nowrap; padding: 6px 14px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;"
-                            onclick="toggleQBAnswer(this)">
-                        Show Answer
-                    </button>
+                    <button class="show-answer-btn" style="white-space: nowrap; padding: 6px 14px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;" onclick="toggleQBAnswer(this)">Show Answer</button>
                 </div>
-                <div class="qp-answer hidden" 
-                     style="margin-top: 12px; padding: 12px; background: #f0f7ff; border-left: 4px solid var(--primary); color: #004085; border-radius: 4px;">
+                <div class="qp-answer hidden" style="margin-top: 12px; padding: 12px; background: #f0f7ff; border-left: 4px solid var(--primary); color: #004085; border-radius: 4px;">
                     <strong style="color:var(--primary);">Answer:</strong> ${item.a}
                 </div>`;
             container.appendChild(qWrapper);
@@ -185,47 +254,26 @@ function toggleQBAnswer(btn) {
     }
 }
 
-// --- 5. INTERACTIVE QUIZ & PROGRESS (UPDATED WITH IMAGE SUPPORT) ---
-function saveProgress(chapterName, score, total) {
-    const key = getProgressKey();
-    let progress = JSON.parse(localStorage.getItem(key)) || {};
-    const percentage = Math.round((score / total) * 100);
-    
-    if (!progress[chapterName] || percentage > progress[chapterName].percent) {
-        progress[chapterName] = {
-            percent: percentage,
-            score: score,
-            total: total,
-            date: new Date().toLocaleDateString()
-        };
-        localStorage.setItem(key, JSON.stringify(progress));
-    }
-}
-
 async function startQuiz(chapterName) {
     const quizDiv = document.getElementById("quizContainer");
-    document.getElementById("notesContainer").innerHTML = "";
-    document.getElementById("questionBankContainer").innerHTML = "";
+    document.getElementById("notesContainer").style.display = "none";
+    document.getElementById("questionBankContainer").style.display = "none";
     quizDiv.style.display = 'block';
     quizDiv.innerHTML = `<p>Loading Quiz...</p>`;
 
     try {
         const response = await fetch(`data/quizzes/${chapterName.trim()}.json`);
-        if (!response.ok) throw new Error("Quiz file not found");
         const questions = await response.json();
         renderInteractiveQuiz(questions, quizDiv, chapterName);
     } catch (err) {
-        quizDiv.innerHTML = `<p style="color:red;">Error: Could not load quiz for ${chapterName}.</p>`;
+        quizDiv.innerHTML = `<p style="color:red;">Error loading quiz.</p>`;
     }
 }
 
 function renderInteractiveQuiz(questions, container, chapterName) {
     container.innerHTML = `<h2 style="text-align:center; margin-bottom:20px; color:var(--primary);">Interactive Quiz</h2>`;
     questions.forEach((item, index) => {
-        // Check if diagram exists in JSON
-        const imageHTML = item.image ? 
-            `<img src="${item.image}" style="display:block; max-width:100%; height:auto; border-radius:8px; margin:15px 0; border:1px solid #eee;">` : "";
-
+        const imageHTML = item.image ? `<img src="${item.image}" onclick="openModal(this.src)" style="display:block; max-width:100%; height:auto; border-radius:8px; margin:15px 0; border:1px solid #eee; cursor:zoom-in;">` : "";
         const qCard = document.createElement('div');
         qCard.style = "background: #fff; border: 1px solid #ddd; padding: 20px; border-radius: 12px; margin-bottom: 20px;";
         qCard.innerHTML = `
@@ -267,22 +315,17 @@ function renderInteractiveQuiz(questions, container, chapterName) {
     container.appendChild(submitBtn);
 }
 
-// --- 6. NOTES & DASHBOARD ---
-async function showNotes(chapterName) {
-    const notesDiv = document.getElementById("notesContainer");
-    document.getElementById("quizContainer").innerHTML = "";
-    document.getElementById("questionBankContainer").innerHTML = "";
-    notesDiv.style.display = 'block';
-    if (notesData[chapterName]) {
-        try {
-            const response = await fetch(notesData[chapterName]);
-            notesDiv.innerHTML = await response.text();
-        } catch (err) {
-            notesDiv.innerHTML = `<p>Error loading notes.</p>`;
-        }
+function saveProgress(chapterName, score, total) {
+    const key = getProgressKey();
+    let progress = JSON.parse(localStorage.getItem(key)) || {};
+    const percentage = Math.round((score / total) * 100);
+    if (!progress[chapterName] || percentage > progress[chapterName].percent) {
+        progress[chapterName] = { percent: percentage, score: score, total: total, date: new Date().toLocaleDateString() };
+        localStorage.setItem(key, JSON.stringify(progress));
     }
 }
 
+// --- 6. DASHBOARD & UI HELPERS ---
 function showDashboard() {
     const contentArea = document.getElementById("contentArea");
     const key = getProgressKey();
@@ -329,8 +372,7 @@ function showDashboard() {
                 </tbody>
             </table>
         </div>
-        ${count > 0 ? `<button onclick="if(confirm('Clear progress for ${currentUser.name}?')){localStorage.removeItem('${key}'); showDashboard();}" 
-                        style="margin-top:20px; color:#dc3545; border:none; background:none; cursor:pointer;">Reset My Stats</button>` : ''}`;
+        ${count > 0 ? `<button onclick="if(confirm('Clear progress for ${currentUser.name}?')){localStorage.removeItem('${key}'); showDashboard();}" style="margin-top:20px; color:#dc3545; border:none; background:none; cursor:pointer;">Reset My Stats</button>` : ''}`;
 }
 
 function showLoginAgain() {
