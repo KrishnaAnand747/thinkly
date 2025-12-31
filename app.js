@@ -47,9 +47,32 @@ function transitionToApp() {
     document.getElementById("splash").classList.add('hidden');
     document.getElementById("loginScreen").classList.add('hidden');
     document.getElementById("app").classList.remove('hidden');
+    
+    // Update User Info in Topbar
     document.getElementById("user-name").innerText = currentUser.name;
     document.getElementById("user-pic").src = currentUser.pic;
     document.getElementById("user-area").style.display = 'flex';
+
+    // Inject the Large Welcome Image into the Content Area
+    const contentArea = document.getElementById("contentArea");
+    contentArea.classList.add('centered'); // Keeps it centered
+    
+    contentArea.innerHTML = `
+        <div class="post-login-welcome" style="max-width: 600px; width: 100%;">
+            <h2 style="color: var(--primary); margin-bottom: 5px;">Ready to learn, ${currentUser.name}?</h2>
+            <p style="color: var(--text-medium); margin-bottom: 25px;">Select a class and subject from the sidebar to begin your journey.</p>
+            
+            <div class="welcome-hero-container" style="background: white; padding: 15px; border-radius: 20px; box-shadow: var(--shadow-subtle); border: 1px solid var(--border-light);">
+                <img src="images/Thinkly_Welcome.png" alt="Welcome to Thinkly" 
+                     style="width: 100%; height: auto; border-radius: 12px; display: block;">
+            </div>
+            
+            <div class="welcome-footer-hint" style="margin-top: 25px; padding: 10px 20px; background: #eef6ff; color: #1e40af; border-radius: 10px; display: inline-block; font-size: 0.9rem;">
+                <p style="margin:0;">💡 <strong>Tip:</strong> Your progress is automatically saved as a ${currentUser.type} user.</p>
+            </div>
+        </div>
+    `;
+
     populateClassSelect();
 }
 
@@ -127,14 +150,18 @@ function showChapterContent(chapterName) {
 async function showNotes(chapterName) {
     const notesDiv = document.getElementById("notesContainer");
     const selectedClass = document.getElementById("classSelect").value;
-    const selectedSubject = "Science"; // Adjust this based on your dynamic logic if needed
     
-    // Hide others
+    // Dynamically identify the selected subject from the UI buttons
+    const subArea = document.getElementById("subjectButtons");
+    const activeBtn = subArea.querySelector('.subject-btn[style*="background"]');
+    const selectedSubject = activeBtn ? activeBtn.innerText.trim() : "Science";
+    
+    // Hide other sections
     document.getElementById("quizContainer").style.display = "none";
     document.getElementById("questionBankContainer").style.display = "none";
     notesDiv.style.display = 'block';
 
-    // The path to the chapter folder
+    // The path to the chapter folder (matches: data/notes/Class-10/Science/Acids-Bases-and-Salts)
     const chapterPath = `data/notes/Class-${selectedClass}/${selectedSubject}/${chapterName.trim()}`;
 
     try {
@@ -163,7 +190,8 @@ async function showNotes(chapterName) {
         }
 
     } catch (err) {
-        notesDiv.innerHTML = `<p style="padding:20px; color:#666;">Detailed sub-topics for this chapter are coming soon.</p>`;
+        console.error("Path error:", chapterPath, err);
+        notesDiv.innerHTML = `<p style="padding:20px; color:#666;">Detailed sub-topics for <b>${chapterName}</b> are coming soon.</p>`;
     }
 }
 

@@ -1,0 +1,48 @@
+  {
+    "topics": [
+      {
+        "title": "Introduction to Acids, Bases and Salts",
+        "file": "2_1_Introduction.html"
+      },
+      {
+        "title": "Acid–Base Indicators",
+        "file": "2_2_Indicators.html"
+      },
+      {
+        "title": "Acids and Bases in the Laboratory",
+        "file": "2_3_Acids_and_Bases_in_Lab.html"
+      },
+      {
+        "title": "Reaction of Acids and Bases with Metals",
+        "file": "2_4_Reaction_with_Metals.html"
+      },
+      {
+        "title": "Reaction of Acids with Carbonates and Hydrogencarbonates",
+        "file": "2_5_Reaction_with_Carbonates.html"
+      },
+      {
+        "title": "Neutralisation Reaction",
+        "file": "2_6_Neutralisation.html"
+      },
+      {
+        "title": "Strength of Acids and Bases – pH Scale",
+        "file": "2_7_Strength_of_Acids_pH.html"
+      },
+      {
+        "title": "Importance of pH in Everyday Life",
+        "file": "2_8_Importance_of_pH.html"
+      },
+      {
+        "title": "Salts and Their Nature",
+        "file": "2_9_Salts_and_Types.html"
+      },
+      {
+        "title": "Chemicals from Common Salt",
+        "file": "2_10_Chemicals_from_Common_Salt.html"
+      },
+      {
+        "title": "Water of Crystallisation and Plaster of Paris",
+        "file": "2_11_Water_of_Crystallisation.html"
+      }
+    ]
+  }

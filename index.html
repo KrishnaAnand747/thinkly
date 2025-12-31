@@ -3,64 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syllabus Manager - Mint Glass Edition</title>
+    <title>Thinkly Learning Portal</title>
     
     <link rel="stylesheet" href="style.css">
     
     <script>
-        // CLIENT_ID global constant
         const CLIENT_ID = "852025843203-5goe3ipsous490292fqa4mh17p03h0br.apps.googleusercontent.com";
         
-        // This global function must exist before Google's library initializes
         function handleCredentialResponse(response) {
             console.log("Google callback received");
-            if (window.app && typeof window.app.handleCredentialResponse === 'function') {
-                window.app.handleCredentialResponse(response);
-            } else if (typeof window.handleCredentialResponseImplementation === 'function') {
+            if (typeof window.handleCredentialResponseImplementation === 'function') {
                 window.handleCredentialResponseImplementation(response);
+            } else {
+                // Directly call the function in app.js
+                window.handleCredentialResponse(response);
             }
         }
     </script>
 
     <script src="app.js" defer></script> 
-    
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
     <div id="splash" class="splash">
         <div class="spinner"></div>
-        <h1>Loading Syllabus Manager</h1>
+        <h1>Loading Thinkly</h1>
         <p>Setting up your learning portal...</p>
     </div>
 
     <div id="loginScreen" class="login-screen hidden">
-        <div class="login-card">
-            <h2 class="brand">Thinkly Learning Portal</h2>
-            <p class="sub">A calm place to learn — Math & Science (CBSE Class 9 & 10)</p>
-            
-            <div id="gSign" class="g-signin-area">
-                <div id="g_id_onload"
-                    data-client_id="852025843203-5goe3ipsous490292fqa4mh17p03h0br.apps.googleusercontent.com"
-                    data-callback="handleCredentialResponse"
-                    data-auto_prompt="false"
-                    data-ux_mode="popup">
-                </div>
-                <div class="g_id_signin" 
-                     data-type="standard" 
-                     data-shape="rectangular" 
-                     data-theme="outline" 
-                     data-text="signin_with" 
-                     data-size="large" 
-                     data-logo_alignment="left">
-                </div>
+        <div class="welcome-card">
+            <div class="welcome-image-wrapper" style="padding: 30px 0 10px 0; display: flex; justify-content: center;">
+                <img src="images/Thinkly_Welcome_Logo.png" alt="Thinkly Logo" style="width: 100px; height: auto;">
             </div>
 
-            <div class="divider">or</div>
-            <button class="guest-btn" onclick="guestLogin()">Continue as Guest</button>
+            <div class="welcome-text-area">
+                <h2 class="brand">Thinkly Learning Portal</h2>
+                <p class="sub">A calm place to learn — Math & Science</p>
+                
+                <div class="quote-box">
+                    <p class="motivational-quote">"The beautiful thing about learning is that no one can take it away from you."</p>
+                </div>
+                
+                <div id="gSign" class="g-signin-area">
+                    <div id="g_id_onload"
+                        data-client_id="852025843203-5goe3ipsous490292fqa4mh17p03h0br.apps.googleusercontent.com"
+                        data-callback="handleCredentialResponse"
+                        data-auto_prompt="false"
+                        data-ux_mode="popup">
+                    </div>
+                    <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left"></div>
+                </div>
 
-            <p class="policy">Your progress will be saved locally.</p>
-            <p id="loginMessage" style="color: red; margin-top: 10px; display: none;"></p>
+                <div class="divider">or</div>
+                <button class="guest-btn-welcome" onclick="guestLogin()">Continue as Guest</button>
+                <p class="policy" style="margin-top: 15px; font-size: 0.8rem; color: var(--text-medium);">Your progress will be saved locally.</p>
+            </div>
         </div>
     </div>
 
@@ -94,9 +93,6 @@
                 <div id="contentArea" class="content card centered">
                     <h3>Welcome to Thinkly</h3>
                     <p>Choose a class and subject on the left. Sign in to save your progress.</p>
-                </div>
-                
-                <div id="dashboard" class="card" style="display:none;">
                 </div>
             </main>
         </div>
