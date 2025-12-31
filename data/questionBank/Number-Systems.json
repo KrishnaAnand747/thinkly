@@ -6,5 +6,14 @@
   "Short Answer (3M)": [
     { "q": "Represent √5 on the number line.", "a": "Construct a right triangle with legs of length 2 and 1 unit. The hypotenuse will be √5. Use a compass to mark this distance on the number line." },
     { "q": "Find five rational numbers between 3/5 and 4/5.", "a": "Convert to equivalent fractions with a larger denominator, e.g., 3/5 = 18/30 and 4/5 = 24/30. Numbers are 19/30, 20/30, 21/30, 22/30, 23/30." }
+  ],
+  "Medium Answer(4m)": [
+    {
+      "q": "What is the significance of this buddha?",
+      "image": "data/images/ch1/Buddha_Butterfly.png",
+      "a": "Buddha and butterfly represent meditation",
+      "explanation": "Deep Meditation is possible when you can feel the magic of god and nature and truly start appreciating and thanking it"
+    }
+    
   ]
 }

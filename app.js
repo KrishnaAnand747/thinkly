@@ -15,7 +15,6 @@ function escapeJS(str) {
     return str.replace(/'/g, "\\'");
 }
 
-// Helper to get a unique storage key for the current user
 function getProgressKey() {
     const sanitizedName = currentUser.name.replace(/\s+/g, '_');
     return `studentProgress_${sanitizedName}`;
@@ -95,10 +94,6 @@ function onClassChange() {
     if (subjects.length > 0) showChapters(selectedClass, subjects[0]);
 }
 
-/**
- * UPDATED: Removed the static "0%" progress placeholder 
- * for a cleaner look.
- */
 function showChapters(selectedClass, selectedSubject) {
     const chaptersArea = document.getElementById("chaptersArea");
     const chapters = syllabus[selectedClass][selectedSubject] || [];
@@ -110,7 +105,6 @@ function showChapters(selectedClass, selectedSubject) {
 }
 
 // --- 3. CONTENT RENDERING ---
-
 function showChapterContent(chapterName) {
     const contentArea = document.getElementById("contentArea");
     contentArea.classList.remove('centered');
@@ -128,7 +122,7 @@ function showChapterContent(chapterName) {
     showNotes(chapterName);
 }
 
-// --- 4. QUESTION BANK ---
+// --- 4. QUESTION BANK (UPDATED WITH IMAGE SUPPORT) ---
 async function showQuestionBank(chapterName) {
     const qbArea = document.getElementById("questionBankContainer");
     document.getElementById("notesContainer").innerHTML = "";
@@ -151,11 +145,18 @@ function renderQuestionBank(data, container) {
     for (const category in data) {
         container.innerHTML += `<h4 style="margin-top:25px; color:var(--secondary); text-decoration:underline;">${category}</h4>`;
         data[category].forEach((item, index) => {
+            // Check if diagram exists in JSON
+            const qImageHTML = item.image ? 
+                `<img src="${item.image}" style="display:block; max-width:100%; height:auto; border-radius:8px; margin:12px 0; border:1px solid #ddd;">` : "";
+
             const qWrapper = document.createElement('div');
             qWrapper.style = "margin-bottom: 15px; padding: 15px; border-radius: 8px; background: #fff; border: 1px solid #eaeaea; box-shadow: 0 2px 4px rgba(0,0,0,0.02);";
             qWrapper.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
-                    <p style="margin: 0; flex: 1;"><strong>Q${index + 1}:</strong> ${item.q}</p>
+                    <div style="flex: 1;">
+                        <p style="margin: 0;"><strong>Q${index + 1}:</strong> ${item.q}</p>
+                        ${qImageHTML}
+                    </div>
                     <button class="show-answer-btn" 
                             style="white-space: nowrap; padding: 6px 14px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;"
                             onclick="toggleQBAnswer(this)">
@@ -184,8 +185,7 @@ function toggleQBAnswer(btn) {
     }
 }
 
-// --- 5. INTERACTIVE QUIZ & USER-SCOPED PROGRESS ---
-
+// --- 5. INTERACTIVE QUIZ & PROGRESS (UPDATED WITH IMAGE SUPPORT) ---
 function saveProgress(chapterName, score, total) {
     const key = getProgressKey();
     let progress = JSON.parse(localStorage.getItem(key)) || {};
@@ -222,10 +222,15 @@ async function startQuiz(chapterName) {
 function renderInteractiveQuiz(questions, container, chapterName) {
     container.innerHTML = `<h2 style="text-align:center; margin-bottom:20px; color:var(--primary);">Interactive Quiz</h2>`;
     questions.forEach((item, index) => {
+        // Check if diagram exists in JSON
+        const imageHTML = item.image ? 
+            `<img src="${item.image}" style="display:block; max-width:100%; height:auto; border-radius:8px; margin:15px 0; border:1px solid #eee;">` : "";
+
         const qCard = document.createElement('div');
         qCard.style = "background: #fff; border: 1px solid #ddd; padding: 20px; border-radius: 12px; margin-bottom: 20px;";
         qCard.innerHTML = `
             <p style="font-weight: 600;">Q${index + 1}: ${item.q}</p>
+            ${imageHTML}
             <div class="options-group">${item.options.map(opt => `
                 <label style="display: block; padding: 10px; margin: 5px 0; border: 1px solid #eee; border-radius: 8px; cursor: pointer;">
                     <input type="radio" name="q${index}" value="${opt}" style="margin-right: 10px;"> ${opt}
@@ -262,7 +267,7 @@ function renderInteractiveQuiz(questions, container, chapterName) {
     container.appendChild(submitBtn);
 }
 
-// --- 6. NOTES & USER-SCOPED DASHBOARD ---
+// --- 6. NOTES & DASHBOARD ---
 async function showNotes(chapterName) {
     const notesDiv = document.getElementById("notesContainer");
     document.getElementById("quizContainer").innerHTML = "";
