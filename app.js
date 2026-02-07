@@ -5,8 +5,9 @@ window.logout = logout;
 window.onClassChange = onClassChange;
 window.showDashboard = showDashboard;
 window.showLoginAgain = showLoginAgain;
-window.toggleQBAnswer = toggleQBAnswer; 
+window.toggleQBAnswer = toggleQBAnswer;
 window.loadSubTopic = loadSubTopic; // Exposed for onclick
+
 
 let syllabus = {};
 let notesData = {}; 
@@ -67,7 +68,7 @@ function transitionToApp() {
                      style="width: 100%; height: auto; border-radius: 12px; display: block;">
             </div>
             
-            <div class="welcome-footer-hint" style="margin-top: 25px; padding: 10px 20px; background: #eef6ff; color: #1e40af; border-radius: 10px; display: inline-block; font-size: 0.9rem;">
+            <div class="welcome-footer-hint" style="margin-top: 25px; padding: 10px 20px; background: #8B4513; color: white; border-radius: 10px; display: inline-block; font-size: 0.9rem;">
                 <p style="margin:0;">💡 <strong>Tip:</strong> Your progress is automatically saved as a ${currentUser.type} user.</p>
             </div>
         </div>
@@ -111,7 +112,7 @@ function onClassChange() {
     if (!selectedClass || !syllabus[selectedClass]) return;
     
     const subjects = Object.keys(syllabus[selectedClass]);
-    subArea.innerHTML = subjects.map(sub => 
+    subArea.innerHTML = subjects.map(sub =>
         `<button class="subject-btn" onclick="showChapters('${selectedClass}', '${sub}')">
             ${sub.charAt(0).toUpperCase() + sub.slice(1)}
          </button>`).join('');
@@ -228,6 +229,8 @@ function openModal(src) {
     document.body.appendChild(modal);
 }
 
+
+
 // --- 5. QUESTION BANK & QUIZ (Updated with Image Support) ---
 async function showQuestionBank(chapterName) {
     const qbArea = document.getElementById("questionBankContainer");
@@ -317,25 +320,25 @@ function renderInteractiveQuiz(questions, container, chapterName) {
 
     const submitBtn = document.createElement('button');
     submitBtn.innerText = "Check My Answers";
-    submitBtn.style = "display: block; width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;";
+    submitBtn.style = "display: block; width: 100%; padding: 15px; background: #8B4513; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;";
     submitBtn.onclick = () => {
         let score = 0;
         questions.forEach((item, index) => {
             const selected = document.querySelector(`input[name="q${index}"]:checked`);
             const feedback = document.getElementById(`feedback-${index}`);
             feedback.classList.remove('hidden');
-            if (selected && selected.value === item.a) {
-                score++;
-                feedback.style.background = "#d4edda";
-                feedback.innerHTML = `✅ Correct!`;
-            } else {
-                feedback.style.background = "#f8d7da";
-                feedback.innerHTML = `❌ Incorrect. Answer: ${item.a}`;
-            }
+        if (selected && selected.value === item.a) {
+            score++;
+            feedback.style.background = "#d4edda";
+            feedback.innerHTML = `✅ Correct! Explanation: ${item.explanation}`;
+        } else {
+            feedback.style.background = "#f8d7da";
+            feedback.innerHTML = `❌ Incorrect. Answer: ${item.a}. Explanation: ${item.explanation}`;
+        }
         });
         saveProgress(chapterName, score, questions.length);
         const summary = document.createElement('div');
-        summary.style = "text-align: center; font-size: 1.2rem; font-weight: bold; margin-top: 20px; padding: 15px; background: #eef6ff; border-radius: 10px;";
+        summary.style = "text-align: center; font-size: 1.2rem; font-weight: bold; margin-top: 20px; padding: 15px; background: #333333; color: white; border-radius: 10px;";
         summary.innerHTML = `Your Score: ${score} / ${questions.length}`;
         container.prepend(summary);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -408,4 +411,105 @@ function showLoginAgain() {
     document.getElementById("loginScreen").classList.remove('hidden');
 }
 
+// --- 7. RIGHT SIDEBAR UTILITIES ---
+
+// Clock functionality
+function updateClock() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    document.getElementById('clock').textContent = timeString;
+}
+
+// Timer functionality
+let timerInterval;
+let timerSeconds = 0;
+let isTimerRunning = false;
+
+function startTimer() {
+    if (!isTimerRunning) {
+        isTimerRunning = true;
+        timerInterval = setInterval(() => {
+            timerSeconds++;
+            updateTimerDisplay();
+        }, 1000);
+    }
+}
+
+// Auto-start timer on page load
+document.addEventListener('DOMContentLoaded', () => {
+    startTimer();
+});
+
+function stopTimer() {
+    if (isTimerRunning) {
+        isTimerRunning = false;
+        clearInterval(timerInterval);
+    }
+}
+
+function resetTimer() {
+    stopTimer();
+    timerSeconds = 0;
+    updateTimerDisplay();
+}
+
+function updateTimerDisplay() {
+    const hours = Math.floor(timerSeconds / 3600);
+    const minutes = Math.floor((timerSeconds % 3600) / 60);
+    const seconds = timerSeconds % 60;
+    const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    document.getElementById('header-timer').textContent = timeString;
+}
+
+// Sticky notes functionality
+function loadNotes() {
+    const notes = JSON.parse(localStorage.getItem('stickyNotes') || '[]');
+    const notesList = document.getElementById('notesList');
+    notesList.innerHTML = '';
+    notes.forEach((note, index) => {
+        const noteItem = document.createElement('div');
+        noteItem.className = 'note-item';
+        noteItem.innerHTML = `
+            <textarea rows="3" placeholder="Write your note here..." oninput="saveNotes()">${note}</textarea>
+            <button class="delete-note" onclick="deleteNote(${index})">×</button>
+        `;
+        notesList.appendChild(noteItem);
+    });
+}
+
+function addNote() {
+    const notes = JSON.parse(localStorage.getItem('stickyNotes') || '[]');
+    notes.push('');
+    localStorage.setItem('stickyNotes', JSON.stringify(notes));
+    loadNotes();
+}
+
+function deleteNote(index) {
+    const notes = JSON.parse(localStorage.getItem('stickyNotes') || '[]');
+    notes.splice(index, 1);
+    localStorage.setItem('stickyNotes', JSON.stringify(notes));
+    loadNotes();
+}
+
+function saveNotes() {
+    const noteItems = document.querySelectorAll('.note-item textarea');
+    const notes = Array.from(noteItems).map(textarea => textarea.value);
+    localStorage.setItem('stickyNotes', JSON.stringify(notes));
+}
+
+// Initialize utilities when app loads
+function initializeUtilities() {
+    updateClock();
+    setInterval(updateClock, 1000);
+    updateTimerDisplay();
+    loadNotes();
+}
+
 document.addEventListener('DOMContentLoaded', loadContentData);
+
+// Initialize utilities after transition to app
+const originalTransitionToApp = transitionToApp;
+transitionToApp = function() {
+    originalTransitionToApp();
+    initializeUtilities();
+};

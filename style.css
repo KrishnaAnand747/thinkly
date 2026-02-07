@@ -2,14 +2,14 @@
 /* 1. ROOT VARIABLES & GLOBAL RESET      */
 /* ==================================== */
 :root {
-    --primary: #1e3a8a; 
-    --secondary: #3b82f6; 
-    --mint: #16a34a; 
-    --bg-light: #f1f5f9; 
-    --card-bg: white;
-    --text-dark: #1f2937;
-    --text-medium: #6b7280; 
-    --border-light: #e2e8f0;
+    --primary: #8B4513;
+    --secondary: #D2691E;
+    --black: #000000;
+    --bg-light: #F5F5DC;
+    --card-bg: #FFFFFF;
+    --text-dark: #3E2723;
+    --text-medium: #795548;
+    --border-light: #D7CCC8;
     --shadow-subtle: 0 10px 25px rgba(0, 0, 0, 0.05);
 }
 
@@ -112,7 +112,7 @@ body {
 .divider::after { right: 0; }
 
 .guest-btn, .guest-btn-welcome {
-    background: var(--mint);
+    background: var(--secondary);
     color: white;
     width: 100%;
     padding: 12px;
@@ -125,7 +125,7 @@ body {
 }
 
 .guest-btn:hover, .guest-btn-welcome:hover {
-    background: #10873a;
+    background: #FF8A65;
 }
 
 .policy {
@@ -174,8 +174,8 @@ body {
 .welcome-footer-hint {
     margin-top: 25px;
     padding: 12px 20px;
-    background: #eef6ff;
-    color: #1e40af;
+    background: var(--primary);
+    color: white;
     border-radius: 10px;
     display: inline-block;
     font-size: 0.9rem;
@@ -189,6 +189,12 @@ body {
 /* ==================================== */
 /* 4. SPLASH & APP GLOBAL STYLES        */
 /* ==================================== */
+
+.app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
 
 .splash {
     position: fixed;
@@ -223,16 +229,77 @@ body {
     padding: 10px 24px;
     background: var(--primary);
     color: white;
+    flex-shrink: 0;
+}
+
+.header-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-timer {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 5px 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .user-area { display: flex; align-items: center; gap: 12px; }
 .user-pic { width: 32px; height: 32px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
-.header-btn { background: var(--secondary); color: white; padding: 6px 14px; border: none; font-weight: 500; cursor: pointer; border-radius: 6px; margin-left: 5px;}
+.btn { background: var(--secondary); color: white; padding: 8px 16px; border: none; font-weight: 500; cursor: pointer; border-radius: 6px; margin-right: 10px; transition: background 0.2s; }
+.btn:hover { background: var(--black); }
+
+.subject-btn { background: var(--secondary); color: white; padding: 10px 20px; border: none; font-weight: 500; cursor: pointer; border-radius: 8px; margin-right: 10px; transition: background 0.2s; }
+.subject-btn:hover { background: var(--black); }
+
+.quiz-btn { background: var(--secondary); color: white; padding: 10px 20px; border: none; font-weight: 500; cursor: pointer; border-radius: 8px; margin-right: 10px; transition: background 0.2s; }
+.quiz-btn:hover { background: var(--black); }
+
+.sub-btn { white-space: nowrap; padding: 8px 18px; border-radius: 20px; border: 1.5px solid var(--primary); background: #fff; color: var(--primary); font-weight: 600; cursor: pointer; margin-right: 10px; transition: all 0.2s; }
+.sub-btn:hover { background: var(--primary); color: #fff; }
+
+.show-answer-btn { white-space: nowrap; padding: 6px 14px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; margin-right: 10px; transition: background 0.2s; }
+.show-answer-btn:hover { background: #FF8A65; }
+
+.header-btn { background: var(--secondary); color: white; padding: 6px 14px; border: none; font-weight: 500; cursor: pointer; border-radius: 6px; margin-left: 5px; margin-right: 10px;}
 
 .container { display: flex; flex-grow: 1; max-width: 1400px; width: 100%; margin: 0 auto; }
-.sidebar { width: 300px; padding: 24px; background: var(--card-bg); border-right: 1px solid var(--border-light); flex-shrink: 0; }
-.main { flex-grow: 1; padding: 24px; background: var(--bg-light); }
-.content { background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); min-height: 70vh; }
+.sidebar { width: 300px; padding: 8px 8px 8px 0px; background: var(--card-bg); border-right: 1px solid var(--border-light); flex-shrink: 0; }
+
+#classSelect {
+  appearance: none;
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  color: var(--text-dark);
+  width: 100%;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 10px center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 40px;
+}
+
+#classSelect:hover {
+  border-color: var(--primary);
+}
+
+#classSelect:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+
+.main { flex-grow: 1; padding: 8px; background: var(--bg-light); }
+.content { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); min-height: 40vh; }
 .centered { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
 
 .chapter-card {
@@ -242,7 +309,137 @@ body {
 }
 .chapter-card:hover { background: white; border-color: var(--secondary); box-shadow: var(--shadow-subtle); }
 
+.right-sidebar {
+    width: 140px;
+    padding: 15px;
+    background: var(--card-bg);
+    border-left: 1px solid var(--border-light);
+    flex-shrink: 0;
+    overflow-y: auto;
+}
+
+.utility-section {
+    margin-bottom: 20px;
+    padding: 10px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+}
+
+.utility-section h3 {
+    margin: 0 0 15px 0;
+    color: var(--primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.clock-display {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-dark);
+    text-align: center;
+    padding: 10px;
+    background: #ffff99;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    transform: rotate(-1deg);
+}
+
+.timer-display {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-dark);
+    text-align: center;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    margin-bottom: 15px;
+}
+
+.timer-controls {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+}
+
+.timer-btn {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.timer-btn:hover {
+    background: var(--black);
+}
+
+.notes-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+.note-item {
+    background: #ffff99;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border-light);
+    position: relative;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    transform: rotate(1deg);
+}
+
+.note-item textarea {
+    width: 100%;
+    border: none;
+    resize: none;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    background: transparent;
+    outline: none;
+}
+
+.note-item .delete-note {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-note-btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--secondary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.add-note-btn:hover {
+    background: var(--black);
+}
+
 @media (max-width: 900px) {
     .container { flex-direction: column; }
     .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-light); }
+    .right-sidebar { width: 100%; border-left: none; border-top: 1px solid var(--border-light); }
 }

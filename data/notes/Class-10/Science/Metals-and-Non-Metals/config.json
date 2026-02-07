@@ -1,0 +1,24 @@
+{
+  "topics": [
+    {
+      "title": "1. Physical Properties of Metals and Non-Metals",
+      "file": "01_Physical_Properties_Metals_NonMetals.html"
+    },
+    {
+      "title": "2. Chemical Properties of Metals",
+      "file": "02_Chemical_Properties_of_Metals.html"
+    },
+    {
+      "title": "3. Reactivity Series and Extraction of Metals",
+      "file": "03_Reactivity_Series_and_Extraction.html"
+    },
+    {
+      "title": "4. Corrosion and Its Prevention",
+      "file": "04_Corrosion_and_Prevention.html"
+    },
+    {
+      "title": "5. Uses of Metals and Non-Metals",
+      "file": "05_Uses_of_Metals_and_NonMetals.html"
+    }
+  ]
+}
