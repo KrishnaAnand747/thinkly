@@ -438,6 +438,64 @@ body {
     background: var(--black);
 }
 
+/* ==================================== */
+/* 5. TEACHER AVATAR & READ ALOUD STYLES */
+/* ==================================== */
+
+.teacher-avatar {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 150px;
+    height: 150px;
+    background: #fff;
+    border-radius: 50%;
+    border: 3px solid var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.teacher-avatar.speaking {
+    animation: speaking 1s ease-in-out infinite alternate;
+    border-color: #28a745;
+    box-shadow: 0 6px 12px rgba(40, 167, 69, 0.3);
+}
+
+.teacher-avatar.speaking .avatar-face {
+    animation: mouthMove 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes speaking {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}
+
+@keyframes mouthMove {
+    0% { transform: scaleY(1); }
+    100% { transform: scaleY(0.8); }
+}
+
+.read-aloud-btn {
+    white-space: nowrap;
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: 1.5px solid #28a745;
+    background: #fff;
+    color: #28a745;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.read-aloud-btn:hover {
+    background: #28a745;
+    color: #fff;
+}
+
 @media (max-width: 900px) {
     .container { flex-direction: column; }
     .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-light); }

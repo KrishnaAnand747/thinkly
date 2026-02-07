@@ -7,6 +7,8 @@ window.showDashboard = showDashboard;
 window.showLoginAgain = showLoginAgain;
 window.toggleQBAnswer = toggleQBAnswer;
 window.loadSubTopic = loadSubTopic; // Exposed for onclick
+window.startReading = startReading;
+window.stopReading = stopReading;
 
 
 let syllabus = {};
@@ -172,8 +174,9 @@ async function showNotes(chapterName) {
 
         notesDiv.innerHTML = `
             <div class="subtopic-nav" style="display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; margin-bottom: 20px; border-bottom: 2px solid #eee; -webkit-overflow-scrolling: touch;">
+                <button id="readAloudBtn" class="read-aloud-btn" onclick="startReading()" style="white-space: nowrap; padding: 8px 18px; border-radius: 20px; border: 1.5px solid #28a745; background: #fff; color: #28a745; font-weight: 600; cursor: pointer;">🔊 Read Aloud</button>
                 ${config.topics.map(t => `
-                    <button class="sub-btn" onclick="loadSubTopic('${chapterPath}/${t.file}', this)" 
+                    <button class="sub-btn" onclick="loadSubTopic('${chapterPath}/${t.file}', this)"
                             style="white-space: nowrap; padding: 8px 18px; border-radius: 20px; border: 1.5px solid var(--primary); background: #fff; color: var(--primary); font-weight: 600; cursor: pointer;">
                         ${t.title}
                     </button>
@@ -181,6 +184,9 @@ async function showNotes(chapterName) {
             </div>
             <div id="subTopicDisplay" class="subtopic-content" style="line-height:1.6;">
                 <p>Loading sub-topic...</p>
+            </div>
+            <div id="teacherAvatar" class="teacher-avatar hidden" style="position: fixed; bottom: 20px; right: 20px; width: 150px; height: 150px; background: #fff; border-radius: 50%; border: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 1000;">
+                <div class="avatar-face" style="font-size: 60px;">👩‍🏫</div>
             </div>
         `;
 
@@ -229,7 +235,65 @@ function openModal(src) {
     document.body.appendChild(modal);
 }
 
+// --- 4.5. TEXT-TO-SPEECH & AVATAR LOGIC ---
+let speechSynthesis = window.speechSynthesis;
+let currentUtterance = null;
 
+function startReading() {
+    const display = document.getElementById("subTopicDisplay");
+    const text = display.textContent || display.innerText;
+    const avatar = document.getElementById("teacherAvatar");
+    const btn = document.getElementById("readAloudBtn");
+
+    if (!text.trim()) {
+        alert("No text to read.");
+        return;
+    }
+
+    if (speechSynthesis.speaking) {
+        stopReading();
+        return;
+    }
+
+    currentUtterance = new SpeechSynthesisUtterance(text);
+    currentUtterance.rate = 0.8; // Slightly slower for clarity
+    currentUtterance.pitch = 1;
+    currentUtterance.volume = 1;
+
+    currentUtterance.onstart = () => {
+        avatar.classList.remove('hidden');
+        avatar.classList.add('speaking');
+        btn.innerText = "🔊 Stop Reading";
+        btn.style.background = "#dc3545";
+        btn.style.color = "#fff";
+        btn.setAttribute('onclick', 'stopReading()');
+    };
+
+    currentUtterance.onend = () => {
+        stopReading();
+    };
+
+    currentUtterance.onerror = () => {
+        stopReading();
+    };
+
+    speechSynthesis.speak(currentUtterance);
+}
+
+function stopReading() {
+    if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+    }
+    const avatar = document.getElementById("teacherAvatar");
+    const btn = document.getElementById("readAloudBtn");
+    avatar.classList.add('hidden');
+    avatar.classList.remove('speaking');
+    btn.innerText = "🔊 Read Aloud";
+    btn.style.background = "#fff";
+    btn.style.color = "#28a745";
+    btn.setAttribute('onclick', 'startReading()');
+    currentUtterance = null;
+}
 
 // --- 5. QUESTION BANK & QUIZ (Updated with Image Support) ---
 async function showQuestionBank(chapterName) {
