@@ -6,11 +6,13 @@
     --secondary: #D2691E;
     --black: #000000;
     --bg-light: #F5F5DC;
-    --card-bg: #FFFFFF;
+    --card-bg: rgba(255, 255, 255, 0.8);
     --text-dark: #3E2723;
     --text-medium: #795548;
-    --border-light: #D7CCC8;
+    --border-light: rgba(215, 204, 200, 0.5);
     --shadow-subtle: 0 10px 25px rgba(0, 0, 0, 0.05);
+    --glass-bg: rgba(139, 69, 19, 0.1);
+    --glass-blur: blur(10px);
 }
 
 * { box-sizing: border-box; }
@@ -44,7 +46,9 @@ body {
 }
 
 .login-card, .welcome-card {
-    background: var(--card-bg);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
     max-width: 480px;
     width: 100%;
     border-radius: 20px;
@@ -52,6 +56,7 @@ body {
     box-shadow: var(--shadow-subtle);
     text-align: center;
     animation: fadeInScale 0.6s ease-out;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .welcome-hero-img {
@@ -269,7 +274,7 @@ body {
 .header-btn { background: var(--secondary); color: white; padding: 6px 14px; border: none; font-weight: 500; cursor: pointer; border-radius: 6px; margin-left: 5px; margin-right: 10px;}
 
 .container { display: flex; flex-grow: 1; max-width: 1400px; width: 100%; margin: 0 auto; }
-.sidebar { width: 300px; padding: 8px 8px 8px 0px; background: var(--card-bg); border-right: 1px solid var(--border-light); flex-shrink: 0; }
+.sidebar { width: 300px; padding: 8px 8px 8px 0px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-right: 1px solid rgba(255, 255, 255, 0.2); flex-shrink: 0; }
 
 #classSelect {
   appearance: none;
@@ -298,22 +303,24 @@ body {
   box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
 }
 
-.main { flex-grow: 1; padding: 8px; background: var(--bg-light); }
-.content { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); min-height: 40vh; }
+.main { flex-grow: 1; padding: 8px 208px 8px 8px; background: var(--bg-light); position: relative; }
+.content { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); min-height: 40vh; position: relative; }
 .centered { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
 
 .chapter-card {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 15px; border-radius: 8px; background: #f8fafc; margin-bottom: 8px;
-    cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
+    padding: 12px 15px; border-radius: 8px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); margin-bottom: 8px;
+    cursor: pointer; transition: all 0.2s; border: 1px solid rgba(255, 255, 255, 0.2);
 }
-.chapter-card:hover { background: white; border-color: var(--secondary); box-shadow: var(--shadow-subtle); }
+.chapter-card:hover { background: rgba(255, 255, 255, 0.3); border-color: var(--secondary); box-shadow: var(--shadow-subtle); }
 
 .right-sidebar {
     width: 140px;
     padding: 15px;
-    background: var(--card-bg);
-    border-left: 1px solid var(--border-light);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
     flex-shrink: 0;
     overflow-y: auto;
 }
@@ -460,7 +467,6 @@ body {
 }
 
 .teacher-avatar.speaking {
-    animation: speaking 1s ease-in-out infinite alternate;
     border-color: #28a745;
     box-shadow: 0 6px 12px rgba(40, 167, 69, 0.3);
 }

@@ -174,7 +174,6 @@ async function showNotes(chapterName) {
 
         notesDiv.innerHTML = `
             <div class="subtopic-nav" style="display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; margin-bottom: 20px; border-bottom: 2px solid #eee; -webkit-overflow-scrolling: touch;">
-                <button id="readAloudBtn" class="read-aloud-btn" onclick="startReading()" style="white-space: nowrap; padding: 8px 18px; border-radius: 20px; border: 1.5px solid #28a745; background: #fff; color: #28a745; font-weight: 600; cursor: pointer;">🔊 Read Aloud</button>
                 ${config.topics.map(t => `
                     <button class="sub-btn" onclick="loadSubTopic('${chapterPath}/${t.file}', this)"
                             style="white-space: nowrap; padding: 8px 18px; border-radius: 20px; border: 1.5px solid var(--primary); background: #fff; color: var(--primary); font-weight: 600; cursor: pointer;">
@@ -182,10 +181,11 @@ async function showNotes(chapterName) {
                     </button>
                 `).join('')}
             </div>
+            <button id="readAloudBtn" class="read-aloud-btn" onclick="startReading()">🔊 Read Aloud</button>
             <div id="subTopicDisplay" class="subtopic-content" style="line-height:1.6;">
                 <p>Loading sub-topic...</p>
             </div>
-            <div id="teacherAvatar" class="teacher-avatar hidden" style="position: fixed; bottom: 20px; right: 20px; width: 150px; height: 150px; background: #fff; border-radius: 50%; border: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 1000;">
+            <div id="teacherAvatar" class="teacher-avatar hidden">
                 <div class="avatar-face" style="font-size: 60px;">👩‍🏫</div>
             </div>
         `;
@@ -294,6 +294,26 @@ function stopReading() {
     btn.setAttribute('onclick', 'startReading()');
     currentUtterance = null;
 }
+
+function selectAvatar(avatar) {
+    localStorage.setItem('selectedTeacherAvatar', avatar);
+    const avatarFace = document.querySelector('.avatar-face');
+    if (avatarFace) {
+        avatarFace.textContent = avatar;
+    }
+    // Optional: Add visual feedback for selected avatar
+    const avatarIcons = document.querySelectorAll('.avatar-icons button');
+    avatarIcons.forEach(btn => {
+        if (btn.textContent === avatar) {
+            btn.style.background = 'rgba(139, 69, 19, 0.2)';
+            btn.style.borderRadius = '8px';
+        } else {
+            btn.style.background = 'none';
+        }
+    });
+}
+
+
 
 // --- 5. QUESTION BANK & QUIZ (Updated with Image Support) ---
 async function showQuestionBank(chapterName) {
