@@ -65,6 +65,12 @@
 
     <div id="app" class="app hidden">
         <header class="topbar">
+            <!-- Hamburger Button for Mobile -->
+            <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
             <div class="brand-left">Thinkly Learning Portal</div>
             <div class="header-center">
                 <div id="header-timer" class="header-timer">00:00:00</div>
@@ -80,8 +86,11 @@
             </div>
         </header>
 
+        <!-- Sidebar Overlay for Mobile -->
+        <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
         <div class="container">
-            <aside class="sidebar">
+            <aside id="sidebar" class="sidebar">
                 <h2>Start Learning</h2>
                 <label for="classSelect">Class</label>
                 <select id="classSelect" onchange="onClassChange()">

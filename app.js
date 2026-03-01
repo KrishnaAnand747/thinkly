@@ -9,6 +9,8 @@ window.toggleQBAnswer = toggleQBAnswer;
 window.loadSubTopic = loadSubTopic; // Exposed for onclick
 window.startReading = startReading;
 window.stopReading = stopReading;
+window.toggleSidebar = toggleSidebar;
+window.closeSidebar = closeSidebar;
 
 
 let syllabus = {};
@@ -495,7 +497,32 @@ function showLoginAgain() {
     document.getElementById("loginScreen").classList.remove('hidden');
 }
 
-// --- 7. RIGHT SIDEBAR UTILITIES ---
+// --- 7. SIDEBAR TOGGLE FOR MOBILE ---
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const hamburger = document.getElementById('hamburgerBtn');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    if (sidebar && sidebar.classList.contains('active')) {
+        closeSidebar();
+    } else {
+        sidebar.classList.add('active');
+        hamburger.classList.add('active');
+        if (overlay) overlay.classList.add('active');
+    }
+}
+
+function closeSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const hamburger = document.getElementById('hamburgerBtn');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    if (sidebar) sidebar.classList.remove('active');
+    if (hamburger) hamburger.classList.remove('active');
+    if (overlay) overlay.classList.remove('active');
+}
+
+// --- 8. RIGHT SIDEBAR UTILITIES ---
 
 // Clock functionality
 function updateClock() {
