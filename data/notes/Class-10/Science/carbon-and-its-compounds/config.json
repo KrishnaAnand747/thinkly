@@ -1,0 +1,24 @@
+{
+  "topics": [
+    {
+      "title": "1. Bonding in Carbon",
+      "file": "01_Bonding_in_Carbon.html"
+    },
+    {
+      "title": "2. Versatile Nature of Carbon",
+      "file": "02_Versatile_Nature_of_Carbon.html"
+    },
+    {
+      "title": "3. Allotropes of Carbon",
+      "file": "03_Allotropes_of_Carbon.html"
+    },
+    {
+      "title": "4. Hydrocarbons",
+      "file": "04_Hydrocarbons.html"
+    },
+    {
+      "title": "5. Functional Groups",
+      "file": "05_Functional_Groups.html"
+    }
+  ]
+}

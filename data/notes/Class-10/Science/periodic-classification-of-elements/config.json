@@ -1,0 +1,24 @@
+{
+  "topics": [
+    {
+      "title": "1. Early Attempts",
+      "file": "01_Early_Attempts.html"
+    },
+    {
+      "title": "2. Mendeleev's Table",
+      "file": "02_Mendeleevs_Table.html"
+    },
+    {
+      "title": "3. Modern Periodic Table",
+      "file": "03_Modern_Periodic_Table.html"
+    },
+    {
+      "title": "4. Trends in Properties",
+      "file": "04_Trends_in_Properties.html"
+    },
+    {
+      "title": "5. Anomalies",
+      "file": "05_Anomalies.html"
+    }
+  ]
+}

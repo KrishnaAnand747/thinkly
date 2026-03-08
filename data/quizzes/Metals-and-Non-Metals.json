@@ -1,0 +1,63 @@
+[
+  {
+    "q": "Which of the following is a physical property of metals?",
+    "options": ["Brittle", "Dull appearance", "Malleable", "Poor conductor of heat"],
+    "a": "Malleable",
+    "explanation": "Malleability (ability to be hammered into sheets) is a key physical property of metals. Non-metals are brittle, dull, and poor conductors of heat."
+  },
+  {
+    "q": "Which metal exists in liquid state at room temperature?",
+    "options": ["Sodium", "Mercury", "Copper", "Iron"],
+    "a": "Mercury",
+    "explanation": "Mercury is the only metal that is liquid at room temperature (20°C). All other metals are solid at room temperature."
+  },
+  {
+    "q": "Which non-metal is a good conductor of electricity?",
+    "options": ["Sulphur", "Phosphorus", "Graphite", "Carbon (diamond)"],
+    "a": "Graphite",
+    "explanation": "Graphite is an exception among non-metals - it conducts electricity due to delocalized electrons in its layered structure."
+  },
+  {
+    "q": "What is the chemical name of rust?",
+    "options": ["Iron sulphide", "Hydrated iron oxide", "Iron chloride", "Iron carbonate"],
+    "a": "Hydrated iron oxide",
+    "explanation": "Rust is hydrated iron oxide (Fe<sub>2</sub>O<sub>3</sub>.xH<sub>2</sub>O) formed when iron reacts with oxygen and moisture in the air."
+  },
+  {
+    "q": "Zinc reacts with dilute hydrochloric acid to form:",
+    "options": ["Zinc chloride and hydrogen", "Zinc oxide and water", "Zinc sulphate and hydrogen", "Zinc chloride only"],
+    "a": "Zinc chloride and hydrogen",
+    "explanation": "The reaction is: Zn + 2HCl → ZnCl<sub>2</sub> + H<sub>2</sub>. Metals react with dilute acids to form salt and hydrogen gas."
+  },
+  {
+    "q": "In the reactivity series, which metal can displace copper from copper sulphate solution?",
+    "options": ["Silver", "Gold", "Zinc", "Mercury"],
+    "a": "Zinc",
+    "explanation": "Zinc is more reactive than copper (位置 above hydrogen in reactivity series), so it displaces copper: Zn + CuSO<sub>4</sub> → ZnSO<sub>4</sub> + Cu."
+  },
+  {
+    "q": "Which method is used to extract highly reactive metals like sodium and aluminium?",
+    "options": ["Reduction with carbon", "Electrolysis", "Roasting in air", "Fractional distillation"],
+    "a": "Electrolysis",
+    "explanation": "Highly reactive metals (Na, K, Ca, Mg, Al) cannot be extracted by reduction with carbon. Electrolysis of their molten salts is used."
+  },
+  {
+    "q": "The process of coating iron with zinc is called:",
+    "options": ["Electroplating", "Galvanization", "Anodizing", "Tinning"],
+    "a": "Galvanization",
+    "explanation": "Galvanization protects iron from corrosion by coating it with zinc. Zinc being more reactive, acts as a sacrificial anode."
+  },
+  {
+    "q": "When iron nails are placed in copper sulphate solution, the solution turns green because:",
+    "options": ["Iron reacts with water", "Iron displaces copper forming iron sulphate", "Copper deposits on iron", "Iron forms iron hydroxide"],
+    "a": "Iron displaces copper forming iron sulphate",
+    "explanation": "Fe + CuSO<sub>4</sub> → FeSO<sub>4</sub> + Cu. Iron being more reactive displaces copper, and FeSO<sub>4</sub> (green) forms, causing the color change."
+  },
+  {
+    "q": "Aluminium is highly reactive yet does not corrode easily. This is because:",
+    "options": ["It does not react with oxygen", "A protective oxide layer forms on its surface", "It is an noble metal", "It reacts only with acids"],
+    "a": "A protective oxide layer forms on its surface",
+    "explanation": "Aluminium forms a thin, adherent layer of Al<sub>2</sub>O<sub>3</sub> (aluminium oxide) on exposure to air, which prevents further corrosion - this is called passivation."
+  }
+]
+

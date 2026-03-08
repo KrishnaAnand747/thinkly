@@ -1,0 +1,63 @@
+[
+  {
+    "q": "Carbon is tetravalent because it has:",
+    "options": ["2 valence electrons", "4 valence electrons", "6 valence electrons", "1 valence electron"],
+    "a": "4 valence electrons",
+    "explanation": "Carbon has atomic number 6 with electronic configuration 2,4. It has 4 valence electrons and thus forms 4 covalent bonds (tetravalent)."
+  },
+  {
+    "q": "What is catenation?",
+    "options": ["Bonding with oxygen", "Forming long chains with itself", "Forming double bonds", "Bonding with metals"],
+    "a": "Forming long chains with itself",
+    "explanation": "Catenation is the ability of carbon to form long chains by bonding with other carbon atoms. This leads to millions of carbon compounds."
+  },
+  {
+    "q": "Which allotrope of carbon is the hardest substance?",
+    "options": ["Graphite", "Diamond", "Fullerene", "Charcoal"],
+    "a": "Diamond",
+    "explanation": "Diamond is the hardest natural substance. Each carbon is bonded to 4 others in a tetrahedral 3D structure, making it extremely hard."
+  },
+  {
+    "q": "Why does graphite conduct electricity?",
+    "options": ["It has free electrons", "It has ionic bonds", "It is a metal", "It has no resistance"],
+    "a": "It has free electrons",
+    "explanation": "Graphite has layered structure with delocalized electrons between layers. These free electrons can move, allowing graphite to conduct electricity."
+  },
+  {
+    "q": "What is the general formula of alkanes?",
+    "options": ["C<sub>n</sub>H<sub>2n</sub>", "C<sub>n</sub>H<sub>2n+2</sub>", "C<sub>n</sub>H<sub>2n-2</sub>", "C<sub>n</sub>H<sub>n</sub>"],
+    "a": "C<sub>n</sub>H<sub>2n+2</sub>",
+    "explanation": "Alkanes are saturated hydrocarbons with single bonds only. For n carbons, they have 2n+2 hydrogens (e.g., CH<sub>4</sub>, C<sub>2</sub>H<sub>6</sub>)."
+  },
+  {
+    "q": "Which gas is produced when methane burns in excess oxygen?",
+    "options": ["Carbon monoxide", "Carbon dioxide and water", "Oxygen", "Hydrogen"],
+    "a": "Carbon dioxide and water",
+    "explanation": "Combustion of methane: CH<sub>4</sub> + 2O<sub>2</sub> → CO<sub>2</sub> + 2H<sub>2</sub>O. Hydrocarbons produce CO<sub>2</sub> and H<sub>2</sub>O on burning."
+  },
+  {
+    "q": "The -OH group is characteristic of:",
+    "options": ["Aldehydes", "Ketones", "Alcohols", "Carboxylic acids"],
+    "a": "Alcohols",
+    "explanation": "The hydroxyl group (-OH) is the functional group of alcohols. Examples: methanol (CH<sub>3</sub>OH), ethanol (CH<sub>3</sub>CH<sub>2</sub>OH)."
+  },
+  {
+    "q": "Compounds with the same molecular formula but different structures are called:",
+    "options": ["Isomers", "Polymers", "Homologs", "Isotopes"],
+    "a": "Isomers",
+    "explanation": "Isomers have same molecular formula but different structural arrangements. For example, butane has straight and branched chain isomers."
+  },
+  {
+    "q": "Fullerene (C<sub>60</sub>) has a structure similar to:",
+    "options": ["Diamond", "Graphite", "Soccer ball", "Cube"],
+    "a": "Soccer ball",
+    "explanation": "Fullerene C<sub>60</sub> has a spherical cage structure resembling a soccer ball (buckminsterfullerene). It is used in nanotechnology."
+  },
+  {
+    "q": "The homologous series differs by:",
+    "options": ["One carbon atom", "Two carbon atoms", "Three carbon atoms", "Four carbon atoms"],
+    "a": "One carbon atom",
+    "explanation": "Members of a homologous series differ by CH<sub>2</sub> group (one carbon and two hydrogens). This increases molecular mass by 14 units."
+  }
+]
+

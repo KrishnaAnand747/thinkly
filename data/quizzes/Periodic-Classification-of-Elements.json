@@ -1,0 +1,63 @@
+[
+  {
+    "q": "Dobereiner's triads were groups of how many elements?",
+    "options": ["2", "3", "4", "5"],
+    "a": "3",
+    "explanation": "Dobereiner's triads were groups of 3 elements with similar properties, where the middle element had an atomic mass approximately equal to the average of the other two."
+  },
+  {
+    "q": "According to Newlands' Law of Octaves, properties repeat after how many elements?",
+    "options": ["7", "8", "9", "10"],
+    "a": "8",
+    "explanation": "Newlands' Law of Octaves stated that every 8th element had similar properties to the 1st, like musical octaves. This worked only for the first 17 elements."
+  },
+  {
+    "q": "Mendeleev arranged elements in increasing order of their:",
+    "options": ["Atomic number", "Atomic mass", "Valency", "Density"],
+    "a": "Atomic mass",
+    "explanation": "Mendeleev arranged elements by increasing atomic mass in his periodic table. He left gaps for undiscovered elements and predicted their properties."
+  },
+  {
+    "q": "The modern periodic law is based on:",
+    "options": ["Atomic mass", "Atomic number", "Valency", "Electronegativity"],
+    "a": "Atomic number",
+    "explanation": "Modern periodic law states that properties of elements are a periodic function of their atomic numbers. This resolved anomalies in Mendeleev's table."
+  },
+  {
+    "q": "How many groups are there in the modern periodic table?",
+    "options": ["7", "8", "16", "18"],
+    "a": "18",
+    "explanation": "The modern periodic table has 18 groups (vertical columns) and 7 periods (horizontal rows). Groups 1-2 are s-block, 13-18 are p-block."
+  },
+  {
+    "q": "Which group contains noble gases?",
+    "options": ["Group 1", "Group 17", "Group 18", "Group 2"],
+    "a": "Group 18",
+    "explanation": "Group 18 contains noble gases (He, Ne, Ar, Kr, Xe, Rn). They have complete outer electron shells (octet) and are chemically inert."
+  },
+  {
+    "q": "Across a period (left to right), atomic size:",
+    "options": ["Increases", "Decreases", "Remains constant", "First increases then decreases"],
+    "a": "Decreases",
+    "explanation": "Atomic size decreases across a period due to increased nuclear charge pulling electrons closer, without adding new electron shells."
+  },
+  {
+    "q": "Down a group, metallic character:",
+    "options": ["Decreases", "Increases", "Remains constant", "First decreases then increases"],
+    "a": "Increases",
+    "explanation": "Metallic character increases down a group because atomic size increases (easier to lose electrons) and ionization energy decreases."
+  },
+  {
+    "q": "The element with atomic number 14 is:",
+    "options": ["Carbon", "Silicon", "Germanium", "Nitrogen"],
+    "a": "Silicon",
+    "explanation": "Silicon (Si) has atomic number 14. It is in Group 14 and Period 3 of the modern periodic table, with electronic configuration 2,8,4."
+  },
+  {
+    "q": "Hydrogen can be placed in group 1 and group 17 because:",
+    "options": ["It has similar properties to both alkali metals and halogens", "It is a noble gas", "It has same mass as helium", "It does not react with anything"],
+    "a": "It has similar properties to both alkali metals and halogens",
+    "explanation": "Hydrogen is anomalous. Like alkali metals (Group 1), it forms H<sup>+</sup> ion. Like halogens (Group 17), it forms H<sup>-</sup> (hydride ion) and exists as diatomic gas."
+  }
+]
+

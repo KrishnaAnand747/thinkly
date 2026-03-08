@@ -1,0 +1,63 @@
+[
+  {
+    "q": "In a chemical equation, what are the substances on the left side called?",
+    "options": ["Products", "Reactants", "Catalysts", "Intermediates"],
+    "a": "Reactants",
+    "explanation": "Reactants are the starting substances on the left side of a chemical equation that undergo change during the reaction."
+  },
+  {
+    "q": "Which symbol indicates a solid state in a chemical equation?",
+    "options": ["(g)", "(l)", "(s)", "(aq)"],
+    "a": "(s)",
+    "explanation": "State symbols: (s) = solid, (l) = liquid, (g) = gas, (aq) = aqueous (dissolved in water)."
+  },
+  {
+    "q": "What type of reaction is: CaO + H<sub>2</sub>O → Ca(OH)<sub>2</sub>?",
+    "options": ["Decomposition", "Combination", "Displacement", "Double displacement"],
+    "a": "Combination",
+    "explanation": "Combination reaction: Two or more reactants combine to form a single product. A + B → AB."
+  },
+  {
+    "q": "Which type of reaction involves one element replacing another?",
+    "options": ["Combination", "Decomposition", "Displacement", "Redox"],
+    "a": "Displacement",
+    "explanation": "Displacement: A more reactive element displaces a less reactive element. A + BC → AC + B."
+  },
+  {
+    "q": "What is the product when hydrogen burns in oxygen?",
+    "options": ["Hydrogen peroxide", "Water", "Hydrochloric acid", "Oxygen"],
+    "a": "Water",
+    "explanation": "2H<sub>2</sub> + O<sub>2</sub> → 2H<sub>2</sub>O. This is a combustion (oxidation) reaction producing heat and light."
+  },
+  {
+    "q": "The reaction AB + CD → AD + CB is an example of:",
+    "options": ["Combination", "Decomposition", "Displacement", "Double displacement"],
+    "a": "Double displacement",
+    "explanation": "Double displacement: Exchange of ions between two compounds. Ions switch partners to form new compounds."
+  },
+  {
+    "q": "What is the chemical formula of rust?",
+    "options": ["FeO", "Fe<sub>2</sub>O<sub>3</sub>", "Fe<sub>2</sub>O<sub>3</sub>.xH<sub>2</sub>O", "Fe<sub>3</sub>O<sub>4</sub>"],
+    "a": "Fe<sub>2</sub>O<sub>3</sub>.xH<sub>2</sub>O",
+    "explanation": "Rust is hydrated iron oxide. 4Fe + 3O<sub>2</sub> + 6H<sub>2</sub>O → 2Fe<sub>2</sub>O<sub>3</sub>.3H<sub>2</sub>O."
+  },
+  {
+    "q": "Which gas turns lime water milky?",
+    "options": ["Oxygen", "Hydrogen", "Carbon dioxide", "Nitrogen"],
+    "a": "Carbon dioxide",
+    "explanation": "CO<sub>2</sub> + Ca(OH)<sub>2</sub> → CaCO<sub>3</sub> + H<sub>2</sub>O. Calcium carbonate forms white precipitate, turning lime water milky."
+  },
+  {
+    "q": "Rancidity in fats and oils is caused by:",
+    "options": ["Reduction", "Oxidation", "Hydrolysis", "Fermentation"],
+    "a": "Oxidation",
+    "explanation": "Rancidity occurs when fats/oils oxidize, producing unpleasant smells/taste. Prevention: airtight containers, antioxidants, refrigeration."
+  },
+  {
+    "q": "Which method prevents rusting of iron?",
+    "options": ["Painting", "All of these", "Galvanization", "Oiling"],
+    "a": "All of these",
+    "explanation": "Rust prevention includes painting, galvanization (zinc coating), oiling, and alloying. All methods create a barrier against moisture and oxygen."
+  }
+]
+

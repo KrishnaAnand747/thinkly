@@ -1,0 +1,63 @@
+[
+  {
+    "q": "What is the pH of a neutral solution?",
+    "options": ["0", "7", "14", "1"],
+    "a": "7",
+    "explanation": "Neutral solutions have pH 7, exactly in the middle of the pH scale. Acids have pH < 7, bases have pH > 7."
+  },
+  {
+    "q": "Which indicator turns blue in basic solution?",
+    "options": ["Litmus", "Methyl Orange", "Phenolphthalein", "Turmeric"],
+    "a": "Litmus",
+    "explanation": "Litmus turns red in acid and blue in base. It's a natural indicator derived from lichens."
+  },
+  {
+    "q": "What is the color of phenolphthalein in acidic solution?",
+    "options": ["Pink", "Yellow", "Colorless", "Red"],
+    "a": "Colorless",
+    "explanation": "Phenolphthalein is colorless in acids (pH < 8.2) and turns pink in bases (pH > 8.2)."
+  },
+  {
+    "q": "Which acid is present in lemon?",
+    "options": ["Acetic acid", "Citric acid", "Hydrochloric acid", "Sulphuric acid"],
+    "a": "Citric acid",
+    "explanation": "Lemons contain citric acid which gives them their sour taste. It is a weak organic acid."
+  },
+  {
+    "q": "The reaction between an acid and a base to form salt and water is called:",
+    "options": ["Displacement", "Combination", "Neutralization", "Decomposition"],
+    "a": "Neutralization",
+    "explanation": "Neutralization is acid + base → salt + water. Example: HCl + NaOH → NaCl + H<sub>2</sub>O."
+  },
+  {
+    "q": "Which of the following is a strong acid?",
+    "options": ["Acetic acid", "Citric acid", "Hydrochloric acid", "Carbonic acid"],
+    "a": "Hydrochloric acid",
+    "explanation": "HCl completely ionizes in water, releasing all H<sup>+</sup> ions. Strong acids include HCl, H<sub>2</sub>SO<sub>4</sub>, HNO<sub>3</sub>."
+  },
+  {
+    "q": "What gas is evolved when zinc reacts with dilute hydrochloric acid?",
+    "options": ["Oxygen", "Chlorine", "Hydrogen", "Carbon dioxide"],
+    "a": "Hydrogen",
+    "explanation": "Zn + 2HCl → ZnCl<sub>2</sub> + H<sub>2</sub>. Metals above hydrogen in reactivity series displace hydrogen from acids."
+  },
+  {
+    "q": "Which compound is formed when CO<sub>2</sub> is passed through lime water?",
+    "options": ["Calcium hydroxide", "Calcium carbonate", "Calcium chloride", "Calcium oxide"],
+    "a": "Calcium carbonate",
+    "explanation": "CO<sub>2</sub> + Ca(OH)<sub>2</sub> → CaCO<sub>3</sub> + H<sub>2</sub>. CaCO<sub>3</sub> makes lime water turn milky."
+  },
+  {
+    "q": "Why does copper not react with dilute hydrochloric acid?",
+    "options": ["Copper is a noble metal", "Copper is below hydrogen in reactivity series", "Copper reacts only with bases", "Copper is already oxidized"],
+    "a": "Copper is below hydrogen in reactivity series",
+    "explanation": "Only metals above hydrogen (Zn, Fe, Mg, etc.) can displace hydrogen from acids. Copper is below hydrogen and is less reactive."
+  },
+  {
+    "q": "The property of a base to change the smell of onion is called:",
+    "options": ["Olfactory indicator", "Synthetic indicator", "Natural indicator", "Universal indicator"],
+    "a": "Olfactory indicator",
+    "explanation": "Olfactory indicators change smell in acidic or basic solutions. Onion loses smell in base, vanilla gains smell in acid."
+  }
+]
+
