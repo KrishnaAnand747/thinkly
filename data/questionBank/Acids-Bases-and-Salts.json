@@ -1,0 +1,82 @@
+{
+  "Very Short Answer (1M)": [
+    {
+      "q": "What is an indicator?",
+      "a": "A substance that changes color in the presence of acids and bases"
+    },
+    {
+      "q": "What is the pH of a neutral solution?",
+      "a": "7"
+    },
+    {
+      "q": "Name the indicator which can be used to test both acids and bases.",
+      "a": "Litmus"
+    },
+    {
+      "q": "What color does phenolphthalein show in acidic solution?",
+      "a": "Colorless"
+    },
+    {
+      "q": "Name the acid present in lemon.",
+      "a": "Citric acid"
+    },
+    {
+      "q": "What is a neutralization reaction?",
+      "a": "Reaction between an acid and a base to produce salt and water"
+    }
+  ],
+  "Short Answer (3M)": [
+    {
+      "q": "Give two differences between acids and bases.",
+      "a": "1. Acids have sour taste, bases have bitter taste.\n2. Acids turn blue litmus red, bases turn red litmus blue.\n3. Acids have pH < 7, bases have pH > 7."
+    },
+    {
+      "q": "Name two natural indicators and their color changes.",
+      "a": "1. Litmus: Red in acid, blue in base.\n2. Turmeric: Yellow in neutral/acid, red in base.\n3. China rose: Green in acid, pink in base."
+    },
+    {
+      "q": "Write the equation for neutralization of HCl by NaOH.",
+      "a": "HCl + NaOH → NaCl + H₂O"
+    },
+    {
+      "q": "Define a strong acid.",
+      "a": "A strong acid is an acid that completely ionizes in aqueous solution to produce H⁺ ions."
+    },
+    {
+      "q": "Give one example each of a metal reacting with water and with acid.",
+      "a": "1. Metal with water: Na + 2H₂O → 2NaOH + H₂\n2. Metal with acid: Zn + 2HCl → ZnCl₂ + H₂"
+    },
+    {
+      "q": "What is the difference between concentrated and dilute acid?",
+      "a": "1. Concentrated acid has high amount of solute in solution.\n2. Dilute acid has low amount of solute in solution.\n3. Concentrated acids are stronger and may be more reactive."
+    },
+    {
+      "q": "Write the equation for reaction of zinc with dilute sulphuric acid.",
+      "a": "Zn + H₂SO₄ → ZnSO₄ + H₂"
+    },
+    {
+      "q": "How do you test the gas evolved when metals react with acids?",
+      "a": "The gas (hydrogen) burns with a pop sound when a burning matchstick is brought near it."
+    }
+  ],
+  "Medium Answer(4m)": [
+    {
+      "q": "Explain why iron nails get corroded when kept in copper sulphate solution.",
+      "image": "data/notes/Class-10/Science/acids-bases-and-salts/diagrams/2_4_ReactionMetals.PNG",
+      "a": "Iron is more reactive than copper, so it displaces copper from copper sulphate solution. Fe + CuSO₄ → FeSO₄ + Cu. The copper deposits on iron surface, and iron oxidizes, causing corrosion.",
+      "explanation": "This is a displacement reaction based on reactivity series. Iron, being higher in reactivity, loses electrons more readily than copper. The electrons from iron reduce Cu²⁺ to Cu metal. For HOTS, students should understand electrochemical corrosion and why more reactive metals act as sacrificial anodes."
+    },
+    {
+      "q": "Compare the properties of strong and weak acids.",
+      "image": "data/notes/Class-10/Science/acids-bases-and-salts/diagrams/2_3_LabAcidsBases.PNG",
+      "a": "Strong acids completely ionize (HCl, H₂SO₄), have higher [H⁺], conduct electricity well, and react faster. Weak acids partially ionize (CH₃COOH), have lower [H⁺], conduct less, and react slower.",
+      "explanation": "Degree of ionization differs: strong acids → 100% ionized, weak acids → partially ionized. This affects pH, conductivity, and reaction rates. For competitive exams, relate to Ka values; larger Ka indicates stronger acid. Remember pKa = -log(Ka)."
+    },
+    {
+      "q": "Explain the role of indicators in identifying acids and bases with examples.",
+      "image": "data/notes/Class-10/Science/acids-bases-and-salts/diagrams/2_2_Indicators.PNG",
+      "a": "Indicators change color based on pH. Litmus is red in acid (pH<7) and blue in base (pH>7). Phenolphthalein is colorless in acid and pink in base. Universal indicator shows different colors at different pH.",
+      "explanation": "Indicators work by having different color-producing structures at different pH levels due to protonation/deprotonation. Litmus contains anthocyanins that absorb different wavelengths. For exams, know the pH ranges where each indicator changes color—critical for analytical chemistry."
+    }
+  ]
+}

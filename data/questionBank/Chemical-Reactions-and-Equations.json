@@ -1,0 +1,78 @@
+{
+  "Very Short Answer (1M)": [
+    {
+      "q": "What is a chemical equation?",
+      "a": "A representation of a chemical reaction using symbols and formulas of reactants and products"
+    },
+    {
+      "q": "What is the symbol for solid state in chemical equations?",
+      "a": "(s)"
+    },
+    {
+      "q": "Name the gas evolved when metals react with acids.",
+      "a": "Hydrogen (H₂)"
+    },
+    {
+      "q": "What is rusting?",
+      "a": "Oxidation of iron in presence of moisture and oxygen forming rust (Fe₂O₃·xH₂O)"
+    },
+    {
+      "q": "Define rancidity.",
+      "a": "Process where fats and oils become unpleasant due to oxidation"
+    },
+    {
+      "q": "Name a substance added to prevent rancidity.",
+      "a": "Antioxidants like BHA, BHT, or Vitamin E"
+    }
+  ],
+  "Short Answer (3M)": [
+    {
+      "q": "Balance the chemical equation: H₂ + O₂ → H₂O",
+      "a": "2H₂ + O₂ → 2H₂O"
+    },
+    {
+      "q": "Define combination reaction. Give example.",
+      "a": "Two or more substances combine to form one product. Example: CaO + H₂O → Ca(OH)₂ or 2Mg + O₂ → 2MgO"
+    },
+    {
+      "q": "What is displacement reaction? Give example.",
+      "a": "One element replaces another in a compound. Example: Zn + CuSO₄ → ZnSO₄ + Cu. Iron is more reactive than copper."
+    },
+    {
+      "q": "Write equation for double displacement reaction.",
+      "a": "Example: NaCl + AgNO₃ → NaNO₃ + AgCl↓. Ions exchange between compounds."
+    },
+    {
+      "q": "How to prevent browning of fruits?",
+      "a": "1. Add vitamin C or citric acid (lowers pH).\n2. Apply lemon juice.\n3. Reduce oxygen exposure by storing in airtight containers."
+    },
+    {
+      "q": "How to prevent rancidity in foods?",
+      "a": "1. Store in airtight containers.\n2. Add antioxidants.\n3. Refrigerate.\n4. Flush packaging with nitrogen gas."
+    },
+    {
+      "q": "Give two examples of oxidation in everyday life.",
+      "a": "1. Browning of apples - enzymes oxidize phenols.\n2. Rusting of iron - oxidation forming rust.\n3. Combustion of fuels - rapid oxidation.\n4. Respiration - cellular oxidation."
+    }
+  ],
+  "Medium Answer(4m)": [
+    {
+      "q": "Explain different types of chemical reactions with examples.",
+      "image": "data/notes/Class-10/Science/chemical-reactions-and-equations/diagrams/1_2_TypesReactions.PNG",
+      "a": "1. Combination: A + B → AB. Example: CaO + H₂O → Ca(OH)₂\n2. Decomposition: AB → A + B. Example: 2PbO → 2Pb + O₂\n3. Displacement: A + BC → AC + B. Example: Zn + CuSO₄ → ZnSO₄ + Cu\n4. Double displacement: AB + CD → AD + CB. Example: NaCl + AgNO₃ → NaNO₃ + AgCl",
+      "explanation": "Each reaction type follows specific patterns. Combination is exothermic; decomposition usually endothermic. Displacement follows reactivity series. Double displacement forms precipitate often. For HOTS, relate to energy changes—combination releases energy, decomposition requires energy input."
+    },
+    {
+      "q": "Explain rusting of iron and methods to prevent it.",
+      "image": "data/notes/Class-10/Science/chemical-reactions-and-equations/diagrams/1_4_Corrosion.PNG",
+      "a": "Rusting: 4Fe + 3O₂ + 6H₂O → 2Fe₂O₃·3H₂O. Requires moisture and oxygen. Prevention methods: Painting (barrier), Galvanizing (sacrificial zinc), Electroplating (non-reactive coating), Alloying (stainless steel).",
+      "explanation": "Rusting is electrochemical corrosion. Iron acts as anode, losing electrons. Oxygen accepts electrons at cathode. Water provides electrolyte. For environmental context, explain acid rain accelerates rusting. Galvanizing works because zinc (more reactive) corrodes first, protecting iron."
+    },
+    {
+      "q": "What is rancidity? Explain causes and prevention methods.",
+      "image": "data/notes/Class-10/Science/chemical-reactions-and-equations/diagrams/1_5_Rancidity.PNG",
+      "a": "Rancidity is oxidation of unsaturated fats/oils causing unpleasant smell and taste. Causes: Oxygen, moisture, light, microorganisms. Prevention: Airtight storage, antioxidants (BHA, BHT, Vit E), refrigeration, nitrogen flushing.",
+      "explanation": "Rancidity is auto-oxidation of C=C bonds in unsaturated fats forming ketones and aldehydes with bad smell. Antioxidants donor electrons to break chain reaction. For food chemistry, discuss why saturated fats resist rancidity (no C=C bonds). Relate to malondialdehyde formation."
+    }
+  ]
+}
