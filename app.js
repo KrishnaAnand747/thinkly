@@ -375,20 +375,21 @@ function showChapterContent(chapterName) {
 // --- 4. NEW: SUB-TOPIC NOTES LOGIC ---
 async function showNotes(chapterName) {
     const notesDiv = document.getElementById("notesContainer");
-    const selectedClassValue = document.getElementById("classSelect").value;
+    const selectedClassValue = document.getElementById("classSelect").value.toLowerCase().replace(/\\s+/g, '-');
     
     // Use global selectedSubject first, fallback to UI
-    let selectedSubjectFinal = selectedSubject;
+    let selectedSubjectFinal = selectedSubject ? selectedSubject.toLowerCase().replace(/\\s+/g, '-') : "science";
     if (!selectedSubjectFinal) {
         const subArea = document.getElementById("subjectButtons");
         const activeBtn = subArea ? subArea.querySelector('.subject-btn:nth-child(1)') || subArea.querySelector('.subject-btn') : null;
-        selectedSubjectFinal = activeBtn ? activeBtn.textContent.trim() : "Science";
+        selectedSubjectFinal = activeBtn ? activeBtn.textContent.trim().toLowerCase().replace(/\\s+/g, '-') : "science";
     }
     
-    // Paths match EXACT folder structure: Class-10/Science/acids-bases-and-salts/
-    const classFolder = `Class-${selectedClassValue}`;
-    const subjectFolder = selectedSubjectFinal;
-    const chapterFolder = chapterName.trim();
+    const chapterFolder = chapterName.trim().toLowerCase().replace(/\\s+/g, '-');
+    
+    // ALL lowercase-hyphen paths for fetch
+    const classFolder = `class-${selectedClassValue}`;
+    const subjectFolder = selectedSubjectFinal.toLowerCase().replace(/\\s+/g, '-');
     
     // Hide other sections
     document.getElementById("quizContainer").style.display = "none";
@@ -397,9 +398,11 @@ async function showNotes(chapterName) {
 
     const chapterPath = `data/notes/${classFolder}/${subjectFolder}/${chapterFolder}`;
 
+    console.log('Notes path:', chapterPath); // Debug
+
     try {
         const configResp = await fetch(`${chapterPath}/config.json`);
-        if (!configResp.ok) throw new Error("No config.json found");
+        if (!configResp.ok) throw new Error(`No config.json: ${configResp.status}`);
         const config = await configResp.json();
 
         notesDiv.innerHTML = `
@@ -426,7 +429,7 @@ async function showNotes(chapterName) {
 
     } catch (err) {
         console.error("Notes error:", chapterPath, err);
-        notesDiv.innerHTML = `<p style="padding:20px; color:#666;">📚 Notes for "${chapterName}" coming soon!<br><small>Class: ${selectedClassValue} | Subject: ${selectedSubjectFinal}</small></p>`;
+        notesDiv.innerHTML = `<p style="padding:20px; color:#666;">📚 Notes for "${chapterName}"<br><small>Class: ${classFolder} | Subject: ${subjectFolder} | Path: ${chapterPath}</small></p>`;
     }
 }
 
@@ -552,12 +555,14 @@ async function showQuestionBank(chapterName) {
     qbArea.innerHTML = `<p>Loading Question Bank...</p>`;
 
     const safeChapterName = chapterName.trim().toLowerCase().replace(/\s+/g, '-');
+    const safePath = `data/questionBank/${safeChapterName}.json`;
     try {
-        const response = await fetch(`data/questionBank/${safeChapterName}.json`);
+        const response = await fetch(safePath);
         const data = await response.json();
         renderQuestionBank(data, qbArea);
     } catch (err) {
-        qbArea.innerHTML = `<p>No Question Bank found for ${chapterName}.</p>`;
+        console.error('QB path:', safePath, err);
+        qbArea.innerHTML = `<p>No Question Bank found for ${chapterName}. Path: ${safePath}</p>`;
     }
 }
 
@@ -606,12 +611,14 @@ async function startQuiz(chapterName) {
     quizDiv.innerHTML = `<p>Loading Quiz...</p>`;
 
     const safeChapterName = chapterName.trim().toLowerCase().replace(/\s+/g, '-');
+    const safePath = `data/quizzes/${safeChapterName}.json`;
     try {
-        const response = await fetch(`data/quizzes/${safeChapterName}.json`);
+        const response = await fetch(safePath);
         const questions = await response.json();
         renderInteractiveQuiz(questions, quizDiv, chapterName);
     } catch (err) {
-        quizDiv.innerHTML = `<p style="color:red;">Error loading quiz.</p>`;
+        console.error('Quiz path:', safePath, err);
+        quizDiv.innerHTML = `<p style="color:red;">Error loading quiz. Path: ${safePath}</p>`;
     }
 }
 
