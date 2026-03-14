@@ -11,11 +11,22 @@ window.startReading = startReading;
 window.stopReading = stopReading;
 window.toggleSidebar = toggleSidebar;
 window.closeSidebar = closeSidebar;
+window.startAssessment = startAssessment;
+window.exitExam = exitExam;
+window.submitExam = submitExam;
 
 
 let syllabus = {};
 let notesData = {}; 
-let currentUser = { name: "Guest", pic: "images/guest-profile.png", type: "Guest" };
+let currentUser = { name: "Guest", pic: "images/guest-profile.png", type: "Guest", uid: null };
+let selectedSubject = '';
+let examActive = false;
+let examQuestions = [];
+let examTimer = 1200; // 20 minutes
+let examTimerInterval = null;
+let examSubjectId = '';
+let firebaseApp = null;
+let db = null;
 
 function escapeJS(str) {
     return str.replace(/'/g, "\\'");
@@ -31,11 +42,28 @@ function handleCredentialResponse(response) {
     try {
         const token = response.credential;
         const payload = JSON.parse(window.atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-        currentUser = { name: payload.name, pic: payload.picture, type: "Google" };
+        currentUser = { name: payload.name, pic: payload.picture, type: "Google", uid: payload.sub };
+        initFirebase();
         transitionToApp();
     } catch (e) {
         console.error("Login failed:", e);
     }
+}
+
+function initFirebase() {
+    if (currentUser.type !== 'Google' || !window.firebaseModules) return;
+    const firebaseConfig = {
+        // REPLACE WITH YOUR FIREBASE CONFIG
+        apiKey: "your-api-key",
+        authDomain: "your-project.firebaseapp.com",
+        projectId: "your-project-id",
+        storageBucket: "your-project.appspot.com",
+        messagingSenderId: "123456789",
+        appId: "your-app-id"
+    };
+    firebaseApp = window.firebaseModules.initializeApp(firebaseConfig);
+    db = window.firebaseModules.getFirestore(firebaseApp);
+    console.log('Firebase initialized');
 }
 
 function guestLogin() {
@@ -112,15 +140,37 @@ function populateClassSelect() {
 function onClassChange() {
     const selectedClass = document.getElementById("classSelect").value;
     const subArea = document.getElementById("subjectButtons");
+    const assessmentBtn = document.getElementById("btn-assessment");
     subArea.innerHTML = '';
+    assessmentBtn.disabled = true;
+    assessmentBtn.style.opacity = '0.5';
+    selectedSubject = '';
     if (!selectedClass || !syllabus[selectedClass]) return;
     
     const subjects = Object.keys(syllabus[selectedClass]);
     subArea.innerHTML = subjects.map(sub =>
-        `<button class="subject-btn" onclick="showChapters('${selectedClass}', '${sub}')">
+        `<button class="subject-btn" onclick="onSubjectSelect('${selectedClass}', '${sub}', this)">
             ${sub.charAt(0).toUpperCase() + sub.slice(1)}
          </button>`).join('');
-    if (subjects.length > 0) showChapters(selectedClass, subjects[0]);
+    if (subjects.length > 0) onSubjectSelect(selectedClass, subjects[0], subArea.querySelector('.subject-btn'));
+}
+
+function onSubjectSelect(selectedClass, sub, btn) {
+    selectedSubject = sub;
+    document.querySelectorAll('.subject-btn').forEach(b => b.style.background = 'var(--secondary)');
+    btn.style.background = 'var(--primary)';
+    showChapters(selectedClass, sub);
+    document.getElementById("btn-assessment").disabled = false;
+    document.getElementById("btn-assessment").style.opacity = '1';
+}
+
+function onSubjectSelect(selectedClass, sub, btn) {
+    selectedSubject = sub;
+    document.querySelectorAll('.subject-btn').forEach(b => b.style.background = 'var(--secondary)');
+    btn.style.background = 'var(--primary)';
+    showChapters(selectedClass, sub);
+    document.getElementById("btn-assessment").disabled = false;
+    document.getElementById("btn-assessment").style.opacity = '1';
 }
 
 function showChapters(selectedClass, selectedSubject) {
@@ -131,6 +181,176 @@ function showChapters(selectedClass, selectedSubject) {
         `<div class="chapter-card" onclick="showChapterContent('${escapeJS(chapter)}')">
             <span>${chapter.replace(/-/g, ' ')}</span>
         </div>`).join('');
+}
+
+function toKebabCase(str) {
+    return str.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/\s+/g, '-').toLowerCase();
+}
+
+async function startAssessment() {
+    if (!selectedSubject) {
+        alert('Please select a subject first.');
+        return;
+    }
+    
+    // Use first chapter as subject_id proxy
+    const selectedClass = document.getElementById("classSelect").value;
+    const firstChapter = syllabus[selectedClass][selectedSubject][0];
+    examSubjectId = toKebabCase(firstChapter);
+    
+    document.getElementById('sidebar').style.display = 'none';
+    document.querySelector('.main').style.display = 'none';
+    document.getElementById('sidebarOverlay').style.display = 'none';
+    document.getElementById('examMode').classList.remove('hidden');
+    document.getElementById('exam-subject-title').textContent = selectedSubject.charAt(0).toUpperCase() + selectedSubject.slice(1);
+    
+    examActive = true;
+    examTimer = 1200;
+    
+    try {
+        // Load quizzes for MCQ (like view quiz) + QB for other
+        const quizResponse = await fetch(`data/quizzes/${examSubjectId}.json`);
+        const mcqQuestions = await quizResponse.json();
+        
+        const qbResponse = await fetch(`data/questionBank/${examSubjectId}.json`);
+        const qbData = await qbResponse.json();
+        const otherQuestions = [];
+        for (const cat in qbData) {
+            otherQuestions.push(...qbData[cat]);
+        }
+        
+        // 10 MCQ + 10 other
+        const mcqs = mcqQuestions.slice(0, 10);
+        const others = otherQuestions.sort(() => 0.5 - Math.random()).slice(0, 10);
+        examQuestions = [...mcqs, ...others];
+        renderExam();
+        startExamTimer();
+    } catch (err) {
+        console.error('Failed to load questions:', err);
+        document.getElementById('exam-questions').innerHTML = '<p>Error loading assessment. <button onclick="exitExam()">Try Again</button></p>';
+    }
+}
+
+function renderExam() {
+    const container = document.getElementById('exam-questions');
+    container.innerHTML = examQuestions.map((q, i) => {
+        let optionsHtml = '';
+        const imageHtml = q.image ? `<img src="${q.image}" style="max-width:100%; height:auto; border-radius:8px; margin:15px 0;" onclick="openModal('${q.image}')">` : '';
+        
+        if (q.options) {
+            // MCQ from quizzes
+            optionsHtml = q.options.map(opt => `
+                <label style="display: block; padding: 10px; margin: 5px 0; border: 1px solid #eee; border-radius: 8px; cursor: pointer;">
+                    <input type="radio" name="examq${i}" value="${opt}" style="margin-right: 10px;"> ${opt}
+                </label>
+            `).join('');
+        } else {
+            // Short answer from QB
+            optionsHtml = `<textarea name="examq${i}" placeholder="Enter your answer" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; resize:vertical; min-height:80px;"></textarea>`;
+        }
+        
+        return `
+            <div class="exam-question">
+                <h3>Question ${i+1}</h3>
+                <p>${q.q}</p>
+                ${imageHtml}
+                <div class="exam-options">
+                    ${optionsHtml}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function startExamTimer() {
+    document.getElementById('exam-timer').textContent = '20:00';
+    examTimerInterval = setInterval(() => {
+        examTimer--;
+        const min = Math.floor(examTimer / 60).toString().padStart(2, '0');
+        const sec = (examTimer % 60).toString().padStart(2, '0');
+        document.getElementById('exam-timer').textContent = `${min}:${sec}`;
+        if (document.querySelector('.timer-countdown').style.color !== 'red' && examTimer <= 300) {
+            document.querySelector('.timer-countdown').style.color = 'orange';
+        }
+        if (examTimer <= 60) {
+            document.querySelector('.timer-countdown').style.color = 'red';
+        }
+        if (examTimer <= 0) {
+            clearInterval(examTimerInterval);
+            submitExam(true); // auto-submit
+        }
+    }, 1000);
+}
+
+function exitExam() {
+    if (examTimerInterval) clearInterval(examTimerInterval);
+    examActive = false;
+    document.getElementById('examMode').classList.add('hidden');
+    document.getElementById('sidebar').style.display = '';
+    document.querySelector('.main').style.display = '';
+    document.getElementById('sidebarOverlay').style.display = '';
+    showDashboard();
+}
+
+async function submitExam(auto = false) {
+    if (examTimerInterval) clearInterval(examTimerInterval);
+    let score = 0;
+    const totalQuestions = examQuestions.length;
+    
+    for (let i = 0; i < totalQuestions; i++) {
+        const q = examQuestions[i];
+        const radios = document.querySelectorAll(`input[name="examq${i}"]:checked`);
+        const textarea = document.querySelector(`textarea[name="examq${i}"]`);
+        
+        if (q.options) {
+            // MCQ: exact match
+            const selectedRadio = radios[0];
+            if (selectedRadio && selectedRadio.value === q.a) {
+                score++;
+            }
+        } else {
+            // Short answer: substring match (case-insensitive)
+            if (textarea && textarea.value.trim().toLowerCase().includes(q.a.toLowerCase())) {
+                score++;
+            }
+        }
+    }
+    
+    const percent = Math.round((score / totalQuestions) * 100);
+    document.getElementById('exam-questions').innerHTML = `
+        <div class="exam-summary">
+            <h2>Assessment Complete!</h2>
+            <div class="exam-score">${score}/${totalQuestions}</div>
+            <p>${percent}% Score</p>
+            <button onclick="exitExam()" style="margin-top:20px; padding:12px 24px; background:var(--primary); color:white; border:none; border-radius:8px; font-size:1.1rem; cursor:pointer;">Back to Dashboard</button>
+        </div>
+    `;
+    
+    // Save result
+    const result = {
+        score: score,
+        total: examQuestions.length,
+        percent: percent,
+        timestamp: new Date().toISOString(),
+        subject: examSubjectId
+    };
+    
+    if (currentUser.uid && db) {
+        try {
+            await window.firebaseModules.setDoc(window.firebaseModules.doc(db, 'users', currentUser.uid, 'assessments', examSubjectId), result);
+            console.log('Saved to Firebase');
+        } catch (e) {
+            console.error('Firebase save failed:', e);
+        }
+    } else {
+        // Save locally
+        const localKey = `assessment_${examSubjectId}`;
+        const localResults = JSON.parse(localStorage.getItem(localKey) || '[]');
+        localResults.push(result);
+        localStorage.setItem(localKey, JSON.stringify(localResults));
+    }
+    
+    if (auto) alert('Time up! Exam submitted.');
 }
 
 // --- 3. CONTENT RENDERING ---
@@ -156,10 +376,13 @@ async function showNotes(chapterName) {
     const notesDiv = document.getElementById("notesContainer");
     const selectedClass = document.getElementById("classSelect").value;
     
-    // Dynamically identify the selected subject from the UI buttons
-    const subArea = document.getElementById("subjectButtons");
-    const activeBtn = subArea.querySelector('.subject-btn[style*="background"]');
-    const selectedSubject = activeBtn ? activeBtn.innerText.trim() : "Science";
+    // Use global selectedSubject first, fallback to UI
+    let selectedSubjectFinal = selectedSubject;
+    if (!selectedSubjectFinal) {
+        const subArea = document.getElementById("subjectButtons");
+        const activeBtn = subArea ? subArea.querySelector('.subject-btn[style*="background"]') : null;
+        selectedSubjectFinal = activeBtn ? activeBtn.innerText.trim() : "Science";
+    }
     
     // Hide other sections
     document.getElementById("quizContainer").style.display = "none";
@@ -167,7 +390,7 @@ async function showNotes(chapterName) {
     notesDiv.style.display = 'block';
 
     // The path to the chapter folder (matches: data/notes/Class-10/Science/Acids-Bases-and-Salts)
-    const chapterPath = `data/notes/Class-${selectedClass}/${selectedSubject}/${chapterName.trim()}`;
+    const chapterPath = `data/notes/Class-${selectedClass}/${selectedSubjectFinal}/${chapterName.trim()}`;
 
     try {
         const configResp = await fetch(`${chapterPath}/config.json`);
@@ -200,7 +423,8 @@ async function showNotes(chapterName) {
 
     } catch (err) {
         console.error("Path error:", chapterPath, err);
-        notesDiv.innerHTML = `<p style="padding:20px; color:#666;">Detailed sub-topics for <b>${chapterName}</b> are coming soon.</p>`;
+        notesDiv.innerHTML = `<p style="padding:20px; color:#666;">Detailed sub-topics for <b>${chapterName}</b> are coming soon. Used subject: ${selectedSubjectFinal}</p>`;
+        console.log('Used subject for notes:', selectedSubjectFinal);
     }
 }
 
@@ -445,16 +669,49 @@ function saveProgress(chapterName, score, total) {
 // --- 6. DASHBOARD & UI HELPERS ---
 function showDashboard() {
     const contentArea = document.getElementById("contentArea");
-    const key = getProgressKey();
-    const progress = JSON.parse(localStorage.getItem(key)) || {};
-    let rowsHTML = "";
-    let count = 0;
+    const quizKey = getProgressKey();
+    const quizProgress = JSON.parse(localStorage.getItem(quizKey)) || {};
     
-    for (const [chapter, data] of Object.entries(progress)) {
-        count++;
-        rowsHTML += `
+    // Load assessments - FIXED to avoid duplicates
+    const assessmentRows = [];
+    const seenResults = new Set();
+    
+    // Scan all localStorage for assessment_* keys
+    Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('assessment_')) {
+            try {
+                const results = JSON.parse(localStorage.getItem(key) || '[]');
+                results.forEach(result => {
+                    const id = result.timestamp + result.subject; // unique per result
+                    if (!seenResults.has(id)) {
+                        seenResults.add(id);
+                        assessmentRows.push({
+                            type: 'Assessment',
+                            name: result.subject.replace(/-/g, ' ').toUpperCase(),
+                            score: result.score,
+                            total: result.total,
+                            percent: result.percent,
+                            date: new Date(result.timestamp).toLocaleDateString(),
+                            timestamp: result.timestamp
+                        });
+                    }
+                });
+            } catch (e) {
+                console.error('Error parsing assessment key:', key, e);
+            }
+        }
+    });
+    
+    // Sort assessments by date
+    assessmentRows.sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date));
+    
+    let quizRowsHTML = "";
+    let quizCount = 0;
+    for (const [chapter, data] of Object.entries(quizProgress)) {
+        quizCount++;
+        quizRowsHTML += `
             <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 15px;">${chapter.replace(/-/g, ' ')}</td>
+                <td style="padding: 15px;">📚 ${chapter.replace(/-/g, ' ')}</td>
                 <td style="padding: 15px;">
                     <div style="background:#eee; border-radius:10px; height:10px; width:100%; max-width:150px;">
                         <div style="background:var(--primary); height:10px; border-radius:10px; width:${data.percent}%"></div>
@@ -466,30 +723,73 @@ function showDashboard() {
             </tr>`;
     }
 
+    let assessmentRowsHTML = "";
+    assessmentRows.forEach(row => {
+        assessmentRowsHTML += `
+            <tr style="border-bottom: 1px solid #eee; background: rgba(139,69,19,0.05);">
+                <td style="padding: 15px;"><strong>🎯 ${row.name}</strong></td>
+                <td style="padding: 15px;">
+                    <div style="background:#eee; border-radius:10px; height:10px; width:100%; max-width:150px;">
+                        <div style="background:var(--secondary); height:10px; border-radius:10px; width:${row.percent}%"></div>
+                    </div>
+                    <span style="font-size:0.8rem;">${row.percent}%</span>
+                </td>
+                <td style="padding: 15px; font-weight:bold; color:var(--secondary);">${row.score} / ${row.total}</td>
+                <td style="padding: 15px; color:#666; font-size:0.85rem;">${row.date}</td>
+            </tr>`;
+    });
+
+    const totalAssessments = assessmentRows.length;
+
     contentArea.innerHTML = `
         <h2 style="color:var(--secondary); margin-bottom:20px;">Performance: ${currentUser.name}</h2>
         <div style="display:flex; gap:15px; margin-bottom:30px; flex-wrap:wrap;">
             <div style="background:var(--primary); color:white; padding:20px; border-radius:15px; flex:1; text-align:center;">
-                <h3 style="margin:0; font-size:2rem;">${count}</h3>
-                <p style="margin:0;">Quizzes Completed</p>
+                <h3 style="margin:0; font-size:2rem;">${quizCount}</h3>
+                <p style="margin:0;">Quizzes</p>
+            </div>
+            <div style="background:var(--secondary); color:white; padding:20px; border-radius:15px; flex:1; text-align:center;">
+                <h3 style="margin:0; font-size:2rem;">${totalAssessments}</h3>
+                <p style="margin:0;">Assessments</p>
             </div>
         </div>
-        <div class="content-section" style="padding:0; overflow-x:auto;">
+        
+        ${quizRowsHTML ? `
+        <h3 style="color:var(--primary); margin:20px 0 10px 0;">📚 Quiz Results</h3>
+        <div class="content-section" style="padding:0; overflow-x:auto; margin-bottom:30px;">
             <table style="width:100%; border-collapse:collapse; text-align:left; background:white;">
                 <thead style="background:#f8f9fa;">
                     <tr>
                         <th style="padding:15px;">Chapter</th>
                         <th style="padding:15px;">Progress</th>
-                        <th style="padding:15px;">Best Score</th>
+                        <th style="padding:15px;">Score</th>
                         <th style="padding:15px;">Date</th>
                     </tr>
                 </thead>
-                <tbody>
-                    ${rowsHTML || '<tr><td colspan="4" style="padding:30px; text-align:center;">No quiz data for this account.</td></tr>'}
-                </tbody>
+                <tbody>${quizRowsHTML}</tbody>
             </table>
         </div>
-        ${count > 0 ? `<button onclick="if(confirm('Clear progress for ${currentUser.name}?')){localStorage.removeItem('${key}'); showDashboard();}" style="margin-top:20px; color:#dc3545; border:none; background:none; cursor:pointer;">Reset My Stats</button>` : ''}`;
+        ` : ''}
+        
+        ${assessmentRowsHTML ? `
+        <h3 style="color:var(--secondary); margin:20px 0 10px 0;">🎯 Assessment Results</h3>
+        <div class="content-section" style="padding:0; overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; text-align:left; background:white;">
+                <thead style="background:rgba(139,69,19,0.1);">
+                    <tr>
+                        <th style="padding:15px;">Subject</th>
+                        <th style="padding:15px;">Progress</th>
+                        <th style="padding:15px;">Score</th>
+                        <th style="padding:15px;">Date</th>
+                    </tr>
+                </thead>
+                <tbody>${assessmentRowsHTML}</tbody>
+            </table>
+        </div>
+        ` : ''}
+        
+        ${quizCount + totalAssessments > 0 ? `<button onclick="if(confirm('Clear all progress for ${currentUser.name}?')){localStorage.removeItem('${quizKey}'); for(let i=0;i<100;i++) localStorage.removeItem('assessment_'+i); showDashboard();}" style="margin-top:20px; color:#dc3545; border:none; background:none; cursor:pointer;">Reset All Stats</button>` : ''}
+    `;
 }
 
 function showLoginAgain() {

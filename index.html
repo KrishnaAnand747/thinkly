@@ -23,6 +23,12 @@
 
     <script src="app.js" defer></script> 
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Firebase SDK -->
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+      import { getFirestore, collection, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+      window.firebaseModules = { initializeApp, getFirestore, collection, doc, setDoc };
+    </script>
 </head>
 <body>
 
@@ -97,6 +103,7 @@
                     <option value="">-- Select Class --</option>
                 </select>
                 <div id="subjectButtons" class="subject-buttons"></div>
+                <button id="btn-assessment" class="assessment-btn" onclick="startAssessment()" disabled>Start Assessment</button>
                 <div id="chaptersArea" class="chapters"></div>
                 <div class="hint">Progress is saved per user (Google or Guest)</div>
             </aside>
@@ -107,6 +114,19 @@
                     <p>Choose a class and subject on the left. Sign in to save your progress.</p>
                 </div>
             </main>
+        </div>
+
+        <!-- Exam Mode - Full Screen Assessment -->
+        <div id="examMode" class="exam-mode hidden">
+            <div class="exam-header">
+                <div class="exam-title">Assessment - <span id="exam-subject-title"></span></div>
+                <div id="exam-timer" class="timer-countdown">20:00</div>
+                <button id="exit-exam" class="exit-btn" onclick="exitExam()">❌ Exit</button>
+            </div>
+            <div id="exam-questions" class="exam-questions"></div>
+            <div class="exam-footer">
+                <button id="submit-exam" class="exam-submit-btn" onclick="submitExam()">Submit Exam</button>
+            </div>
         </div>
     </div>
 

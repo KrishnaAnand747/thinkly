@@ -276,6 +276,32 @@ body {
 
 .header-btn { background: var(--secondary); color: white; padding: 6px 14px; border: none; font-weight: 500; cursor: pointer; border-radius: 6px; margin-left: 5px; margin-right: 10px;}
 
+.assessment-btn {
+    background: var(--primary);
+    color: white;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(139, 69, 19, 0.3);
+}
+.assessment-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.5;
+    box-shadow: none;
+}
+.assessment-btn:hover:not(:disabled) {
+    background: var(--secondary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.4);
+}
+
 .container { display: flex; flex-grow: 1; max-width: 1400px; width: 100%; margin: 0 auto; }
 .sidebar { width: 300px; padding: 8px 8px 8px 0px; background: rgba(139, 69, 19, 0.3); @supports (backdrop-filter: blur(10px)) { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); } border-right: 1px solid rgba(255, 255, 255, 0.2); flex-shrink: 0; }
 
@@ -852,6 +878,188 @@ body {
     }
     .teacher-avatar .avatar-face {
         font-size: 30px;
+    }
+}
+
+/* ==================================== */
+/* EXAM MODE STYLES */
+/* ==================================== */
+
+#examMode {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: white;
+    z-index: 5000;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#examMode.hidden {
+    display: none;
+}
+
+.exam-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: var(--primary);
+    color: white;
+    flex-shrink: 0;
+}
+
+.exam-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.timer-countdown {
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    min-width: 80px;
+    text-align: center;
+}
+
+.exit-btn {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.exam-questions {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.exam-question {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.exam-question h3 {
+    margin: 0 0 15px 0;
+    color: var(--primary);
+}
+
+.exam-question img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.exam-options label {
+    display: block;
+    padding: 12px 15px;
+    margin: 8px 0;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+}
+
+.exam-options input[type="radio"] {
+    margin-right: 10px;
+    transform: scale(1.2);
+}
+
+.exam-options label:hover {
+    border-color: var(--primary);
+    background: #fff5f0;
+}
+
+.exam-footer {
+    padding: 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.exam-submit-btn {
+    background: #8B4513; /* Chocolate brown - matches --primary */
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+}
+
+.exam-submit-btn:hover {
+    background: #A0522D; /* Darker chocolate brown */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 69, 19, 0.4);
+}
+
+.exam-summary {
+    text-align: center;
+    padding: 40px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.exam-score {
+    font-size: 4rem;
+    font-weight: bold;
+    color: var(--primary);
+    margin: 20px 0;
+}
+
+/* Hide app content during exam */
+.exam-mode ~ .container,
+.exam-mode ~ header,
+.exam-mode ~ .sidebar-overlay {
+    display: none !important;
+}
+
+/* Responsive Exam */
+@media (max-width: 768px) {
+    .exam-header {
+        padding: 12px 15px;
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .exam-title {
+        font-size: 1.1rem;
+    }
+    
+    .timer-countdown {
+        font-size: 1.3rem;
+    }
+    
+    .exam-questions {
+        padding: 15px;
+    }
+    
+    .exam-question {
+        padding: 15px;
+    }
+    
+    .exam-options label {
+        padding: 10px 12px;
     }
 }
 
