@@ -193,10 +193,10 @@ async function startAssessment() {
         return;
     }
     
-    // Use first chapter as subject_id proxy
-    const selectedClass = document.getElementById("classSelect").value;
+    // Use first chapter as subject_id proxy - safe path
+    const selectedClass = document.getElementById("classSelect").value.toLowerCase().replace(/\s+/g, '-');
     const firstChapter = syllabus[selectedClass][selectedSubject][0];
-    examSubjectId = toKebabCase(firstChapter);
+    examSubjectId = firstChapter.trim().toLowerCase().replace(/\s+/g, '-');
     
     document.getElementById('sidebar').style.display = 'none';
     document.querySelector('.main').style.display = 'none';
@@ -209,10 +209,11 @@ async function startAssessment() {
     
     try {
         // Load quizzes for MCQ (like view quiz) + QB for other
-        const quizResponse = await fetch(`data/quizzes/${examSubjectId}.json`);
+        const safeExamId = examSubjectId.toLowerCase().replace(/\s+/g, '-');
+        const quizResponse = await fetch(`data/quizzes/${safeExamId}.json`);
         const mcqQuestions = await quizResponse.json();
         
-        const qbResponse = await fetch(`data/questionBank/${examSubjectId}.json`);
+        const qbResponse = await fetch(`data/questionBank/${safeExamId}.json`);
         const qbData = await qbResponse.json();
         const otherQuestions = [];
         for (const cat in qbData) {
@@ -374,57 +375,58 @@ function showChapterContent(chapterName) {
 // --- 4. NEW: SUB-TOPIC NOTES LOGIC ---
 async function showNotes(chapterName) {
     const notesDiv = document.getElementById("notesContainer");
-    const selectedClass = document.getElementById("classSelect").value;
+    const selectedClassValue = document.getElementById("classSelect").value;
     
     // Use global selectedSubject first, fallback to UI
     let selectedSubjectFinal = selectedSubject;
     if (!selectedSubjectFinal) {
         const subArea = document.getElementById("subjectButtons");
-        const activeBtn = subArea ? subArea.querySelector('.subject-btn[style*="background"]') : null;
-        selectedSubjectFinal = activeBtn ? activeBtn.innerText.trim() : "Science";
+        const activeBtn = subArea ? subArea.querySelector('.subject-btn:nth-child(1)') || subArea.querySelector('.subject-btn') : null;
+        selectedSubjectFinal = activeBtn ? activeBtn.textContent.trim() : "Science";
     }
+    
+    // Paths match EXACT folder structure: Class-10/Science/acids-bases-and-salts/
+    const classFolder = `Class-${selectedClassValue}`;
+    const subjectFolder = selectedSubjectFinal;
+    const chapterFolder = chapterName.trim();
     
     // Hide other sections
     document.getElementById("quizContainer").style.display = "none";
     document.getElementById("questionBankContainer").style.display = "none";
     notesDiv.style.display = 'block';
 
-    // The path to the chapter folder (matches: data/notes/Class-10/Science/Acids-Bases-and-Salts)
-    const chapterPath = `data/notes/Class-${selectedClass}/${selectedSubjectFinal}/${chapterName.trim()}`;
+    const chapterPath = `data/notes/${classFolder}/${subjectFolder}/${chapterFolder}`;
 
     try {
         const configResp = await fetch(`${chapterPath}/config.json`);
-        if (!configResp.ok) throw new Error("No subtopics config found");
+        if (!configResp.ok) throw new Error("No config.json found");
         const config = await configResp.json();
 
         notesDiv.innerHTML = `
-            <div class="subtopic-nav" style="display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; margin-bottom: 20px; border-bottom: 2px solid #eee; -webkit-overflow-scrolling: touch;">
+            <div class="subtopic-nav" style="display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; margin-bottom: 20px; border-bottom: 2px solid #eee;">
                 ${config.topics.map(t => `
-                    <button class="sub-btn" onclick="loadSubTopic('${chapterPath}/${t.file}', this)"
-                            style="white-space: nowrap; padding: 8px 18px; border-radius: 20px; border: 1.5px solid var(--primary); background: #fff; color: var(--primary); font-weight: 600; cursor: pointer;">
+                    <button class="sub-btn" onclick="loadSubTopic('${chapterPath}/${t.file}', this)">
                         ${t.title}
                     </button>
                 `).join('')}
             </div>
             <button id="readAloudBtn" class="read-aloud-btn" onclick="startReading()">🔊 Read Aloud</button>
-            <div id="subTopicDisplay" class="subtopic-content" style="line-height:1.6;">
+            <div id="subTopicDisplay" class="subtopic-content">
                 <p>Loading sub-topic...</p>
             </div>
             <div id="teacherAvatar" class="teacher-avatar hidden">
-                <div class="avatar-face" style="font-size: 60px;">👩‍🏫</div>
+                <div class="avatar-face">👩‍🏫</div>
             </div>
         `;
 
-        // Load first topic by default
         if(config.topics.length > 0) {
             const firstBtn = notesDiv.querySelector('.sub-btn');
             loadSubTopic(`${chapterPath}/${config.topics[0].file}`, firstBtn);
         }
 
     } catch (err) {
-        console.error("Path error:", chapterPath, err);
-        notesDiv.innerHTML = `<p style="padding:20px; color:#666;">Detailed sub-topics for <b>${chapterName}</b> are coming soon. Used subject: ${selectedSubjectFinal}</p>`;
-        console.log('Used subject for notes:', selectedSubjectFinal);
+        console.error("Notes error:", chapterPath, err);
+        notesDiv.innerHTML = `<p style="padding:20px; color:#666;">📚 Notes for "${chapterName}" coming soon!<br><small>Class: ${selectedClassValue} | Subject: ${selectedSubjectFinal}</small></p>`;
     }
 }
 
@@ -549,8 +551,9 @@ async function showQuestionBank(chapterName) {
     qbArea.style.display = 'block';
     qbArea.innerHTML = `<p>Loading Question Bank...</p>`;
 
+    const safeChapterName = chapterName.trim().toLowerCase().replace(/\s+/g, '-');
     try {
-        const response = await fetch(`data/questionBank/${chapterName.trim()}.json`);
+        const response = await fetch(`data/questionBank/${safeChapterName}.json`);
         const data = await response.json();
         renderQuestionBank(data, qbArea);
     } catch (err) {
@@ -602,8 +605,9 @@ async function startQuiz(chapterName) {
     quizDiv.style.display = 'block';
     quizDiv.innerHTML = `<p>Loading Quiz...</p>`;
 
+    const safeChapterName = chapterName.trim().toLowerCase().replace(/\s+/g, '-');
     try {
-        const response = await fetch(`data/quizzes/${chapterName.trim()}.json`);
+        const response = await fetch(`data/quizzes/${safeChapterName}.json`);
         const questions = await response.json();
         renderInteractiveQuiz(questions, quizDiv, chapterName);
     } catch (err) {
