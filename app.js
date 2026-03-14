@@ -375,21 +375,21 @@ function showChapterContent(chapterName) {
 // --- 4. NEW: SUB-TOPIC NOTES LOGIC ---
 async function showNotes(chapterName) {
     const notesDiv = document.getElementById("notesContainer");
-    const selectedClassValue = document.getElementById("classSelect").value.toLowerCase().replace(/\\s+/g, '-');
+    const selectedClassValue = document.getElementById("classSelect").value.replace(/\s+/g, '-').toLowerCase();
     
     // Use global selectedSubject first, fallback to UI
-    let selectedSubjectFinal = selectedSubject ? selectedSubject.toLowerCase().replace(/\\s+/g, '-') : "science";
-    if (!selectedSubjectFinal) {
+    let selectedSubjectFinal = selectedSubject ? selectedSubject.replace(/\s+/g, '-').toLowerCase() : "science";
+    if (!selectedSubjectFinal || selectedSubjectFinal === 'science') {
         const subArea = document.getElementById("subjectButtons");
         const activeBtn = subArea ? subArea.querySelector('.subject-btn:nth-child(1)') || subArea.querySelector('.subject-btn') : null;
-        selectedSubjectFinal = activeBtn ? activeBtn.textContent.trim().toLowerCase().replace(/\\s+/g, '-') : "science";
+        selectedSubjectFinal = activeBtn ? activeBtn.textContent.trim().replace(/\s+/g, '-').toLowerCase() : "science";
     }
     
-    const chapterFolder = chapterName.trim().toLowerCase().replace(/\\s+/g, '-');
+    const chapterFolder = chapterName.trim().replace(/\s+/g, '-').toLowerCase();
     
-    // ALL lowercase-hyphen paths for fetch
+    // STRICT lowercase-hyphen: data/notes/class-10/science/acids-bases-and-salts/
     const classFolder = `class-${selectedClassValue}`;
-    const subjectFolder = selectedSubjectFinal.toLowerCase().replace(/\\s+/g, '-');
+    const subjectFolder = selectedSubjectFinal.replace(/\s+/g, '-').toLowerCase();
     
     // Hide other sections
     document.getElementById("quizContainer").style.display = "none";
@@ -402,7 +402,9 @@ async function showNotes(chapterName) {
 
     try {
         const configResp = await fetch(`${chapterPath}/config.json`);
-        if (!configResp.ok) throw new Error(`No config.json: ${configResp.status}`);
+        if (!configResp.ok) {
+            throw new Error(`HTTP ${configResp.status}: ${configResp.statusText}. Path: ${chapterPath}`);
+        }
         const config = await configResp.json();
 
         notesDiv.innerHTML = `
@@ -422,14 +424,14 @@ async function showNotes(chapterName) {
             </div>
         `;
 
-        if(config.topics.length > 0) {
+        if(config.topics && config.topics.length > 0) {
             const firstBtn = notesDiv.querySelector('.sub-btn');
-            loadSubTopic(`${chapterPath}/${config.topics[0].file}`, firstBtn);
+            if (firstBtn) loadSubTopic(`${chapterPath}/${config.topics[0].file}`, firstBtn);
         }
 
     } catch (err) {
         console.error("Notes error:", chapterPath, err);
-        notesDiv.innerHTML = `<p style="padding:20px; color:#666;">📚 Notes for "${chapterName}"<br><small>Class: ${classFolder} | Subject: ${subjectFolder} | Path: ${chapterPath}</small></p>`;
+        notesDiv.innerHTML = `<p style="padding:20px; color:#666;">📚 Notes loading...<br><small>Class: ${classFolder} | Subject: ${subjectFolder} | Chapter: ${chapterFolder}<br>Error: ${err.message}</small></p>`;
     }
 }
 
@@ -837,9 +839,12 @@ function closeSidebar() {
 
 // Clock functionality
 function updateClock() {
-    const now = new Date();
-    const timeString = now.toLocaleTimeString();
-    document.getElementById('clock').textContent = timeString;
+    const clockEl = document.getElementById('clock');
+    if (clockEl) {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        clockEl.textContent = timeString;
+    }
 }
 
 // Timer functionality
