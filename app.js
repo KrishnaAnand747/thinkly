@@ -375,20 +375,20 @@ function showChapterContent(chapterName) {
 // --- 4. NEW: SUB-TOPIC NOTES LOGIC ---
 async function showNotes(chapterName) {
     const notesDiv = document.getElementById("notesContainer");
-    const selectedClassValue = document.getElementById("classSelect").value.replace(/\s+/g, '-').toLowerCase();
+    const selectedClassValue = document.getElementById("classSelect").value;
     
     // Use global selectedSubject first, fallback to UI
-    let selectedSubjectFinal = selectedSubject ? selectedSubject.replace(/\s+/g, '-').toLowerCase() : "science";
-    if (!selectedSubjectFinal || selectedSubjectFinal === 'science') {
+    let selectedSubjectFinal = selectedSubject;
+    if (!selectedSubjectFinal) {
         const subArea = document.getElementById("subjectButtons");
         const activeBtn = subArea ? subArea.querySelector('.subject-btn:nth-child(1)') || subArea.querySelector('.subject-btn') : null;
-        selectedSubjectFinal = activeBtn ? activeBtn.textContent.trim().replace(/\s+/g, '-').toLowerCase() : "science";
+        selectedSubjectFinal = activeBtn ? activeBtn.textContent.trim() : "science";
     }
     
     const chapterFolder = chapterName.trim().replace(/\s+/g, '-').toLowerCase();
     
     // STRICT lowercase-hyphen: data/notes/class-10/science/acids-bases-and-salts/
-    const classFolder = `class-${selectedClassValue}`;
+    const classFolder = `Class-${selectedClassValue.toUpperCase()}`;
     const subjectFolder = selectedSubjectFinal.replace(/\s+/g, '-').toLowerCase();
     
     // Hide other sections
