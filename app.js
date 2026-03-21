@@ -164,15 +164,6 @@ function onSubjectSelect(selectedClass, sub, btn) {
     document.getElementById("btn-assessment").style.opacity = '1';
 }
 
-function onSubjectSelect(selectedClass, sub, btn) {
-    selectedSubject = sub;
-    document.querySelectorAll('.subject-btn').forEach(b => b.style.background = 'var(--secondary)');
-    btn.style.background = 'var(--primary)';
-    showChapters(selectedClass, sub);
-    document.getElementById("btn-assessment").disabled = false;
-    document.getElementById("btn-assessment").style.opacity = '1';
-}
-
 function showChapters(selectedClass, selectedSubject) {
     const chaptersArea = document.getElementById("chaptersArea");
     const chapters = syllabus[selectedClass][selectedSubject] || [];
@@ -193,7 +184,6 @@ async function startAssessment() {
         return;
     }
     
-    // Use first chapter as subject_id proxy - safe path
     const selectedClass = document.getElementById("classSelect").value.toLowerCase().replace(/\s+/g, '-');
     const firstChapter = syllabus[selectedClass][selectedSubject][0];
     examSubjectId = firstChapter.trim().toLowerCase().replace(/\s+/g, '-');
@@ -208,11 +198,11 @@ async function startAssessment() {
     examTimer = 1200;
     
     try {
-        // Load quizzes for MCQ (like view quiz) + QB for other
         const safeExamId = examSubjectId.toLowerCase().replace(/\s+/g, '-');
         const quizResponse = await fetch(`data/quizzes/${safeExamId}.json`);
         const mcqQuestions = await quizResponse.json();
         
+        // FIX: Ensure path is lowercase 'questionbank'
         const qbResponse = await fetch(`data/questionbank/${safeExamId}.json`);
         const qbData = await qbResponse.json();
         const otherQuestions = [];
@@ -220,7 +210,6 @@ async function startAssessment() {
             otherQuestions.push(...qbData[cat]);
         }
         
-        // 10 MCQ + 10 other
         const mcqs = mcqQuestions.slice(0, 10);
         const others = otherQuestions.sort(() => 0.5 - Math.random()).slice(0, 10);
         examQuestions = [...mcqs, ...others];
@@ -239,14 +228,12 @@ function renderExam() {
         const imageHtml = q.image ? `<img src="${q.image}" style="max-width:100%; height:auto; border-radius:8px; margin:15px 0;" onclick="openModal('${q.image}')">` : '';
         
         if (q.options) {
-            // MCQ from quizzes
             optionsHtml = q.options.map(opt => `
                 <label style="display: block; padding: 10px; margin: 5px 0; border: 1px solid #eee; border-radius: 8px; cursor: pointer;">
                     <input type="radio" name="examq${i}" value="${opt}" style="margin-right: 10px;"> ${opt}
                 </label>
             `).join('');
         } else {
-            // Short answer from QB
             optionsHtml = `<textarea name="examq${i}" placeholder="Enter your answer" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; resize:vertical; min-height:80px;"></textarea>`;
         }
         
@@ -278,7 +265,7 @@ function startExamTimer() {
         }
         if (examTimer <= 0) {
             clearInterval(examTimerInterval);
-            submitExam(true); // auto-submit
+            submitExam(true);
         }
     }, 1000);
 }
@@ -304,13 +291,11 @@ async function submitExam(auto = false) {
         const textarea = document.querySelector(`textarea[name="examq${i}"]`);
         
         if (q.options) {
-            // MCQ: exact match
             const selectedRadio = radios[0];
             if (selectedRadio && selectedRadio.value === q.a) {
                 score++;
             }
         } else {
-            // Short answer: substring match (case-insensitive)
             if (textarea && textarea.value.trim().toLowerCase().includes(q.a.toLowerCase())) {
                 score++;
             }
@@ -327,7 +312,6 @@ async function submitExam(auto = false) {
         </div>
     `;
     
-    // Save result
     const result = {
         score: score,
         total: examQuestions.length,
@@ -339,12 +323,10 @@ async function submitExam(auto = false) {
     if (currentUser.uid && db) {
         try {
             await window.firebaseModules.setDoc(window.firebaseModules.doc(db, 'users', currentUser.uid, 'assessments', examSubjectId), result);
-            console.log('Saved to Firebase');
         } catch (e) {
             console.error('Firebase save failed:', e);
         }
     } else {
-        // Save locally
         const localKey = `assessment_${examSubjectId}`;
         const localResults = JSON.parse(localStorage.getItem(localKey) || '[]');
         localResults.push(result);
@@ -377,7 +359,6 @@ async function showNotes(chapterName) {
     const notesDiv = document.getElementById("notesContainer");
     const selectedClassValue = document.getElementById("classSelect").value;
     
-    // Use global selectedSubject first, fallback to UI
     let selectedSubjectFinal = selectedSubject;
     if (!selectedSubjectFinal) {
         const subArea = document.getElementById("subjectButtons");
@@ -387,23 +368,20 @@ async function showNotes(chapterName) {
     
     const chapterFolder = chapterName.trim().replace(/\s+/g, '-').toLowerCase();
     
-    // STRICT lowercase-hyphen: data/notes/class-10/science/acids-bases-and-salts/
-    const classFolder = `Class-${selectedClassValue.toUpperCase()}`;
+    // FIX: Changed folder path to lowercase 'class-' to match standard repo structure
+    const classFolder = `class-${selectedClassValue.toLowerCase()}`;
     const subjectFolder = selectedSubjectFinal.replace(/\s+/g, '-').toLowerCase();
     
-    // Hide other sections
     document.getElementById("quizContainer").style.display = "none";
     document.getElementById("questionBankContainer").style.display = "none";
     notesDiv.style.display = 'block';
 
     const chapterPath = `data/notes/${classFolder}/${subjectFolder}/${chapterFolder}`;
 
-    console.log('Notes path:', chapterPath); // Debug
-
     try {
         const configResp = await fetch(`${chapterPath}/config.json`);
         if (!configResp.ok) {
-            throw new Error(`HTTP ${configResp.status}: ${configResp.statusText}. Path: ${chapterPath}`);
+            throw new Error(`HTTP ${configResp.status}. Path: ${chapterPath}`);
         }
         const config = await configResp.json();
 
@@ -431,14 +409,13 @@ async function showNotes(chapterName) {
 
     } catch (err) {
         console.error("Notes error:", chapterPath, err);
-        notesDiv.innerHTML = `<p style="padding:20px; color:#666;">📚 Notes loading...<br><small>Class: ${classFolder} | Subject: ${subjectFolder} | Chapter: ${chapterFolder}<br>Error: ${err.message}</small></p>`;
+        notesDiv.innerHTML = `<p style="padding:20px; color:#666;">📚 Notes loading...<br><small>Path: ${chapterPath}<br>Error: ${err.message}</small></p>`;
     }
 }
 
 async function loadSubTopic(filePath, btn) {
     const display = document.getElementById("subTopicDisplay");
     
-    // UI Feedback: Highlight active button
     document.querySelectorAll('.sub-btn').forEach(b => {
         b.style.background = "#fff";
         b.style.color = "var(--primary)";
@@ -450,7 +427,6 @@ async function loadSubTopic(filePath, btn) {
         const response = await fetch(filePath);
         display.innerHTML = await response.text();
         
-        // Auto-handle diagram zoom
         display.querySelectorAll('img').forEach(img => {
             img.style.cursor = "zoom-in";
             img.onclick = function() { openModal(this.src); };
@@ -489,7 +465,7 @@ function startReading() {
     }
 
     currentUtterance = new SpeechSynthesisUtterance(text);
-    currentUtterance.rate = 0.8; // Slightly slower for clarity
+    currentUtterance.rate = 0.8; 
     currentUtterance.pitch = 1;
     currentUtterance.volume = 1;
 
@@ -534,7 +510,6 @@ function selectAvatar(avatar) {
     if (avatarFace) {
         avatarFace.textContent = avatar;
     }
-    // Optional: Add visual feedback for selected avatar
     const avatarIcons = document.querySelectorAll('.avatar-icons button');
     avatarIcons.forEach(btn => {
         if (btn.textContent === avatar) {
@@ -557,10 +532,12 @@ async function showQuestionBank(chapterName) {
     qbArea.innerHTML = `<p>Loading Question Bank...</p>`;
 
     const safeChapterName = chapterName.trim().toLowerCase().replace(/\s+/g, '-');
-    //change to questionbank for qb and quizzes for quiz
+    
+    // FIX: Changed path to lowercase 'questionbank' to match GitHub
     const safePath = `data/questionbank/${safeChapterName}.json`;
     try {
         const response = await fetch(safePath);
+        if (!response.ok) throw new Error(`HTTP ${response.status}. Path: ${safePath}`);
         const data = await response.json();
         renderQuestionBank(data, qbArea);
     } catch (err) {
@@ -651,14 +628,14 @@ function renderInteractiveQuiz(questions, container, chapterName) {
             const selected = document.querySelector(`input[name="q${index}"]:checked`);
             const feedback = document.getElementById(`feedback-${index}`);
             feedback.classList.remove('hidden');
-        if (selected && selected.value === item.a) {
-            score++;
-            feedback.style.background = "#d4edda";
-            feedback.innerHTML = `✅ Correct! Explanation: ${item.explanation}`;
-        } else {
-            feedback.style.background = "#f8d7da";
-            feedback.innerHTML = `❌ Incorrect. Answer: ${item.a}. Explanation: ${item.explanation}`;
-        }
+            if (selected && selected.value === item.a) {
+                score++;
+                feedback.style.background = "#d4edda";
+                feedback.innerHTML = `✅ Correct! Explanation: ${item.explanation}`;
+            } else {
+                feedback.style.background = "#f8d7da";
+                feedback.innerHTML = `❌ Incorrect. Answer: ${item.a}. Explanation: ${item.explanation}`;
+            }
         });
         saveProgress(chapterName, score, questions.length);
         const summary = document.createElement('div');
@@ -686,17 +663,15 @@ function showDashboard() {
     const quizKey = getProgressKey();
     const quizProgress = JSON.parse(localStorage.getItem(quizKey)) || {};
     
-    // Load assessments - FIXED to avoid duplicates
     const assessmentRows = [];
     const seenResults = new Set();
     
-    // Scan all localStorage for assessment_* keys
     Object.keys(localStorage).forEach(key => {
         if (key.startsWith('assessment_')) {
             try {
                 const results = JSON.parse(localStorage.getItem(key) || '[]');
                 results.forEach(result => {
-                    const id = result.timestamp + result.subject; // unique per result
+                    const id = result.timestamp + result.subject; 
                     if (!seenResults.has(id)) {
                         seenResults.add(id);
                         assessmentRows.push({
@@ -716,7 +691,6 @@ function showDashboard() {
         }
     });
     
-    // Sort assessments by date
     assessmentRows.sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date));
     
     let quizRowsHTML = "";
@@ -838,7 +812,6 @@ function closeSidebar() {
 
 // --- 8. RIGHT SIDEBAR UTILITIES ---
 
-// Clock functionality
 function updateClock() {
     const clockEl = document.getElementById('clock');
     if (clockEl) {
@@ -848,7 +821,6 @@ function updateClock() {
     }
 }
 
-// Timer functionality
 let timerInterval;
 let timerSeconds = 0;
 let isTimerRunning = false;
@@ -863,7 +835,6 @@ function startTimer() {
     }
 }
 
-// Auto-start timer on page load
 document.addEventListener('DOMContentLoaded', () => {
     startTimer();
 });
@@ -886,13 +857,14 @@ function updateTimerDisplay() {
     const minutes = Math.floor((timerSeconds % 3600) / 60);
     const seconds = timerSeconds % 60;
     const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    document.getElementById('header-timer').textContent = timeString;
+    const timerDisplay = document.getElementById('header-timer');
+    if (timerDisplay) timerDisplay.textContent = timeString;
 }
 
-// Sticky notes functionality
 function loadNotes() {
     const notes = JSON.parse(localStorage.getItem('stickyNotes') || '[]');
     const notesList = document.getElementById('notesList');
+    if (!notesList) return;
     notesList.innerHTML = '';
     notes.forEach((note, index) => {
         const noteItem = document.createElement('div');
@@ -925,7 +897,6 @@ function saveNotes() {
     localStorage.setItem('stickyNotes', JSON.stringify(notes));
 }
 
-// Initialize utilities when app loads
 function initializeUtilities() {
     updateClock();
     setInterval(updateClock, 1000);
@@ -935,7 +906,6 @@ function initializeUtilities() {
 
 document.addEventListener('DOMContentLoaded', loadContentData);
 
-// Initialize utilities after transition to app
 const originalTransitionToApp = transitionToApp;
 transitionToApp = function() {
     originalTransitionToApp();
