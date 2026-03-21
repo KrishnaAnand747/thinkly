@@ -213,7 +213,7 @@ async function startAssessment() {
         const quizResponse = await fetch(`data/quizzes/${safeExamId}.json`);
         const mcqQuestions = await quizResponse.json();
         
-        const qbResponse = await fetch(`data/questionBank/${safeExamId}.json`);
+        const qbResponse = await fetch(`data/questionbank/${safeExamId}.json`);
         const qbData = await qbResponse.json();
         const otherQuestions = [];
         for (const cat in qbData) {
