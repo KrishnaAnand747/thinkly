@@ -557,7 +557,8 @@ async function showQuestionBank(chapterName) {
     qbArea.innerHTML = `<p>Loading Question Bank...</p>`;
 
     const safeChapterName = chapterName.trim().toLowerCase().replace(/\s+/g, '-');
-    const safePath = `data/questionBank/${safeChapterName}.json`;
+    //change to questionbank for qb and quizzes for quiz
+    const safePath = `data/questionbank/${safeChapterName}.json`;
     try {
         const response = await fetch(safePath);
         const data = await response.json();
